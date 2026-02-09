@@ -1,10 +1,14 @@
-import os
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-# Load MongoDB Atlas connection string from environment variable
-mongo_uri = os.getenv('MONGODB_URI')
+uri = "mongodb+srv://maitechapartegui03_db_user:<db_password>@cluster1.gkoxcnq.mongodb.net/?appName=Cluster1"
 
-# Initialize the MongoDB client
-client = AsyncIOMotorClient(mongo_uri)
+# Create a new client and connect to the server
+client = MongoClient(uri, server_api=ServerApi('1'))
 
-db = client.get_database()  # get the default database
+# Send a ping to confirm a successful connection
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except Exception as e:
+    print(e)
