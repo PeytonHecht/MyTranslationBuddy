@@ -1,14 +1,30 @@
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
+import certifi
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.config import settings
 
-uri = "mongodb+srv://maitechapartegui03_db_user:<fRwEAj6GeNojUI4M>@cluster1.gkoxcnq.mongodb.net/?appName=Cluster1"
+class Database:
+    client: AsyncIOMotorClient = None
 
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+db = Database()
 
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
+async def connect_to_mongo():
+    # This uses the URI from your .env and adds the SSL certificate fix
+    db.client = AsyncIOMotorClient(
+        settings.mongodb_uri, 
+        tlsCAFile=certifi.where()
+    )
+    try:
+        # Pings the database to verify the connection
+        await db.client.admin.command('ping')
+        print("Pinged your deployment. You successfully connected to MongoDB!")
+    except Exception as e:
+        print(f"Connection failed: {e}")
+
+async def close_mongo_connection():
+    if db.client:
+        db.client.close()
+        print("Closed MongoDB connection.")
+
+async def init_indexes():
+    # Required by your main.py import, but can stay empty for now
+    pass
