@@ -1,82 +1,80 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/SFLogo.png";
+// Ensure this path matches your logo file
+import logo from "../assets/MTBLogo.png";
 
-const Tracking = ({ exercises, setExercises }) => {
+const Tracking = () => {
   const navigate = useNavigate();
-  const [exerciseType, setExerciseType] = useState("");
-  const [exerciseTime, setExerciseTime] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [category, setCategory] = useState("");
+  const [wordsLearned, setWordsLearned] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [data, setData] = useState([]);
   const [trackingError, setTrackingError] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/checktracking", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(localStorage.getItem("email")),
-    }).then(
-      res => res.json()
-    ).then(
-      data => {
-        setData(data);
-        console.log(data);
-      }
-    );
+    fetchTrackingData();
   }, []);
 
-  const sortedExercises = [...exercises].sort((a, b) => {
-    if (a.date > b.date) return -1;
-    if (a.date < b.date) return 1;
-    return parseInt(a.time) - parseInt(b.time);
-  });
-
-  const handleAddExercise = async () => {
+  const fetchTrackingData = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/addtracking", {
+      const email = localStorage.getItem("email");
+      if (!email) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.post("/api/checktracking", { email });
+      setData(response.data);
+    } catch (error) {
+      console.error("Failed to fetch tracking data", error);
+    }
+  };
+
+  const handleAddTracking = async () => {
+    if (!category || !wordsLearned) {
+      setTrackingError("Please fill out both the category and amount.");
+      return;
+    }
+
+    try {
+      await axios.post("/api/addtracking", {
         email: localStorage.getItem("email"),
-        exerciseType,
-        exerciseTime,
-        date
+        exerciseType: category,
+        exerciseTime: wordsLearned,
+        date: date
       });
-      const newData = await fetch("http://127.0.0.1:5000/checktracking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(localStorage.getItem("email")),
-      }).then(res => res.json());
-      setData(newData);
-      setExerciseType("");
-      setExerciseTime("");
+
+      fetchTrackingData();
+      setCategory("");
+      setWordsLearned("");
+      setTrackingError("");
     } catch (error) {
       if (error.response && error.response.data) {
         setTrackingError(error.response.data.error || "Tracking Error");
+      } else {
+        setTrackingError("Could not connect to the server.");
       }
     }
   };
 
-  const handleDeleteExercise = async (id) => {
+  const handleDeleteTracking = async (id) => {
     try {
-      await axios.delete("http://127.0.0.1:5000/deletetracking", {
-        data: {id: id}
+      await axios.delete("/api/deletetracking", {
+        data: { id: id }
       });
-      const newData = await fetch("http://127.0.0.1:5000/checktracking", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(localStorage.getItem("email")),
-      }).then(res => res.json());
-      setData(newData);
+      fetchTrackingData();
     } catch (error) {
-      console.error("Error deleting exercise:", error);
+      console.error("Error deleting record:", error);
     }
   };
 
   return (
     <div style={styles.container}>
-      <img 
-        src={logo} 
-        alt="StayFit Logo" 
-        style={styles.logo} 
+      <img
+        src={logo}
+        alt="MyTranslationBuddy Logo"
+        style={styles.logo}
         onClick={() => navigate("/")}
       />
 
@@ -87,34 +85,38 @@ const Tracking = ({ exercises, setExercises }) => {
       </div>
 
       <div style={styles.content}>
-        <h1 style={styles.title}>Fitness Activity Tracking</h1>
-        
+        <h1 style={styles.title}>Vocabulary Tracker</h1>
+        <p style={styles.subtitle}>Log how many new German words you learn each day</p>
+
         {trackingError && <p style={styles.errorText}>{trackingError}</p>}
-        
-        <div style={styles.inputGroup}>
-          <input
-            type="text"
-            placeholder="Exercise Type (e.g., Running)"
-            value={exerciseType}
-            onChange={(e) => setExerciseType(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="number"
-            placeholder="Duration (minutes)"
-            value={exerciseTime}
-            onChange={(e) => setExerciseTime(e.target.value)}
-            style={styles.input}
-          />
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            style={styles.input}
-          />
-          <button onClick={handleAddExercise} style={styles.primaryButton}>
-            Add Exercise
-          </button>
+
+        <div style={styles.formContainer}>
+          <div style={styles.inputGroup}>
+            <input
+              type="text"
+              placeholder="Topic (e.g., Food, Transit, Slang)"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="number"
+              placeholder="Words Learned (e.g., 15)"
+              value={wordsLearned}
+              onChange={(e) => setWordsLearned(e.target.value)}
+              style={styles.input}
+              min="1"
+            />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={styles.input}
+            />
+            <button onClick={handleAddTracking} style={styles.primaryButton}>
+              Log Words
+            </button>
+          </div>
         </div>
 
         {data.length > 0 ? (
@@ -122,24 +124,26 @@ const Tracking = ({ exercises, setExercises }) => {
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Date ▼</th>
-                  <th style={styles.th}>Exercise</th>
-                  <th style={styles.th}>Duration (min)</th>
+                  <th style={styles.th}>Date</th>
+                  <th style={styles.th}>Topic / Category</th>
+                  <th style={styles.th}>Words Learned</th>
                   <th style={styles.th}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {data.map((exercise, index) => (
+                {data.map((item, index) => (
                   <tr key={index} style={styles.tr}>
-                    <td style={styles.td}>{exercise[4]}</td>
-                    <td style={styles.td}>{exercise[2]}</td>
-                    <td style={styles.td}>{exercise[3]}</td>
+                    <td style={styles.td}>{item[4] || item.date}</td>
+                    <td style={styles.td}>{item[2] || item.exerciseType}</td>
                     <td style={styles.td}>
-                      <button 
-                        onClick={() => handleDeleteExercise(exercise[0])}
+                      <span style={styles.numberBadge}>{item[3] || item.exerciseTime} words</span>
+                    </td>
+                    <td style={styles.td}>
+                      <button
+                        onClick={() => handleDeleteTracking(item[0] || item._id)}
                         style={styles.deleteButton}
                       >
-                        Delete
+                        Remove
                       </button>
                     </td>
                   </tr>
@@ -148,7 +152,9 @@ const Tracking = ({ exercises, setExercises }) => {
             </table>
           </div>
         ) : (
-          <p style={styles.placeholder}>No exercises logged yet. Add your first exercise above!</p>
+          <div style={styles.emptyState}>
+            <p style={styles.placeholder}>No vocabulary logged yet. Start tracking your progress above!</p>
+          </div>
         )}
       </div>
     </div>
@@ -162,6 +168,7 @@ const styles = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: "2rem",
     position: "relative",
+    boxSizing: "border-box",
   },
   logo: {
     position: "absolute",
@@ -178,23 +185,20 @@ const styles = {
   navButton: {
     padding: "0.75rem 1.5rem",
     borderRadius: "8px",
-    border: "none",
-    backgroundColor: "#e9ecef",
+    border: "1px solid #ced4da",
+    backgroundColor: "#fff",
     color: "#495057",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#dee2e6",
-    },
   },
   content: {
-    marginTop: "6rem",
+    marginTop: "5rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    maxWidth: "800px",
+    maxWidth: "900px",
     margin: "0 auto",
   },
   title: {
@@ -203,95 +207,123 @@ const styles = {
     background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
-    marginBottom: "2rem",
+    marginBottom: "0.5rem",
     fontFamily: "'Poppins', sans-serif",
   },
-  inputGroup: {
+  subtitle: {
+    fontSize: "1.1rem",
+    color: "#6c757d",
+    marginBottom: "2.5rem",
+  },
+  formContainer: {
     width: "100%",
+    backgroundColor: "#ffffff",
+    padding: "2rem",
+    borderRadius: "12px",
+    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
+    marginBottom: "3rem",
+    boxSizing: "border-box",
+  },
+  inputGroup: {
     display: "flex",
-    flexDirection: "column",
     gap: "1rem",
-    marginBottom: "2rem",
+    alignItems: "center",
+    flexWrap: "wrap",
   },
   input: {
-    width: "100%",
-    padding: "1rem",
+    flex: "1 1 200px",
+    padding: "0.8rem 1rem",
     borderRadius: "8px",
     border: "1px solid #ced4da",
     fontSize: "1rem",
+    backgroundColor: "#f8f9fa",
     transition: "border-color 0.2s",
-    ":focus": {
-      outline: "none",
-      borderColor: "#3a7bd5",
-      boxShadow: "0 0 0 3px rgba(58, 123, 213, 0.1)",
-    },
   },
   primaryButton: {
-    padding: "1rem",
+    flex: "0 1 auto",
+    padding: "0.8rem 1.5rem",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: "#20c997",
+    backgroundColor: "#3a7bd5",
     color: "white",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "600",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#12b886",
-      transform: "translateY(-1px)",
-    },
+    whiteSpace: "nowrap",
   },
   tableContainer: {
     width: "100%",
     overflowX: "auto",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "8px",
+    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.05)",
+    borderRadius: "12px",
+    backgroundColor: "#fff",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
-    backgroundColor: "#fff",
   },
   th: {
-    padding: "1rem",
+    padding: "1.2rem 1rem",
     textAlign: "left",
-    backgroundColor: "#3a7bd5",
-    color: "#fff",
+    backgroundColor: "#f8f9fa",
+    color: "#495057",
     fontWeight: "600",
+    borderBottom: "2px solid #dee2e6",
   },
   td: {
     padding: "1rem",
     borderBottom: "1px solid #e9ecef",
+    color: "#212529",
+    verticalAlign: "middle",
   },
   tr: {
+    transition: "background-color 0.2s",
     ":hover": {
       backgroundColor: "#f8f9fa",
     },
   },
-  deleteButton: {
-    padding: "0.5rem 1rem",
-    borderRadius: "6px",
-    border: "none",
-    backgroundColor: "#dc3545",
-    color: "white",
-    cursor: "pointer",
+  numberBadge: {
+    backgroundColor: "rgba(58, 123, 213, 0.1)",
+    color: "#3a7bd5",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "20px",
     fontSize: "0.9rem",
+    fontWeight: "600",
+  },
+  deleteButton: {
+    padding: "0.4rem 0.8rem",
+    borderRadius: "6px",
+    border: "1px solid #dc3545",
+    backgroundColor: "transparent",
+    color: "#dc3545",
+    cursor: "pointer",
+    fontSize: "0.85rem",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#c82333",
-    },
+  },
+  emptyState: {
+    width: "100%",
+    padding: "3rem",
+    textAlign: "center",
+    backgroundColor: "#ffffff",
+    borderRadius: "12px",
+    border: "1px dashed #ced4da",
+    boxSizing: "border-box",
   },
   placeholder: {
-    fontSize: "1.2rem",
+    fontSize: "1.1rem",
     color: "#6c757d",
-    marginTop: "2rem",
+    margin: 0,
   },
   errorText: {
     color: "#dc3545",
-    fontSize: "0.9rem",
-    marginBottom: "1rem",
+    fontSize: "0.95rem",
+    marginBottom: "1.5rem",
     textAlign: "center",
+    backgroundColor: "rgba(220, 53, 69, 0.1)",
+    padding: "0.5rem 1rem",
+    borderRadius: "6px",
   },
 };
 

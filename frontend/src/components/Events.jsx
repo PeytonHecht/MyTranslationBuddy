@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+// Ensure this path matches your logo file
+import logo from "../assets/MTBLogo.png";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -8,17 +10,21 @@ const Events = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const countryCode = "US";
+  // Changed to Germany (DE) since the app is for study abroad students there
+  const countryCode = "DE";
   const radius = "";
   const unit = "miles";
   const size = "20";
 
   const fetchEvents = async (keywordParam = "", pageNum = 0) => {
+    setIsLoading(true);
     try {
-      const response = await axios.get("http://127.0.0.1:5000/api/tm-events", {
+      // Using Vite proxy to communicate with your FastAPI backend
+      const response = await axios.get("/api/tm-events", {
         params: {
           countryCode,
           keyword: keywordParam,
@@ -29,6 +35,7 @@ const Events = () => {
         },
         withCredentials: false
       });
+
       if (
         response.data &&
         response.data._embedded &&
@@ -45,7 +52,7 @@ const Events = () => {
         setError(response.data.fault.faultstring || "Error fetching events.");
       } else {
         setEvents([]);
-        setError("Unexpected response format.");
+        setError("No events found for this search.");
       }
     } catch (err) {
       setError(
@@ -53,9 +60,12 @@ const Events = () => {
           ? err.response.data.fault?.faultstring || "Error fetching events."
           : "An unexpected error occurred while fetching events."
       );
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Fetch initial events in Germany on load
   useEffect(() => {
     fetchEvents();
   }, []);
@@ -71,7 +81,7 @@ const Events = () => {
   };
 
   const renderPageButtons = () => {
-    const maxButtons = 7;
+    const maxButtons = 5;
     let start = Math.max(currentPage - Math.floor(maxButtons / 2), 0);
     let end = start + maxButtons;
     if (end > totalPages) {
@@ -85,9 +95,10 @@ const Events = () => {
           key={i}
           onClick={() => handlePageChange(i)}
           style={{
-            ...styles.pageButton,
-            backgroundColor: i === currentPage ? "#007bff" : "#fff",
-            color: i === currentPage ? "#fff" : "#007bff"
+            ...styles.pageNumberButton,
+            backgroundColor: i === currentPage ? "#3a7bd5" : "#fff",
+            color: i === currentPage ? "#fff" : "#3a7bd5",
+            borderColor: i === currentPage ? "#3a7bd5" : "#ced4da"
           }}
         >
           {i + 1}
@@ -97,259 +108,325 @@ const Events = () => {
     return buttons;
   };
 
-  const handleBack = () => {
-    navigate("/profile");
-  };
-
   return (
-    <div style={styles.page}>
-      <header style={styles.header}>
-        <div style={styles.headerLeft}>
-          <button onClick={handleBack} style={styles.backButton}>
-            Back
-          </button>
-        </div>
-        <div style={styles.headerCenter}>
-          <h1 style={styles.headerTitle}>Events</h1>
-        </div>
-      </header>
-
-      <div style={styles.searchContainer}>
-        <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
-          <input
-            type="text"
-            placeholder="Search events (e.g., 5k, concert, festival)"
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            style={styles.searchInput}
-          />
-          <button type="submit" style={styles.searchButton}>
-            Search
-          </button>
-        </form>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <img
+          src={logo}
+          alt="MyTranslationBuddy Logo"
+          style={styles.logo}
+          onClick={() => navigate("/")}
+        />
+        <button onClick={() => navigate("/profile")} style={styles.navButton}>
+          ← Back to Profile
+        </button>
       </div>
 
-      {error && <p style={styles.errorText}>{error}</p>}
+      <div style={styles.content}>
+        <div style={styles.titleSection}>
+          <h1 style={styles.title}>Local Events in Germany</h1>
+          <p style={styles.subtitle}>Discover festivals, concerts, and cultural meetups near you</p>
+        </div>
 
-      {events.length === 0 && !error ? (
-        <p style={styles.loadingText}>Loading events...</p>
-      ) : (
-        <>
-          <div style={styles.tableContainer}>
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Event Name</th>
-                  <th style={styles.th}>Date</th>
-                  <th style={styles.th}>Venue</th>
-                  <th style={styles.th}>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map((event) => {
-                  const eventDate =
-                    event.dates && event.dates.start && event.dates.start.localDate
-                      ? event.dates.start.localDate
-                      : "N/A";
-                  const venue =
-                    event._embedded &&
-                    event._embedded.venues &&
-                    event._embedded.venues[0] &&
-                    event._embedded.venues[0].name
-                      ? event._embedded.venues[0].name
-                      : "N/A";
-                  return (
-                    <tr key={event.id} style={styles.tr}>
-                      <td style={styles.td}>{event.name || "Untitled Event"}</td>
-                      <td style={styles.td}>{eventDate}</td>
-                      <td style={styles.td}>{venue}</td>
-                      <td style={styles.td}>
-                        {event.url ? (
-                          <button
-                            onClick={() => navigate(`/event-details/${event.id}`)}
-                            style={styles.linkButton}
-                          >
-                            View Details
-                          </button>
-                        ) : (
-                          <span style={styles.linkDisabled}>View Details</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div style={styles.pagination}>
-            <button
-              onClick={() => handlePageChange(Math.max(currentPage - 1, 0))}
-              disabled={currentPage === 0}
-              style={{
-                ...styles.pageButton,
-                cursor: currentPage === 0 ? "not-allowed" : "pointer"
-              }}
-            >
-              Previous
+        <div style={styles.searchContainer}>
+          <form onSubmit={handleSearchSubmit} style={styles.searchForm}>
+            <input
+              type="text"
+              placeholder="Search (e.g., Oktoberfest, museum, concert)"
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              style={styles.searchInput}
+            />
+            <button type="submit" style={styles.searchButton}>
+              Search
             </button>
-            {renderPageButtons()}
-            <button
-              onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages - 1))}
-              disabled={currentPage === totalPages - 1}
-              style={{
-                ...styles.pageButton,
-                cursor: currentPage === totalPages - 1 ? "not-allowed" : "pointer"
-              }}
-            >
-              Next
-            </button>
+          </form>
+        </div>
+
+        {error && <p style={styles.errorText}>{error}</p>}
+
+        {isLoading ? (
+          <div style={styles.loadingContainer}>
+            <p style={styles.loadingText}>Searching for events...</p>
           </div>
-        </>
-      )}
+        ) : events.length === 0 && !error ? (
+          <p style={styles.loadingText}>No events found.</p>
+        ) : (
+          <>
+            <div style={styles.tableContainer}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Event Name</th>
+                    <th style={styles.th}>Date</th>
+                    <th style={styles.th}>City / Venue</th>
+                    <th style={styles.th}>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events.map((event) => {
+                    const eventDate =
+                      event.dates && event.dates.start && event.dates.start.localDate
+                        ? event.dates.start.localDate
+                        : "TBD";
+
+                    // Try to grab the city name to make it more relevant for travelers
+                    const city =
+                      event._embedded &&
+                      event._embedded.venues &&
+                      event._embedded.venues[0] &&
+                      event._embedded.venues[0].city
+                        ? event._embedded.venues[0].city.name
+                        : "";
+
+                    const venue =
+                      event._embedded &&
+                      event._embedded.venues &&
+                      event._embedded.venues[0] &&
+                      event._embedded.venues[0].name
+                        ? event._embedded.venues[0].name
+                        : "Location TBA";
+
+                    const locationDisplay = city ? `${city} - ${venue}` : venue;
+
+                    return (
+                      <tr key={event.id} style={styles.tr}>
+                        <td style={styles.td}>
+                          <strong>{event.name || "Untitled Event"}</strong>
+                        </td>
+                        <td style={styles.td}>{eventDate}</td>
+                        <td style={styles.td}>{locationDisplay}</td>
+                        <td style={styles.td}>
+                          {event.url ? (
+                            <a
+                              href={event.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={styles.linkButton}
+                            >
+                              Get Tickets
+                            </a>
+                          ) : (
+                            <span style={styles.linkDisabled}>N/A</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {totalPages > 1 && (
+              <div style={styles.pagination}>
+                <button
+                  onClick={() => handlePageChange(Math.max(currentPage - 1, 0))}
+                  disabled={currentPage === 0}
+                  style={{
+                    ...styles.pageButton,
+                    opacity: currentPage === 0 ? 0.5 : 1,
+                    cursor: currentPage === 0 ? "not-allowed" : "pointer"
+                  }}
+                >
+                  Previous
+                </button>
+                {renderPageButtons()}
+                <button
+                  onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages - 1))}
+                  disabled={currentPage === totalPages - 1}
+                  style={{
+                    ...styles.pageButton,
+                    opacity: currentPage === totalPages - 1 ? 0.5 : 1,
+                    cursor: currentPage === totalPages - 1 ? "not-allowed" : "pointer"
+                  }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 const styles = {
-  page: {
-    background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
+  container: {
     minHeight: "100vh",
+    backgroundColor: "#f8f9fa",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: "2rem",
-    fontFamily: "'Roboto', sans-serif",
-    color: "#333"
+    boxSizing: "border-box",
   },
   header: {
     display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "2rem"
+    marginBottom: "2rem",
   },
-  headerLeft: {
-    flex: "0 0 auto"
-  },
-  backButton: {
-    padding: "0.6rem 1.2rem",
-    borderRadius: "5px",
-    border: "none",
-    backgroundColor: "#ffffff",
-    color: "#007bff",
+  logo: {
+    height: "50px",
     cursor: "pointer",
-    fontSize: "1rem",
-    fontWeight: "600",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-    transition: "background-color 0.3s ease"
   },
-  headerCenter: {
-    flex: "1 1 auto",
-    textAlign: "center"
+  navButton: {
+    padding: "0.6rem 1.2rem",
+    borderRadius: "8px",
+    border: "1px solid #ced4da",
+    backgroundColor: "#fff",
+    color: "#495057",
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    fontWeight: "500",
+    transition: "all 0.2s ease",
   },
-  headerTitle: {
-    fontSize: "2.8rem",
+  content: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+    backgroundColor: "#ffffff",
+    padding: "3rem",
+    borderRadius: "16px",
+    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.05)",
+  },
+  titleSection: {
+    textAlign: "center",
+    marginBottom: "2.5rem",
+  },
+  title: {
+    fontSize: "2.5rem",
+    fontWeight: "800",
+    background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    marginBottom: "0.5rem",
+    fontFamily: "'Poppins', sans-serif",
+  },
+  subtitle: {
+    fontSize: "1.1rem",
+    color: "#6c757d",
     margin: 0,
-    fontWeight: "700"
   },
   searchContainer: {
-    margin: "1rem 0",
-    textAlign: "center"
+    marginBottom: "3rem",
+    display: "flex",
+    justifyContent: "center",
   },
   searchForm: {
-    display: "inline-flex",
+    display: "flex",
     width: "100%",
-    maxWidth: "500px"
+    maxWidth: "600px",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+    borderRadius: "8px",
+    overflow: "hidden", // Keeps the button border radius flush with the input
   },
   searchInput: {
     flex: "1 1 auto",
-    padding: "0.8rem 1rem",
+    padding: "1rem 1.5rem",
     fontSize: "1rem",
-    borderRadius: "5px 0 0 5px",
-    border: "1px solid #ccc",
-    outline: "none"
+    border: "1px solid #ced4da",
+    borderRight: "none",
+    borderRadius: "8px 0 0 8px",
+    outline: "none",
+    transition: "border-color 0.2s",
   },
   searchButton: {
-    padding: "0.8rem 1.2rem",
+    padding: "0 2rem",
     fontSize: "1rem",
-    borderRadius: "0 5px 5px 0",
     border: "none",
-    backgroundColor: "#007bff",
+    backgroundColor: "#3a7bd5",
     color: "#ffffff",
     cursor: "pointer",
     fontWeight: "600",
-    transition: "background-color 0.3s ease"
+    transition: "background-color 0.2s ease",
   },
   errorText: {
-    color: "#d9534f",
+    color: "#dc3545",
+    backgroundColor: "rgba(220, 53, 69, 0.1)",
+    padding: "1rem",
+    borderRadius: "8px",
     textAlign: "center",
-    fontWeight: "600",
-    marginTop: "1rem"
+    marginBottom: "2rem",
+  },
+  loadingContainer: {
+    padding: "4rem",
+    textAlign: "center",
   },
   loadingText: {
     fontSize: "1.2rem",
+    color: "#6c757d",
     textAlign: "center",
-    color: "#555",
-    marginTop: "2rem"
   },
   tableContainer: {
+    width: "100%",
     overflowX: "auto",
-    marginTop: "1rem",
-    paddingBottom: "1rem"
+    borderRadius: "12px",
+    border: "1px solid #e9ecef",
   },
   table: {
     width: "100%",
     borderCollapse: "collapse",
     backgroundColor: "#ffffff",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-    borderRadius: "8px",
-    overflow: "hidden"
   },
   th: {
-    border: "none",
-    padding: "1rem",
-    backgroundColor: "#007bff",
-    color: "#ffffff",
+    padding: "1.2rem 1rem",
     textAlign: "left",
+    backgroundColor: "#f8f9fa",
+    color: "#495057",
     fontWeight: "600",
-    fontSize: "1.1rem"
+    borderBottom: "2px solid #dee2e6",
   },
   tr: {
-    borderBottom: "1px solid #f1f1f1",
-    transition: "background-color 0.3s ease"
+    transition: "background-color 0.2s",
+    ":hover": {
+      backgroundColor: "#f8f9fa",
+    },
   },
   td: {
     padding: "1rem",
-    border: "none",
-    fontSize: "1rem"
+    borderBottom: "1px solid #e9ecef",
+    color: "#212529",
+    verticalAlign: "middle",
   },
   linkButton: {
-    textDecoration: "underline",
-    color: "#007bff",
+    display: "inline-block",
+    padding: "0.5rem 1rem",
+    backgroundColor: "rgba(58, 123, 213, 0.1)",
+    color: "#3a7bd5",
+    textDecoration: "none",
+    borderRadius: "6px",
     fontWeight: "600",
-    background: "none",
-    border: "none",
-    cursor: "pointer",
-    padding: 0
+    fontSize: "0.9rem",
+    transition: "all 0.2s ease",
   },
   linkDisabled: {
-    textDecoration: "none",
-    color: "#aaa",
-    fontWeight: "600",
-    opacity: 0.6
+    color: "#adb5bd",
+    fontSize: "0.9rem",
+    fontWeight: "500",
   },
   pagination: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: "1rem",
+    marginTop: "2.5rem",
     gap: "0.5rem",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   pageButton: {
-    padding: "0.5rem 0.8rem",
-    borderRadius: "4px",
-    border: "1px solid #007bff",
+    padding: "0.6rem 1.2rem",
+    borderRadius: "6px",
+    border: "1px solid #ced4da",
     backgroundColor: "#fff",
-    color: "#007bff",
-    cursor: "pointer",
+    color: "#495057",
     fontWeight: "600",
-    transition: "background-color 0.3s ease"
+    transition: "all 0.2s ease",
+  },
+  pageNumberButton: {
+    padding: "0.6rem 1rem",
+    borderRadius: "6px",
+    border: "1px solid",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "all 0.2s ease",
   }
 };
 

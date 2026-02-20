@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './components/LandingPage.jsx';
 import Login from './components/Login.jsx';
@@ -8,30 +7,12 @@ import Tracking from './components/Tracking.jsx';
 import UpdatePassword from './components/UpdatePassword.jsx';
 import Events from './components/Events.jsx';
 import OAuthAuthenticate from './components/OAuthAuthenticate.jsx';
-import Goal from "./components/Goal.jsx";
-import Analytics from "./components/Analytics.jsx";
+import DialectTips from "./components/DialectTips.jsx";
+import SavedTranslations from "./components/SavedTranslations.jsx";
 import EventDetail from "./components/EventDetail.jsx";
 import Reservations from "./components/Reservations.jsx";
 
 function App() {
-  const [exercises, setExercises] = useState(() => {
-    const saved = localStorage.getItem('exercises');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useState(() => {
-    localStorage.setItem('exercises', JSON.stringify(exercises));
-  }, [exercises]);
-
-  const [goals, setGoals] = useState(() => {
-    const saved = localStorage.getItem('goals');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useState(() => {
-    localStorage.setItem('goals', JSON.stringify(goals));
-  }, [goals]);
-
   return (
     <Router>
       <Routes>
@@ -40,29 +21,16 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/update-password" element={<UpdatePassword />} />
+
         <Route path="/oauth-callback" element={<OAuthAuthenticate />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event-details/:event_id" element={<EventDetail />} />
+
+        {/* Core MyTranslationBuddy Features */}
+        <Route path="/tracking" element={<Tracking />} />
         <Route path="/reservations" element={<Reservations />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route
-          path="/tracking"
-          element={
-            <Tracking
-              exercises={exercises}
-              setExercises={setExercises}
-            />
-          }
-        />
-        <Route
-          path="/goal"
-          element={
-            <Goal
-              goals={goals}
-              setGoals={setGoals}
-            />
-          }
-        />
+        <Route path="/tips" element={<DialectTips />} />
+        <Route path="/saved" element={<SavedTranslations />} />
       </Routes>
     </Router>
   );

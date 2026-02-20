@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/SFLogo.png";
+// Ensure this path matches your logo file
+import logo from "../assets/MTBLogo.png";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const Register = () => {
 
   const validatePassword = (password) => {
     const errors = [];
-    
+
     if (password.length < 8 || password.length > 24) {
       errors.push("8-24 characters");
     }
@@ -35,7 +36,6 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    const bool_end_with_ufl = email.endsWith("@ufl.edu");
     const passwordValidationError = validatePassword(password);
 
     if (passwordValidationError) {
@@ -48,27 +48,29 @@ const Register = () => {
       return;
     }
 
-    if (!bool_end_with_ufl) {
-      setPasswordError("Email does not end with @ufl.edu!");
+    // Basic email validation
+    if (!email.includes("@") || !email.includes(".")) {
+      setPasswordError("Please enter a valid email address.");
       return;
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1:5000/register", {
-        email,
-        password,
-        confirmPassword,
+      // Using the Vite proxy we set up earlier to talk to the FastAPI backend
+      const response = await axios.post("/api/register", {
+        email: email,
+        password: password,
       });
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         navigate("/login");
         setPasswordError("");
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        setPasswordError(error.response.data.error || "Registration Error");
+        // Handle specific errors sent back from your partner's Python code
+        setPasswordError(error.response.data.detail || error.response.data.error || "Registration Error");
       } else {
-        setPasswordError("An unexpected error occurred.");
+        setPasswordError("Could not connect to the server. Is the backend running?");
       }
     }
   };
@@ -77,20 +79,23 @@ const Register = () => {
     <div style={styles.container}>
       <img
         src={logo}
-        alt="StayFit Logo"
+        alt="MyTranslationBuddy Logo"
         style={styles.logo}
         onClick={() => navigate("/")}
       />
 
       <div style={styles.content}>
-        <h1 style={styles.title}>StayFit</h1>
+        <h1 style={styles.title}>Create Account</h1>
 
         <div style={styles.formGroup}>
           <input
             type="email"
-            placeholder="Add Your @ufl.edu Email"
+            placeholder="Email Address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (passwordError) setPasswordError("");
+            }}
             style={styles.input}
           />
 
@@ -118,7 +123,10 @@ const Register = () => {
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value);
+                if (passwordError) setPasswordError("");
+              }}
               style={styles.input}
             />
             <button
@@ -164,6 +172,7 @@ const styles = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: "2rem",
     position: "relative",
+    boxSizing: "border-box", // Added to ensure padding doesn't affect total height
   },
   logo: {
     position: "absolute",
@@ -177,13 +186,13 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "calc(100vh - 8rem)",
+    minHeight: "calc(100vh - 4rem)", // Adjusted for padding
     textAlign: "center",
-    maxWidth: "500px",
+    maxWidth: "400px", // Slimmed down the form width slightly for better aesthetics
     margin: "0 auto",
   },
   title: {
-    fontSize: "3rem",
+    fontSize: "2.5rem",
     fontWeight: "800",
     background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
     WebkitBackgroundClip: "text",
@@ -203,16 +212,12 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #ced4da",
     fontSize: "1rem",
+    boxSizing: "border-box", // Prevents input from overflowing container
     transition: "border-color 0.2s",
-    ":focus": {
-      outline: "none",
-      borderColor: "#3a7bd5",
-      boxShadow: "0 0 0 3px rgba(58, 123, 213, 0.1)",
-    },
   },
   passwordContainer: {
     position: "relative",
-    width: "107%",
+    width: "100%", // Fixed from 107%
     display: "flex",
     alignItems: "center",
   },
@@ -231,24 +236,20 @@ const styles = {
     justifyContent: "center",
   },
   primaryButton: {
-    width: "107%",
+    width: "100%", // Fixed from 107%
     padding: "1rem",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: "#20c997",
+    backgroundColor: "#3a7bd5", // Changed to blue to match theme
     color: "white",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "600",
     marginTop: "1rem",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#12b886",
-      transform: "translateY(-1px)",
-    },
   },
   secondaryButton: {
-    width: "107%",
+    width: "100%", // Fixed from 107%
     padding: "1rem",
     borderRadius: "8px",
     border: "1px solid #ced4da",
@@ -258,9 +259,6 @@ const styles = {
     fontSize: "1rem",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#f8f9fa",
-    },
   },
   errorText: {
     color: "#dc3545",
@@ -269,17 +267,18 @@ const styles = {
     margin: "-0.5rem 0 0.5rem 0",
   },
   passwordRequirements: {
-    width: "107%",
-    backgroundColor: "#f8f9fa",
+    width: "100%", // Fixed from 107%
+    backgroundColor: "#e9ecef", // Slightly darker for better contrast
     borderRadius: "8px",
     padding: "1rem",
-    marginBottom: "1rem",
+    boxSizing: "border-box",
     textAlign: "left",
   },
   requirementTitle: {
     fontWeight: "600",
     color: "#495057",
     marginBottom: "0.5rem",
+    margin: 0, // Reset margin
   },
   requirementList: {
     listStyleType: "none",
@@ -289,14 +288,7 @@ const styles = {
   requirementItem: {
     color: "#6c757d",
     fontSize: "0.9rem",
-    marginBottom: "0.25rem",
-    display: "flex",
-    alignItems: "center",
-    ":before": {
-      content: "'•'",
-      marginRight: "0.5rem",
-      color: "#6c757d",
-    },
+    marginTop: "0.25rem",
   },
 };
 

@@ -4,30 +4,19 @@ import axios from "axios";
 // Ensure this path matches your logo file
 import logo from "../assets/MTBLogo.png";
 
-const Reservations = () => {
+const DialectTips = () => {
   const navigate = useNavigate();
+  const [phrase, setPhrase] = useState("");
   const [region, setRegion] = useState("");
-  const [topic, setTopic] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
-  const [reservations, setReservations] = useState([]);
-  const [error, setError] = useState("");
-
-  // Regions in Germany for study abroad focus
-  const regions = [
-    "Select a Region",
-    "Bavaria (Bayern)",
-    "Baden-Württemberg",
-    "Berlin",
-    "North Rhine-Westphalia",
-    "Saxony (Sachsen)",
-    "Other/General",
-  ];
+  const [meaning, setMeaning] = useState("");
+  const [tips, setTips] = useState([]);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
-    fetchReservations();
+    fetchTips();
   }, []);
 
-  const fetchReservations = async () => {
+  const fetchTips = async () => {
     try {
       const email = localStorage.getItem("email");
       if (!email) {
@@ -35,57 +24,58 @@ const Reservations = () => {
         return;
       }
 
-      const response = await axios.post("/api/get-reservations", { email });
-      setReservations(response.data);
+      // Using Vite proxy for backend connection
+      const response = await axios.post("/api/get-tips", { email });
+      setTips(response.data);
     } catch (err) {
-      console.error("Failed to load reservations", err);
+      console.error("Failed to load dialect tips", err);
+      // Fallback data for testing if backend isn't ready
+      // setTips([{ _id: "1", region: "Hamburg", phrase: "Moin", meaning: "Hello / Good morning" }]);
     }
   };
 
-  const handleAddReservation = async () => {
-    if (region === "Select a Region" || !region) {
-      setError("Please select a valid region.");
-      return;
-    }
-    if (!topic) {
-      setError("Please enter a topic you need help with.");
+  const handleAddTip = async () => {
+    if (!phrase || !region || !meaning) {
+      setErrorMsg("Please fill out all fields to save a tip.");
       return;
     }
 
     try {
-      await axios.post("/api/add-reservation", {
+      await axios.post("/api/add-tip", {
         email: localStorage.getItem("email"),
+        phrase: phrase,
         region: region,
-        topic: topic,
-        date: date,
+        meaning: meaning,
+        dateAdded: new Date().toISOString(),
       });
 
       // Refresh the list after adding
-      fetchReservations();
+      fetchTips();
 
       // Clear inputs
+      setPhrase("");
       setRegion("");
-      setTopic("");
-      setError("");
+      setMeaning("");
+      setErrorMsg("");
     } catch (error) {
       if (error.response && error.response.data) {
-        setError(error.response.data.error || "Reservation Error");
+        setErrorMsg(error.response.data.error || "Error saving tip");
       } else {
-        setError("Could not connect to server.");
+        setErrorMsg("Could not connect to server.");
       }
     }
   };
 
-  const handleDeleteReservation = async (id) => {
+  const handleDeleteTip = async (id) => {
     try {
-      await axios.delete("/api/delete-reservation", {
+      await axios.delete("/api/delete-tip", {
         data: { id: id },
       });
 
       // Refresh the list after deleting
-      fetchReservations();
+      fetchTips();
     } catch (error) {
-      console.error("Error deleting reservation:", error);
+      console.error("Error deleting tip:", error);
     }
   };
 
@@ -105,66 +95,65 @@ const Reservations = () => {
       </div>
 
       <div style={styles.content}>
-        <h1 style={styles.title}>Dialect Guide Reservation</h1>
-        <p style={styles.subtitle}>Request a translation guide for your study abroad region</p>
+        <h1 style={styles.title}>Saved Dialect Tips</h1>
+        <p style={styles.subtitle}>Track local slang and phrases for your study abroad regions</p>
 
-        {error && <p style={styles.errorText}>{error}</p>}
+        {errorMsg && <p style={styles.errorText}>{errorMsg}</p>}
 
         <div style={styles.formContainer}>
           <div style={styles.inputGroup}>
-            <select
+            <input
+              type="text"
+              placeholder="German Phrase / Slang (e.g., 'Moin')"
+              value={phrase}
+              onChange={(e) => setPhrase(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="text"
+              placeholder="Region (e.g., Hamburg)"
               value={region}
               onChange={(e) => setRegion(e.target.value)}
               style={styles.input}
-            >
-              {regions.map((r, index) => (
-                <option key={index} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
+            />
             <input
               type="text"
-              placeholder="Topic (e.g., Ordering food, Train directions)"
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
+              placeholder="English Meaning"
+              value={meaning}
+              onChange={(e) => setMeaning(e.target.value)}
               style={styles.input}
             />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              style={styles.input}
-            />
-            <button onClick={handleAddReservation} style={styles.primaryButton}>
-              Request Guide
+            <button onClick={handleAddTip} style={styles.primaryButton}>
+              Save Tip
             </button>
           </div>
         </div>
 
-        {reservations.length > 0 ? (
+        {tips.length > 0 ? (
           <div style={styles.tableContainer}>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>Date</th>
-                  <th style={styles.th}>German Region</th>
-                  <th style={styles.th}>Topic / Focus</th>
+                  <th style={styles.th}>Region</th>
+                  <th style={styles.th}>Phrase / Slang</th>
+                  <th style={styles.th}>Meaning</th>
                   <th style={styles.th}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {reservations.map((item) => (
-                  <tr key={item._id || item.id} style={styles.tr}>
-                    <td style={styles.td}>{item.date}</td>
-                    <td style={styles.td}>{item.region}</td>
-                    <td style={styles.td}>{item.topic}</td>
+                {tips.map((tip) => (
+                  <tr key={tip._id || tip.id} style={styles.tr}>
+                    <td style={styles.td}>
+                      <span style={styles.regionBadge}>{tip.region}</span>
+                    </td>
+                    <td style={styles.td}><strong>{tip.phrase}</strong></td>
+                    <td style={styles.td}>{tip.meaning}</td>
                     <td style={styles.td}>
                       <button
-                        onClick={() => handleDeleteReservation(item._id || item.id)}
+                        onClick={() => handleDeleteTip(tip._id || tip.id)}
                         style={styles.deleteButton}
                       >
-                        Cancel
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -175,7 +164,7 @@ const Reservations = () => {
         ) : (
           <div style={styles.emptyState}>
             <p style={styles.placeholder}>
-              No active reservations. Request a regional guide above to get started!
+              No dialect tips saved yet. Start adding local phrases above!
             </p>
           </div>
         )}
@@ -300,9 +289,22 @@ const styles = {
     padding: "1rem",
     borderBottom: "1px solid #e9ecef",
     color: "#212529",
+    verticalAlign: "middle",
   },
   tr: {
     transition: "background-color 0.2s",
+    ":hover": {
+      backgroundColor: "#f8f9fa",
+    },
+  },
+  regionBadge: {
+    backgroundColor: "rgba(58, 123, 213, 0.1)",
+    color: "#3a7bd5",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "20px",
+    fontSize: "0.85rem",
+    fontWeight: "600",
+    display: "inline-block",
   },
   deleteButton: {
     padding: "0.4rem 0.8rem",
@@ -340,4 +342,4 @@ const styles = {
   },
 };
 
-export default Reservations;
+export default DialectTips;
