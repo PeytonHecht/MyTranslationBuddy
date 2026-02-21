@@ -26,7 +26,11 @@ const LandingPage = () => {
 
       <div style={styles.heroWrapper}>
         <div style={styles.content}>
-          <h1 style={styles.title}>MyTranslationBuddy</h1>
+          <h1 style={styles.title}>
+            <span style={styles.logoBlack}>My</span>
+            <span style={styles.logoRed}>Translation</span>
+            <span style={styles.logoBlack}>Buddy</span>
+            </h1>
           <p style={styles.subtitle}>Your guide to study abroad programs in Germany</p>
         </div>
 
@@ -46,16 +50,33 @@ const LandingPage = () => {
 
 const styles = {
   container: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#FDFBF7",
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     position: "relative",
     minHeight: "100vh",
   },
   heroWrapper: {
     position: "relative",
-    minHeight: "100vh",
+    minHeight: "calc(100vh-80px)",
     display: "flex",
     flexDirection: "column",
+  },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "1rem 2 rem",
+    position: "relative",
+    zIndex: 10,
+  },
+  barTitle: {
+    fontSize: "1.8rem",
+    fontWeight: "700",
+    fontFamily: "'Poppins', sans-serif",
+    margin: 0,
+    position: "absolute",
+    left: "50%",
+    transform: "translateX(-50%)",
   },
   logo: {
     position: "absolute",
@@ -100,11 +121,19 @@ const styles = {
   title: {
     fontSize: "4rem",
     fontWeight: "800",
-    background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    //background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
+    //WebkitBackgroundClip: "text",
+    //WebkitTextFillColor: "transparent",
     marginBottom: "1rem",
     fontFamily: "'Poppins', sans-serif",
+  },
+  logoBlack: {
+    color: "#0F161D",
+    display: "inline",
+  },
+  logoRed: {
+  color: "#BB0103",
+   display: "inline",
   },
   subtitle: {
     fontSize: "1.5rem",
