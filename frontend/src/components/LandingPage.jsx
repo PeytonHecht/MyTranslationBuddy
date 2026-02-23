@@ -336,6 +336,23 @@ const styles = {
     alignItems: "center",
     gap: "0.75rem",
   },
+  topBar: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "1rem 2 rem",
+    position: "relative",
+    zIndex: 10,
+  },
+  barTitle: {
+    fontSize: "1.8rem",
+    fontWeight: "700",
+    fontFamily: "'Poppins', sans-serif",
+    margin: 0,
+    position: "absolute",
+    left: "50%",
+    transform: "translateX(-50%)",
+  },
   logo: {
     height: "40px",
     cursor: "pointer",
