@@ -1,85 +1,274 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Globe, BookOpen, Users, MessageCircle, MapPin, GraduationCap } from 'lucide-react';
+import { Globe, BookOpen, Users, MessageCircle, MapPin, GraduationCap, Info, Languages, Compass, Thermometer, DollarSign, Briefcase } from 'lucide-react';
 import logo from "../assets/MTBLogo.png";
 
-// City data for the map
+// City data for the map - focused on the 5 target cities
 const cities = [
   {
     id: 'berlin',
     name: 'Berlin',
-    x: 70,
-    y: 30,
-    description: "Germany's vibrant capital with world-class universities",
-    universities: ['Humboldt-Universität', 'Freie Universität', 'TU Berlin']
+    local_name: 'Berlin',
+    description: "Poor but sexy — art, history, and the world's best nightlife",
+    fullDescription: "Germany's capital and cultural heart, known for its vibrant arts scene, Cold War history, and thriving tech ecosystem.",
+    english_friendliness: "very_high",
+    cost_of_living_tier: "high",
+    known_for: [
+      "Berlin Wall and Cold War history",
+      "Museum Island (UNESCO World Heritage Site)",
+      "World-renowned club and nightlife scene",
+      "Thriving tech and startup ecosystem",
+      "Multicultural neighborhoods (Kreuzberg, Neukölln)",
+      "East Side Gallery",
+      "Brandenburg Gate"
+    ],
+    industries: ["Technology", "Creative industries", "Government", "Tourism", "Media"],
+    dialect: "Berlinerisch",
+    climate: {
+      type: "continental",
+      summers: "warm to hot",
+      winters: "cold, grey, occasional snow"
+    },
+    international_airport: "Berlin Brandenburg Airport (BER)"
   },
   {
     id: 'munich',
     name: 'Munich',
-    x: 55,
-    y: 80,
-    description: "Bavaria's cultural hub and tech center",
-    universities: ['LMU München', 'TU München']
+    local_name: 'München',
+    description: "City of art, beer, and the Alps",
+    fullDescription: "Bavaria's beautiful capital blending traditional German culture with modern innovation and world-class universities.",
+    english_friendliness: "high",
+    cost_of_living_tier: "very_high",
+    known_for: [
+      "Oktoberfest",
+      "BMW headquarters",
+      "English Garden (Englischer Garten)",
+      "Neuschwanstein proximity",
+      "Bavarian culture",
+      "World-class art museums (Kunstareal)"
+    ],
+    industries: ["Automotive", "Engineering", "Technology", "Finance", "Tourism"],
+    dialect: "Bavarian (Bairisch / Bayerisch)",
+    climate: {
+      type: "continental",
+      summers: "warm",
+      winters: "cold and snowy",
+      note: "Close to Alps; can get significant snow"
+    },
+    international_airport: "Munich Airport (MUC)"
   },
   {
     id: 'hamburg',
     name: 'Hamburg',
-    x: 45,
-    y: 15,
-    description: 'Port city with maritime culture',
-    universities: ['Universität Hamburg', 'HafenCity Universität']
+    local_name: 'Hamburg',
+    description: "Germany's gateway to the world — port city, media capital, maritime soul",
+    fullDescription: "Northern Germany's maritime metropolis with a rich trading history and vibrant cultural scene.",
+    english_friendliness: "high",
+    cost_of_living_tier: "high",
+    known_for: [
+      "Port of Hamburg (one of Europe's largest)",
+      "Elbphilharmonie concert hall",
+      "Reeperbahn entertainment district (St. Pauli)",
+      "Fischmarkt (Sunday fish market)",
+      "Speicherstadt warehouse district (UNESCO World Heritage Site)",
+      "HafenCity urban development",
+      "Beatles' early history (Reeperbahn)"
+    ],
+    industries: ["Logistics", "Shipping", "Media", "Aerospace", "Retail", "Tourism"],
+    dialect: "Low German influence (Plattdeutsch) / Missingsch",
+    climate: {
+      type: "maritime",
+      summers: "mild to warm",
+      winters: "mild but wet and grey",
+      note: "Most maritime climate — mild winters but frequent rain year-round"
+    },
+    international_airport: "Hamburg Airport (HAM)"
   },
   {
-    id: 'cologne',
-    name: 'Cologne',
-    x: 25,
-    y: 45,
-    description: 'Historic city on the Rhine',
-    universities: ['Universität zu Köln', 'TH Köln']
+    id: 'stuttgart',
+    name: 'Stuttgart',
+    local_name: 'Stuttgart',
+    description: "The cradle of the automobile, surrounded by vineyards",
+    fullDescription: "Swabian metropolis known for automotive excellence, surrounded by picturesque vineyards.",
+    english_friendliness: "moderate",
+    cost_of_living_tier: "high",
+    known_for: [
+      "Mercedes-Benz Museum",
+      "Porsche Museum",
+      "Württemberg wine region (vineyards within city limits)",
+      "Swabian cuisine (Maultaschen, Spätzle)",
+      "Cannstatter Volksfest",
+      "Stuttgart Ballet",
+      "Staatsgalerie Stuttgart"
+    ],
+    industries: ["Automotive", "Mechanical engineering", "Manufacturing", "Finance", "Logistics"],
+    dialect: "Swabian (Schwäbisch)",
+    climate: {
+      type: "continental",
+      summers: "warm to hot",
+      winters: "mild to cold",
+      note: "Located in a valley (Kessel) which traps air — can feel warmer in summer and foggy in winter"
+    },
+    international_airport: "Stuttgart Airport (STR)"
   },
   {
-    id: 'frankfurt',
-    name: 'Frankfurt',
-    x: 35,
-    y: 55,
-    description: 'Financial center with international flair',
-    universities: ['Goethe-Universität', 'Frankfurt UAS']
-  },
-  {
-    id: 'heidelberg',
-    name: 'Heidelberg',
-    x: 35,
-    y: 65,
-    description: 'Historic university town',
-    universities: ['Ruprecht-Karls-Universität']
-  },
-  {
-    id: 'freiburg',
-    name: 'Freiburg',
-    x: 20,
-    y: 75,
-    description: 'Charming city in the Black Forest',
-    universities: ['Albert-Ludwigs-Universität']
-  },
-  {
-    id: 'leipzig',
-    name: 'Leipzig',
-    x: 60,
-    y: 40,
-    description: 'Creative hub with rich musical heritage',
-    universities: ['Universität Leipzig']
+    id: 'vienna',
+    name: 'Vienna',
+    local_name: 'Wien',
+    description: "Imperial grandeur, coffee houses, and classical music",
+    fullDescription: "Austria's elegant capital, where imperial history meets modern European culture and quality of life.",
+    english_friendliness: "high",
+    cost_of_living_tier: "high",
+    known_for: [
+      "Vienna Philharmonic",
+      "Vienna State Opera (Staatsoper)",
+      "Imperial palaces (Schönbrunn, Hofburg, Belvedere)",
+      "Coffee house culture (UNESCO recognized)",
+      "Ball Season",
+      "Naschmarkt",
+      "Heurigen wine taverns"
+    ],
+    industries: ["Tourism", "Government", "Culture", "Finance", "Education"],
+    dialect: "Viennese (Wienerisch)",
+    climate: {
+      type: "continental",
+      summers: "warm to hot",
+      winters: "cold, occasional snow",
+      note: "Four distinct seasons; humid in summer, cold and grey in winter"
+    },
+    international_airport: "Vienna International Airport (VIE)"
   }
 ];
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState(null);
-  const [hoveredCity, setHoveredCity] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
+  // Load external map scripts
 
-  const handleExploreCity = (cityName) => {
-    // You can navigate to a city-specific page or just scroll to features
-    console.log(`Exploring ${cityName}`);
-    // navigate(`/city/${cityName.toLowerCase()}`);
+useEffect(() => {
+  // Load from local files in public/maps folder
+  const script1 = document.createElement('script');
+  script1.src = '/maps/mapdata.js';  // This points to public/maps/mapdata.js
+  script1.async = true;
+  
+  const script2 = document.createElement('script');
+  script2.src = '/maps/europemap.js'; // This points to public/maps/europemap.js
+  script2.async = true;
+  
+  script2.onload = () => {
+    console.log('Map loaded successfully');
+    setMapLoaded(true);
+  };
+
+  script2.onerror = (error) => {
+    console.error('Failed to load map:', error);
+  };
+
+  document.head.appendChild(script1);
+  document.head.appendChild(script2);
+
+  return () => {
+    document.head.removeChild(script1);
+    document.head.removeChild(script2);
+  };
+}, []);
+
+useEffect(() => {
+
+  const handleCitySelection = (event) => {
+    const locationId = event.detail.locationId;
+
+    const mapIdToCity = {
+      0: "berlin",
+      1: "munich",
+      2: "vienna",
+      3: "stuttgart",
+      4: "hamburg"
+    };
+
+    const cityId = mapIdToCity[locationId];
+
+    const city = cities.find(c => c.id === cityId);
+
+    if (city) {
+      setSelectedCity(city);
+      setActiveSection(null); // reset section when city changes
+    }
+  };
+
+  window.addEventListener("citySelected", handleCitySelection);
+
+  return () => {
+    window.removeEventListener("citySelected", handleCitySelection);
+  };
+
+}, []);
+
+
+const handleSectionChange = (section) => {
+  setActiveSection(section);
+};
+const sectionContent = {
+  basic: (
+    <div>
+      <h3>Basic Information</h3>
+      <p>{selectedCity?.fullDescription}</p>
+
+      <ul>
+        {selectedCity?.known_for.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  ),
+
+  phrases: (
+    <div>
+      <h3>Phrases & Pronunciation</h3>
+      <p>
+        Learn common German phrases used in {selectedCity?.name}.
+      </p>
+
+      <p>
+        Local dialect: <strong>{selectedCity?.dialect}</strong>
+      </p>
+    </div>
+  ),
+
+  culture: (
+    <div>
+      <h3>Culture & Tips</h3>
+
+      <p>
+        {selectedCity?.name} has a {selectedCity?.climate.type} climate.
+      </p>
+
+      <p>
+        Industries: {selectedCity?.industries.join(", ")}
+      </p>
+    </div>
+  )
+};
+
+  // Helper function to get color based on English friendliness
+  const getEnglishFriendlinessColor = (level) => {
+    switch(level) {
+      case 'very_high': return '#10B981';
+      case 'high': return '#3B82F6';
+      case 'moderate': return '#F59E0B';
+      default: return '#6B7280';
+    }
+  };
+
+  // Helper function to get color based on cost of living
+  const getCostOfLivingColor = (tier) => {
+    switch(tier) {
+      case 'very_high': return '#EF4444';
+      case 'high': return '#F59E0B';
+      default: return '#10B981';
+    }
   };
 
   return (
@@ -117,7 +306,7 @@ const LandingPage = () => {
         <div style={styles.heroContent}>
           <h1 style={styles.title}>Your Language & Culture Companion</h1>
           <p style={styles.subtitle}>
-            Preparing to study abroad in Germany? Master essential German phrases 
+            Preparing to study abroad in Germany and Austria? Master essential German phrases 
             and cultural insights tailored for student life.
           </p>
         </div>
@@ -128,63 +317,21 @@ const LandingPage = () => {
         <div style={styles.mapContainer}>
           <div style={styles.mapWrapper}>
             <h3 style={styles.mapTitle}>Select Your Destination</h3>
-            <svg viewBox="0 0 100 100" style={styles.mapSvg}>
-              {/* Simplified Germany outline */}
-              <path
-                d="M 30,10 L 45,8 L 55,12 L 65,10 L 75,15 L 80,25 L 78,35 L 75,45 L 70,55 L 65,65 L 60,75 L 55,85 L 50,88 L 45,85 L 40,80 L 35,75 L 28,70 L 22,65 L 18,58 L 15,50 L 18,40 L 22,30 L 25,20 Z"
-                fill="#E8F4F8"
-                stroke="#3B82F6"
-                strokeWidth="0.5"
-              />
-              
-              {/* Cities */}
-              {cities.map((city) => (
-                <g key={city.id}>
-                  {(hoveredCity === city.id || selectedCity?.id === city.id) && (
-                    <circle
-                      cx={city.x}
-                      cy={city.y}
-                      r="3"
-                      fill="#3B82F6"
-                      opacity="0.3"
-                      style={styles.pulseAnimation}
-                    />
-                  )}
-                  <circle
-                    cx={city.x}
-                    cy={city.y}
-                    r="2"
-                    fill={selectedCity?.id === city.id ? '#EF4444' : '#3B82F6'}
-                    stroke="white"
-                    strokeWidth="0.5"
-                    style={styles.cityMarker}
-                    onClick={() => setSelectedCity(city)}
-                    onMouseEnter={() => setHoveredCity(city.id)}
-                    onMouseLeave={() => setHoveredCity(null)}
-                  />
-                  <text
-                    x={city.x}
-                    y={city.y - 3}
-                    fontSize="3"
-                    fill="#1F2937"
-                    textAnchor="middle"
-                    style={styles.cityLabel}
-                  >
-                    {city.name}
-                  </text>
-                </g>
-              ))}
-            </svg>
+            
+            {/* External Map Container */}
+            <div id="map" style={styles.externalMap}>
+              {!mapLoaded && (
+                <div style={styles.mapLoading}>
+                  Loading map...
+                </div>
+              )}
+            </div>
             
             {/* Legend */}
             <div style={styles.legend}>
               <div style={styles.legendItem}>
                 <div style={{...styles.legendDot, backgroundColor: '#3B82F6'}}></div>
                 <span>Study Abroad City</span>
-              </div>
-              <div style={styles.legendItem}>
-                <div style={{...styles.legendDot, backgroundColor: '#EF4444'}}></div>
-                <span>Selected</span>
               </div>
             </div>
           </div>
@@ -198,31 +345,101 @@ const LandingPage = () => {
                     <MapPin size={24} color="#3B82F6" />
                   </div>
                   <div>
-                    <h2 style={styles.cityName}>{selectedCity.name}</h2>
-                    <p style={styles.cityDescription}>{selectedCity.description}</p>
+                    <h2 style={styles.cityName}>
+                      {selectedCity.name} 
+                      {selectedCity.local_name !== selectedCity.name && (
+                        <span style={styles.localName}> ({selectedCity.local_name})</span>
+                      )}
+                    </h2>
+                    <p style={styles.cityDescription}>{selectedCity.fullDescription}</p>
                   </div>
                 </div>
 
-                <div style={styles.universitiesSection}>
-                  <div style={styles.universitiesHeader}>
-                    <GraduationCap size={20} color="#4B5563" />
-                    <h3 style={styles.universitiesTitle}>Popular Universities</h3>
+                {/* Quick Stats */}
+                <div style={styles.quickStats}>
+                  <div style={styles.statItem}>
+                    <div style={styles.statLabel}>
+                      <Thermometer size={14} color="#6B7280" />
+                      <span>Climate</span>
+                    </div>
+                    <span style={styles.statValue}>{selectedCity.climate.type}</span>
                   </div>
-                  <ul style={styles.universitiesList}>
-                    {selectedCity.universities.map((uni, index) => (
-                      <li key={index} style={styles.universityItem}>
-                        <div style={styles.universityDot}></div>
-                        {uni}
-                      </li>
-                    ))}
-                  </ul>
+                  <div style={styles.statItem}>
+                    <div style={styles.statLabel}>
+                      <DollarSign size={14} color="#6B7280" />
+                      <span>Cost of Living</span>
+                    </div>
+                    <span style={{
+                      ...styles.statValue,
+                      color: getCostOfLivingColor(selectedCity.cost_of_living_tier)
+                    }}>
+                      {selectedCity.cost_of_living_tier.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <div style={styles.statItem}>
+                    <div style={styles.statLabel}>
+                      <Briefcase size={14} color="#6B7280" />
+                      <span>English Friendly</span>
+                    </div>
+                    <span style={{
+                      ...styles.statValue,
+                      color: getEnglishFriendlinessColor(selectedCity.english_friendliness)
+                    }}>
+                      {selectedCity.english_friendliness.replace('_', ' ')}
+                    </span>
+                  </div>
                 </div>
 
+                {/* Three Action Buttons */}
+                <div style={styles.actionButtonsContainer}>
+                  <button 
+                    style={styles.actionButton}
+                    onClick={() => handleSectionChange("basic")}
+                  >
+                    <Info size={20} color="#3B82F6" style={styles.actionButtonIcon} />
+                    <div style={styles.actionButtonContent}>
+                      <span style={styles.actionButtonTitle}>Basic Info</span>
+                      <span style={styles.actionButtonDescription}>
+                        Essential facts about {selectedCity.name}
+                      </span>
+                    </div>
+                    
+                  </button>
+                    
+                  <button 
+                    style={styles.actionButton}
+                    onClick={() => handleSectionChange("phrases")}
+                  >
+                    <Languages size={20} color="#10B981" style={styles.actionButtonIcon} />
+                    <div style={styles.actionButtonContent}>
+                      <span style={styles.actionButtonTitle}>Phrases & Pronunciation</span>
+                      <span style={styles.actionButtonDescription}>
+                        Key German phrases with {selectedCity.dialect} influence
+                      </span>
+                    </div>
+                  </button>
+
+                  <button 
+                    style={styles.actionButton}
+                    onClick={() => handleSectionChange("culture")}
+                  >
+                    <Compass size={20} color="#F59E0B" style={styles.actionButtonIcon} />
+                    <div style={styles.actionButtonContent}>
+                      <span style={styles.actionButtonTitle}>City Tips & Culture</span>
+                      <span style={styles.actionButtonDescription}>
+                        Local customs and student insights
+                      </span>
+                    </div>
+                  </button>
+                </div>
+                <div style={{ marginTop: "20px" }}>
+                      {activeSection && sectionContent[activeSection]}
+                    </div>
                 <button 
                   style={styles.exploreButton}
-                  onClick={() => handleExploreCity(selectedCity.name)}
+                  onClick={() => console.log("Explore", selectedCity.name)}
                 >
-                  Start Learning German for {selectedCity.name}
+                  Explore All Resources for {selectedCity.name}
                 </button>
               </div>
             ) : (
@@ -232,14 +449,27 @@ const LandingPage = () => {
                 </div>
                 <h3 style={styles.placeholderTitle}>Choose Your Study Abroad Destination</h3>
                 <p style={styles.placeholderText}>
-                  Click on any city on the map to learn more about study abroad opportunities 
-                  and start your German language journey
+                  Click on any city on the map to access basic information, essential phrases, 
+                  and cultural tips for your study abroad journey.
                 </p>
+                <div style={styles.cityList}>
+                  {cities.map(city => (
+                    <button
+                      key={city.id}
+                      style={styles.cityPill}
+                      onClick={() => setSelectedCity(city)}
+                    >
+                      {city.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
         </div>
       </section>
+
+      
 
       {/* Features Section */}
       <section id="features" style={styles.features}>
@@ -263,7 +493,7 @@ const LandingPage = () => {
             </div>
             <h3 style={styles.featureTitle}>Cultural Insights</h3>
             <p style={styles.featureDescription}>
-              Understand German university culture, social norms, and daily life 
+              Understand German and Austrian university culture, social norms, and daily life 
               expectations to help you adapt and thrive.
             </p>
           </div>
@@ -275,7 +505,7 @@ const LandingPage = () => {
             <h3 style={styles.featureTitle}>Student-Focused Content</h3>
             <p style={styles.featureDescription}>
               Every phrase and tip is designed specifically for English-speaking students 
-              navigating academic and everyday life in Germany.
+              navigating academic and everyday life in German-speaking countries.
             </p>
           </div>
         </div>
@@ -287,7 +517,7 @@ const LandingPage = () => {
           <h2 style={styles.ctaTitle}>Ready to Start Your German Adventure?</h2>
           <p style={styles.ctaText}>
             Select a city above to begin exploring essential phrases and cultural tips 
-            for your study abroad experience.
+            for your study abroad experience in Germany or Austria.
           </p>
           <button 
             onClick={() => navigate("/register")} 
@@ -302,7 +532,7 @@ const LandingPage = () => {
       <footer style={styles.footer}>
         <div style={styles.footerContent}>
           <p style={styles.footerText}>
-            &copy; 2026 My Translation Buddy. Empowering students to succeed abroad.
+            &copy; 2026 My Translation Buddy. Empowering students to succeed in German-speaking countries.
           </p>
         </div>
       </footer>
@@ -335,23 +565,6 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "0.75rem",
-  },
-  topBar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "1rem 2 rem",
-    position: "relative",
-    zIndex: 10,
-  },
-  barTitle: {
-    fontSize: "1.8rem",
-    fontWeight: "700",
-    fontFamily: "'Poppins', sans-serif",
-    margin: 0,
-    position: "absolute",
-    left: "50%",
-    transform: "translateX(-50%)",
   },
   logo: {
     height: "40px",
@@ -405,7 +618,7 @@ const styles = {
     padding: "4rem 2rem",
   },
   heroContent: {
-    maxWidth: "800px",
+    maxWidth: "700px",
     margin: "0 auto",
     textAlign: "center",
   },
@@ -419,7 +632,7 @@ const styles = {
   subtitle: {
     fontSize: "1.25rem",
     color: "#6B7280",
-    maxWidth: "600px",
+    maxWidth: "550px",
     margin: "0 auto",
   },
   mapSection: {
@@ -429,7 +642,7 @@ const styles = {
   },
   mapContainer: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "65% 35%",
     gap: "2rem",
     alignItems: "center",
   },
@@ -446,22 +659,18 @@ const styles = {
     marginBottom: "1rem",
     color: "#1F2937",
   },
-  mapSvg: {
+  externalMap: {
     width: "100%",
-    height: "auto",
     minHeight: "400px",
+    position: "relative",
   },
-  cityMarker: {
-    cursor: "pointer",
-    transition: "r 0.2s",
-  },
-  cityLabel: {
-    userSelect: "none",
-    fontSize: "3px",
-    fontWeight: "500",
-  },
-  pulseAnimation: {
-    animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+  mapLoading: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    color: "#6B7280",
+    fontSize: "1rem",
   },
   legend: {
     display: "flex",
@@ -482,9 +691,9 @@ const styles = {
   infoPanel: {
     backgroundColor: "#ffffff",
     borderRadius: "1rem",
-    padding: "2rem",
+    padding: "1.5rem",
     boxShadow: "0 10px 25px -5px rgba(0,0,0,0.1)",
-    minHeight: "400px",
+    minHeight: "500px",
     display: "flex",
     flexDirection: "column",
   },
@@ -509,42 +718,81 @@ const styles = {
     color: "#111827",
     margin: "0 0 0.25rem 0",
   },
+  localName: {
+    fontSize: "1rem",
+    fontWeight: "normal",
+    color: "#6B7280",
+  },
   cityDescription: {
     color: "#6B7280",
     margin: 0,
+    lineHeight: 1.5,
+    fontSize: "0.95rem",
   },
-  universitiesSection: {
-    flex: 1,
+  quickStats: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, 1fr)",
+    gap: "0.5rem",
+    backgroundColor: "#F9FAFB",
+    padding: "0.75rem",
+    borderRadius: "0.75rem",
+    marginBottom: "1.5rem",
   },
-  universitiesHeader: {
+  statItem: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.25rem",
+  },
+  statLabel: {
     display: "flex",
     alignItems: "center",
-    gap: "0.5rem",
-    marginBottom: "1rem",
+    gap: "0.25rem",
+    fontSize: "0.7rem",
+    color: "#6B7280",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
   },
-  universitiesTitle: {
-    fontSize: "1rem",
+  statValue: {
+    fontSize: "0.8rem",
     fontWeight: "600",
     color: "#1F2937",
-    margin: 0,
+    textTransform: "capitalize",
   },
-  universitiesList: {
-    listStyle: "none",
-    padding: 0,
-    margin: 0,
+  actionButtonsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.75rem",
+    marginBottom: "1.5rem",
   },
-  universityItem: {
+  actionButton: {
     display: "flex",
     alignItems: "center",
-    gap: "0.5rem",
-    padding: "0.5rem 0",
-    color: "#4B5563",
+    gap: "0.75rem",
+    padding: "0.75rem",
+    backgroundColor: "#F9FAFB",
+    border: "1px solid #E5E7EB",
+    borderRadius: "0.75rem",
+    cursor: "pointer",
+    transition: "all 0.2s",
+    textAlign: "left",
+    width: "100%",
   },
-  universityDot: {
-    width: "6px",
-    height: "6px",
-    borderRadius: "50%",
-    backgroundColor: "#3B82F6",
+  actionButtonIcon: {
+    flexShrink: 0,
+  },
+  actionButtonContent: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.15rem",
+  },
+  actionButtonTitle: {
+    fontSize: "0.95rem",
+    fontWeight: "600",
+    color: "#111827",
+  },
+  actionButtonDescription: {
+    fontSize: "0.8rem",
+    color: "#6B7280",
   },
   exploreButton: {
     width: "100%",
@@ -553,10 +801,10 @@ const styles = {
     color: "#ffffff",
     border: "none",
     borderRadius: "0.5rem",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     fontWeight: "500",
     cursor: "pointer",
-    marginTop: "1.5rem",
+    marginTop: "auto",
     transition: "background-color 0.2s",
   },
   placeholderInfo: {
@@ -581,8 +829,24 @@ const styles = {
   },
   placeholderText: {
     color: "#6B7280",
-    maxWidth: "300px",
-    margin: "0 auto",
+    maxWidth: "280px",
+    margin: "0 auto 1rem",
+    fontSize: "0.9rem",
+  },
+  cityList: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "0.5rem",
+    justifyContent: "center",
+    marginTop: "1rem",
+  },
+  cityPill: {
+    backgroundColor: "#F3F4F6",
+    color: "#4B5563",
+    padding: "0.4rem 0.8rem",
+    borderRadius: "2rem",
+    fontSize: "0.8rem",
+    fontWeight: "500",
   },
   features: {
     maxWidth: "1280px",
@@ -670,19 +934,5 @@ const styles = {
     margin: 0,
   },
 };
-
-// Add keyframes for pulse animation
-const styleSheet = document.createElement("style");
-styleSheet.textContent = `
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.3;
-    }
-  }
-`;
-document.head.appendChild(styleSheet);
 
 export default LandingPage;
