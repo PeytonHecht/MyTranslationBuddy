@@ -8,6 +8,7 @@ class CityTipBase(BaseModel):
     category: str = Field(..., description="e.g. transportation, housing, food_drink, events, etiquette")
     title: str
     content: str
+    program: Optional[str] = Field(None, description="Name of the study abroad program or university, if applicable")
 
     short_description: Optional[str] = None
     tags: List[str] = []

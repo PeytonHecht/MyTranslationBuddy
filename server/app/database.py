@@ -65,18 +65,18 @@ class Database:
     """Main database connection manager for all databases"""
     
     def __init__(self) -> None:
-        self.client: AsyncIOMotorClient | None = None
-        self.cities_dialects: CitiesDialectsDB | None = None
-        self.users_auth: UsersAuthDB | None = None
-        self.translation_history: TranslationHistoryDB | None = None
-        self.phrases_vocabulary: PhrasesVocabularyDB | None = None
+        self.client = None
+        self.cities_info = None
+        self.users_auth = None
+        self.translation_history = None
+        self.phrases_vocabulary = None
     
     async def connect(self) -> None:
         """Connect to MongoDB and initialize all database managers"""
         self.client = AsyncIOMotorClient(settings.mongodb_uri)
         
         # Initialize database managers
-        self.cities_dialects = CitiesDialectsDB(
+        self.cities_info = CitiesDialectsDB(
             self.client[settings.cities_db]
         )
         self.users_auth = UsersAuthDB(
