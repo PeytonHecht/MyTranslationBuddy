@@ -6,10 +6,10 @@ from pydantic import BaseModel  # <-- Added this import for our user data model
 import logging
 
 from app.config import settings
-from app.database import connect_to_mongo, close_mongo_connection, init_indexes
+from app.database import connect_to_mongo, close_mongo_connection
 from app.exceptions import AppException
 from app.middleware.error_handler import exception_handler
-from app.routes import health
+from app.routes import health, cities, tips
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -22,7 +22,6 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting MyTranslationBuddy backend...")
     await connect_to_mongo()
-    await init_indexes()
     logger.info("✓ Application started successfully")
 
     yield
@@ -56,6 +55,8 @@ app.add_exception_handler(Exception, exception_handler)
 
 # Include routers
 app.include_router(health.router)
+app.include_router(cities.router)
+app.include_router(tips.router)
 
 
 # Additional health endpoint

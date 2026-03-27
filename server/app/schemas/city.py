@@ -47,6 +47,13 @@ class CityBase(BaseModel):
     airport_distance_km: Optional[int] = None
 
     climate: Climate
+    
+    # Additional optional fields for completeness
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    tags: Optional[List[str]] = None
+    priority: Optional[int] = None
+    source_name: Optional[str] = None
 
 
 class CityCreate(CityBase):

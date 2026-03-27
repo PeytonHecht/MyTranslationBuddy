@@ -631,7 +631,7 @@ from app.schemas.tip import CityTipCreate
 
 wu_vienna_undergrad_tips = [
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="UF Exchange - WU Vienna University of Economics and Business Program Overview (Undergraduate)",
         content=(
@@ -648,7 +648,7 @@ wu_vienna_undergrad_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business (Undergraduate)"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="eligibility",
         title="Eligibility & Requirements (WU Vienna UF Exchange - Undergraduate)",
         content="Must have completed at least 12 credit hours at UF, minimum 3.0 GPA, and be in good disciplinary standing. Should study in the Warrington College of Business. Non-business undergraduates must obtain permission from WCBA advisors. Undergraduate business students receive priority, but additional students may be accommodated on a space-available basis.",
@@ -659,7 +659,7 @@ wu_vienna_undergrad_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business (Undergraduate)"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="Academic Departments & Courses (WU Vienna UF Exchange - Undergraduate)",
         content=(
@@ -673,7 +673,7 @@ wu_vienna_undergrad_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business (Undergraduate)"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="Pre-Semester Programs (WU Vienna UF Exchange - Undergraduate)",
         content=(
@@ -687,7 +687,7 @@ wu_vienna_undergrad_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business (Undergraduate)"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="city life",
         title="Vienna City Overview (WU Vienna UF Exchange - Undergraduate)",
         content=(
@@ -702,7 +702,7 @@ wu_vienna_undergrad_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business (Undergraduate)"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="housing",
         title="Housing in Vienna (WU Vienna UF Exchange - Undergraduate)",
         content=(
@@ -718,7 +718,7 @@ wu_vienna_undergrad_tips = [
 ]
 wu_vienna_tips = [
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="UF Exchange - WU Vienna University of Economics and Business Program Overview",
         content=(
@@ -735,7 +735,7 @@ wu_vienna_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="eligibility",
         title="Eligibility & Requirements (WU Vienna UF Exchange)",
         content="Must have completed at least 12 credit hours at UF, minimum 3.0 GPA, and be in good disciplinary standing. Should study in the Warrington College of Business. Non-business undergraduates must obtain permission from WCBA advisors. Undergraduate business students receive priority, but additional students may be accommodated on a space-available basis.",
@@ -746,7 +746,7 @@ wu_vienna_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="Academic Departments & Courses (WU Vienna UF Exchange)",
         content=(
@@ -760,7 +760,7 @@ wu_vienna_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="academics",
         title="Pre-Semester Programs (WU Vienna UF Exchange)",
         content=(
@@ -774,7 +774,7 @@ wu_vienna_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="city life",
         title="Vienna City Overview (WU Vienna UF Exchange)",
         content=(
@@ -789,7 +789,7 @@ wu_vienna_tips = [
         program="UF Exchange - WU Vienna University of Economics and Business"
     ),
     CityTipCreate(
-        city_slug="wu_vienna",
+        city_slug="vienna",
         category="housing",
         title="Housing in Vienna (WU Vienna UF Exchange)",
         content=(
@@ -814,7 +814,8 @@ hamburg_tips = [
         short_description="Port city, canals, culture, international student life.",
         tags=["city life", "culture", "port", "canals", "students"],
         priority=0,
-        source_name="General city info"
+        source_name="General city info",
+        program="UF Exchange - HAW Hamburg"
     ),
     CityTipCreate(
         city_slug="hamburg",
@@ -824,7 +825,8 @@ hamburg_tips = [
         short_description="Apply early for student housing because reserved exchange rooms are limited.",
         tags=["housing", "students", "exchange", "haw hamburg"],
         priority=1,
-        source_name="UF HAW Hamburg program page"
+        source_name="UF HAW Hamburg program page",
+        program="UF Exchange - HAW Hamburg"
     ),
     CityTipCreate(
         city_slug="hamburg",
@@ -834,7 +836,8 @@ hamburg_tips = [
         short_description="Budget for shared student housing with basic essentials included.",
         tags=["housing", "budget", "students", "meal plan"],
         priority=2,
-        source_name="UF HAW Hamburg program page"
+        source_name="UF HAW Hamburg program page",
+        program="UF Exchange - HAW Hamburg"
     )
 ]
 
@@ -889,7 +892,8 @@ berlin_tips = [
         short_description="History, art, innovation, vibrant student life.",
         tags=["city life", "history", "art", "innovation", "students"],
         priority=0,
-        source_name="General city info"
+        source_name="General city info",
+        program="UF in Berlin - MIB GIE"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -899,7 +903,8 @@ berlin_tips = [
         short_description="Eligibility is limited to approved MIB and graduate business students.",
         tags=["academics", "eligibility", "business", "graduate", "study abroad"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - MIB GIE"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -909,7 +914,8 @@ berlin_tips = [
         short_description="The program includes a 2-credit global business immersion course.",
         tags=["academics", "credits", "business", "faculty-led"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - MIB GIE"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -919,7 +925,8 @@ berlin_tips = [
         short_description="Check for future application cycles before planning around this program.",
         tags=["applications", "planning", "deadline", "study abroad"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - MIB GIE"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -929,7 +936,8 @@ berlin_tips = [
         short_description="Students may be able to use financial aid and scholarships toward the program cost.",
         tags=["financial aid", "scholarships", "cost", "planning"],
         priority=2,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - MIB GIE"
     ),
     # TASSEP - Technische Universität Berlin tips (differentiated)
     CityTipCreate(
@@ -940,7 +948,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: Cultural hub, science, vibrant student life.",
         tags=["city life", "culture", "history", "science", "TASSEP", "TUB", "students"],
         priority=10,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -950,7 +959,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: Science exchange, multiple departments.",
         tags=["science", "exchange", "TASSEP", "TUB", "Berlin"],
         priority=11,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -960,7 +970,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: All majors, 2.5+ GPA, good standing required.",
         tags=["eligibility", "GPA", "TASSEP", "TUB", "requirements"],
         priority=12,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -970,7 +981,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: Application, advising, credit transfer.",
         tags=["application", "TASSEP", "TUB", "advising", "credit"],
         priority=13,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -980,7 +992,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: Courses mostly in German, some in English, language requirements.",
         tags=["academics", "language", "German", "English", "TASSEP", "TUB", "courses"],
         priority=14,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -990,7 +1003,8 @@ berlin_tips = [
         short_description="TASSEP/TUB: Limited dorm rooms, apply via TUB International Office.",
         tags=["housing", "dorms", "TUB", "TASSEP", "apply"],
         priority=15,
-        source_name="UF TASSEP Berlin program page"
+        source_name="UF TASSEP Berlin program page",
+        program="TASSEP - Technische Universität Berlin"
     ),
         CityTipCreate(
             city_slug="berlin",
@@ -1030,6 +1044,39 @@ berlin_tips = [
             tags=["general", "city overview", "history", "culture", "landmarks"],
             priority=21,
             source_name="General Berlin info",
+            program="UF in Berlin - MIB GIE"
+        ),
+        CityTipCreate(
+            city_slug="berlin",
+            category="costs",
+            title="Program Costs & Financial Aid (MIB GIE)",
+            content=(
+                "Please refer to program cost information provided by the MIB program. "
+                "Most financial aid that you would normally receive on campus for the selected term abroad can be applied toward the cost of this study abroad program; "
+                "however, all financial aid eligibility is determined by The Office of Student Financial Aid and Scholarships (SFA). "
+                "You must speak with SFA to determine what aid can be applied. Contact SFA at (352) 392-1275, email sfa-help@mail.ufl.edu (subject: 'Study Abroad'), "
+                "or visit their office in S107 Criser Hall."
+            ),
+            short_description="Contact SFA for financial aid eligibility; costs provided by MIB program.",
+            tags=["costs", "financial aid", "SFA", "MIB", "graduate", "UF-specific"],
+            priority=22,
+            source_name="UF Berlin MIB GIE program page",
+            program="UF in Berlin - MIB GIE"
+        ),
+        CityTipCreate(
+            city_slug="berlin",
+            category="costs",
+            title="Scholarships (MIB GIE)",
+            content=(
+                "The UF International Center sponsors a large number of study abroad scholarships. "
+                "In addition to UFIC scholarships, many UF colleges, departments, and national organizations offer study abroad scholarships. "
+                "Students who apply for UFIC scholarships will be considered for all scholarships for which they are eligible. "
+                "Check the UFIC Scholarship Application page for eligibility requirements."
+            ),
+            short_description="UFIC and external scholarships available; apply through UFIC.",
+            tags=["scholarships", "UFIC", "financial aid", "MIB", "graduate", "UF-specific"],
+            priority=23,
+            source_name="UF Berlin MIB GIE program page",
             program="UF in Berlin - MIB GIE"
         ),
             CityTipCreate(
@@ -1084,6 +1131,7 @@ detmold_tips = [
         short_description="Nature, architecture, regional history, student life.",
         tags=["city life", "nature", "architecture", "history", "students"],
         priority=0,
+        program="UF in Detmold - International Construction",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1094,6 +1142,7 @@ detmold_tips = [
         short_description="Students learn through lectures, labs, workshops, and site visits in Germany.",
         tags=["academics", "construction", "design", "international", "exchange"],
         priority=1,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     ),
     CityTipCreate(
@@ -1104,6 +1153,7 @@ detmold_tips = [
         short_description="The program is accessible to English-speaking students.",
         tags=["academics", "language", "english", "study abroad"],
         priority=1,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     ),
     CityTipCreate(
@@ -1114,6 +1164,7 @@ detmold_tips = [
         short_description="Students stay in local housing with breakfast included.",
         tags=["housing", "breakfast", "local housing", "immersion"],
         priority=1,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     ),
     CityTipCreate(
@@ -1124,6 +1175,7 @@ detmold_tips = [
         short_description="Open to all majors with a minimum 2.5 GPA.",
         tags=["eligibility", "planning", "gpa", "duration"],
         priority=1,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     ),
     CityTipCreate(
@@ -1134,6 +1186,7 @@ detmold_tips = [
         short_description="Students earn 3 UF GPA credits through construction-focused coursework.",
         tags=["academics", "credits", "construction", "undergraduate", "graduate"],
         priority=2,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     ),
     CityTipCreate(
@@ -1144,6 +1197,7 @@ detmold_tips = [
         short_description="Excursions are part of the experience, including Hamburg and optional Berlin.",
         tags=["excursions", "hamburg", "berlin", "industry tours", "field work"],
         priority=2,
+        program="UF in Detmold - International Construction",
         source_name="UF Detmold program page"
     )
 ]
@@ -1157,6 +1211,7 @@ osnabruck_tips = [
         short_description="Historic town, festivals, international student life.",
         tags=["city life", "history", "festivals", "international", "students"],
         priority=0,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1167,6 +1222,7 @@ osnabruck_tips = [
         short_description="Internships available; German crash course recommended.",
         tags=["internship", "business", "german", "crash course"],
         priority=1,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="UF Osnabrück program page"
     ),
     CityTipCreate(
@@ -1177,6 +1233,7 @@ osnabruck_tips = [
         short_description="2.5+ GPA, CALS students, good standing required.",
         tags=["eligibility", "GPA", "CALS", "requirements"],
         priority=2,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="UF Osnabrück program page"
     ),
     CityTipCreate(
@@ -1187,6 +1244,7 @@ osnabruck_tips = [
         short_description="Wide course selection; ECTS credits convert 2:1 to UF credits.",
         tags=["academics", "ECTS", "english", "german", "courses"],
         priority=3,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="UF Osnabrück program page"
     ),
     CityTipCreate(
@@ -1197,6 +1255,7 @@ osnabruck_tips = [
         short_description="Affordable, furnished student housing available for internationals.",
         tags=["housing", "student housing", "international", "rent"],
         priority=4,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="UF Osnabrück program page"
     ),
     CityTipCreate(
@@ -1207,6 +1266,7 @@ osnabruck_tips = [
         short_description="Historic, lively city with international connections.",
         tags=["city life", "culture", "festivals", "international"],
         priority=5,
+        program="UF Exchange - Hochschule Osnabrück",
         source_name="UF Osnabrück program page"
     )
 ]
@@ -1221,6 +1281,7 @@ vallendar_tips = [
         short_description="Picturesque town, vineyards, historic monuments, student life.",
         tags=["city life", "valley", "vineyards", "historic", "students"],
         priority=0,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1231,6 +1292,7 @@ vallendar_tips = [
         short_description="Accredited, practical, international business education.",
         tags=["business", "accredited", "practical", "international"],
         priority=1,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="UF WHU program page"
     ),
     CityTipCreate(
@@ -1241,6 +1303,7 @@ vallendar_tips = [
         short_description="3.0+ GPA, 12+ credits, WCBA students, good standing required.",
         tags=["eligibility", "GPA", "WCBA", "requirements"],
         priority=2,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="UF WHU program page"
     ),
     CityTipCreate(
@@ -1251,6 +1314,7 @@ vallendar_tips = [
         short_description="Wide business course selection; check equivalencies.",
         tags=["academics", "business", "courses", "equivalency"],
         priority=3,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="UF WHU program page"
     ),
     CityTipCreate(
@@ -1261,6 +1325,7 @@ vallendar_tips = [
         short_description="Semi-furnished dorms and private apartments arranged by WHU.",
         tags=["housing", "dorms", "apartments", "exchange"],
         priority=4,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="UF WHU program page"
     ),
     CityTipCreate(
@@ -1271,6 +1336,7 @@ vallendar_tips = [
         short_description="Picturesque town, close to Koblenz, Frankfurt, Cologne.",
         tags=["city life", "culture", "valley", "proximity"],
         priority=5,
+        program="UF Exchange - WHU Otto Beisheim School of Management",
         source_name="UF WHU program page"
     )
 ]
@@ -1285,6 +1351,7 @@ stuttgart_tips = [
         short_description="Festivals, culture, international student life, ESN events.",
         tags=["city life", "festivals", "culture", "international", "students"],
         priority=0,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1295,6 +1362,7 @@ stuttgart_tips = [
         short_description="Specialized media university with diverse programs.",
         tags=["media", "design", "business", "advertising", "computer science"],
         priority=1,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="UF HdM program page"
     ),
     CityTipCreate(
@@ -1305,6 +1373,7 @@ stuttgart_tips = [
         short_description="Open to all majors, 3.0+ GPA, good standing required.",
         tags=["eligibility", "GPA", "requirements"],
         priority=2,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="UF HdM program page"
     ),
     CityTipCreate(
@@ -1315,6 +1384,7 @@ stuttgart_tips = [
         short_description="English-taught minors, B2 English, ECTS credits convert 2:1.",
         tags=["academics", "minors", "english", "ECTS", "credit"],
         priority=3,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="UF HdM program page"
     ),
     CityTipCreate(
@@ -1325,6 +1395,7 @@ stuttgart_tips = [
         short_description="Shared student flats, single rooms, apply early for housing.",
         tags=["housing", "student flats", "shared", "apply early"],
         priority=4,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="UF HdM program page"
     ),
     CityTipCreate(
@@ -1335,6 +1406,7 @@ stuttgart_tips = [
         short_description="Lively city, festivals, ESN events, international experience.",
         tags=["city life", "festivals", "ESN", "international", "student life"],
         priority=5,
+        program="UF Exchange - Hochschule der Medien Stuttgart",
         source_name="UF HdM program page"
     )
 ]
@@ -1349,6 +1421,7 @@ aachen_tips = [
         short_description="Lively student city, historic, international, nature parks.",
         tags=["city life", "historic", "international", "nature", "students"],
         priority=0,
+        program="Global E3 - RWTH Aachen University",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1359,6 +1432,7 @@ aachen_tips = [
         short_description="Engineering exchange, Global E3, multiple departments.",
         tags=["engineering", "exchange", "Global E3", "RWTH"],
         priority=1,
+        program="Global E3 - RWTH Aachen University",
         source_name="UF RWTH Aachen program page"
     ),
     CityTipCreate(
@@ -1369,6 +1443,7 @@ aachen_tips = [
         short_description="Engineering majors, 3.0+ GPA, good standing required.",
         tags=["eligibility", "GPA", "engineering", "requirements"],
         priority=2,
+        program="Global E3 - RWTH Aachen University",
         source_name="UF RWTH Aachen program page"
     ),
     CityTipCreate(
@@ -1379,6 +1454,7 @@ aachen_tips = [
         short_description="Global E3 app, list 3 schools, credit/internship options.",
         tags=["application", "Global E3", "credit", "internship"],
         priority=3,
+        program="Global E3 - RWTH Aachen University",
         source_name="UF RWTH Aachen program page"
     ),
     CityTipCreate(
@@ -1389,6 +1465,7 @@ aachen_tips = [
         short_description="Apply early for student housing, limited rooms.",
         tags=["housing", "student housing", "apply early", "placement"],
         priority=4,
+        program="Global E3 - RWTH Aachen University",
         source_name="UF RWTH Aachen program page"
     ),
     CityTipCreate(
@@ -1399,6 +1476,7 @@ aachen_tips = [
         short_description="Lively student city, historic, international, nature parks.",
         tags=["city life", "culture", "student", "international", "nature"],
         priority=5,
+        program="Global E3 - RWTH Aachen University",
         source_name="UF RWTH Aachen program page"
     )
         ,
@@ -1483,6 +1561,7 @@ lemgo_tips = [
         short_description="Nature, hiking, design excursions, spa towns, student life.",
         tags=["city life", "nature", "excursions", "spa", "students"],
         priority=0,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1493,6 +1572,7 @@ lemgo_tips = [
         short_description="Mutual design exchange, studio project, lab facilities.",
         tags=["design", "exchange", "studio", "lab"],
         priority=1,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="UF TH OWL program page"
     ),
     CityTipCreate(
@@ -1503,6 +1583,7 @@ lemgo_tips = [
         short_description="DCP majors, 2.5+ GPA, good standing required.",
         tags=["eligibility", "GPA", "DCP", "requirements"],
         priority=2,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="UF TH OWL program page"
     ),
     CityTipCreate(
@@ -1513,6 +1594,7 @@ lemgo_tips = [
         short_description="UF faculty, 6 credits, undergraduate and graduate options.",
         tags=["courses", "credits", "faculty", "undergraduate", "graduate"],
         priority=3,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="UF TH OWL program page"
     ),
     CityTipCreate(
@@ -1523,6 +1605,7 @@ lemgo_tips = [
         short_description="Dorm housing at TH OWL, apply early.",
         tags=["housing", "dorms", "TH OWL", "apply early"],
         priority=4,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="UF TH OWL program page"
     ),
     CityTipCreate(
@@ -1533,6 +1616,7 @@ lemgo_tips = [
         short_description="Nature, hiking, design excursions, spa towns.",
         tags=["city life", "nature", "excursions", "spa", "culture"],
         priority=5,
+        program="UF in Lemgo - TH OWL Interior Design",
         source_name="UF TH OWL program page"
     )
 ]
@@ -1547,6 +1631,7 @@ munich_tips = [
         short_description="Beautiful, safe city, vibrant student life, culture, nature.",
         tags=["city life", "tradition", "modernity", "culture", "students"],
         priority=0,
+        program="Global E3 - Munich University of Applied Science",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1557,6 +1642,7 @@ munich_tips = [
         short_description="Engineering exchange, Global E3, multiple departments.",
         tags=["engineering", "exchange", "Global E3", "HM"],
         priority=1,
+        program="Global E3 - Munich University of Applied Science",
         source_name="UF Munich program page"
     ),
     CityTipCreate(
@@ -1567,6 +1653,7 @@ munich_tips = [
         short_description="Engineering majors, 3.0+ GPA, good standing required.",
         tags=["eligibility", "GPA", "engineering", "requirements"],
         priority=2,
+        program="Global E3 - Munich University of Applied Science",
         source_name="UF Munich program page"
     ),
     CityTipCreate(
@@ -1577,6 +1664,7 @@ munich_tips = [
         short_description="Global E3 app, list 3 schools, credit/internship options.",
         tags=["application", "Global E3", "credit", "internship"],
         priority=3,
+        program="Global E3 - Munich University of Applied Science",
         source_name="UF Munich program page"
     ),
     CityTipCreate(
@@ -1587,6 +1675,7 @@ munich_tips = [
         short_description="Limited student housing, first come first served.",
         tags=["housing", "student housing", "first come", "limited"],
         priority=4,
+        program="Global E3 - Munich University of Applied Science",
         source_name="UF Munich program page"
     ),
         # Sport Management tips
@@ -1752,6 +1841,7 @@ jena_tips = [
         short_description="Historic university city, science, nature, student life.",
         tags=["city life", "science", "nature", "students"],
         priority=0,
+        program="TASSEP - Friedrich Schiller Universität Jena",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1762,6 +1852,7 @@ jena_tips = [
         short_description="Science exchange, TASSEP, multiple departments.",
         tags=["science", "exchange", "TASSEP", "Jena"],
         priority=1,
+        program="TASSEP - Friedrich Schiller Universität Jena",
         source_name="UF TASSEP Jena program page"
     ),
     CityTipCreate(
@@ -1772,6 +1863,7 @@ jena_tips = [
         short_description="All majors, 2.5+ GPA, good standing required.",
         tags=["eligibility", "GPA", "requirements"],
         priority=2,
+        program="TASSEP - Friedrich Schiller Universität Jena",
         source_name="UF TASSEP Jena program page"
     ),
     CityTipCreate(
@@ -1782,6 +1874,7 @@ jena_tips = [
         short_description="TASSEP app, academic advising, credit transfer.",
         tags=["application", "TASSEP", "advising", "credit"],
         priority=3,
+        program="TASSEP - Friedrich Schiller Universität Jena",
         source_name="UF TASSEP Jena program page"
     ),
     CityTipCreate(
@@ -1792,6 +1885,7 @@ jena_tips = [
         short_description="Historic university city, lively student life, science tradition.",
         tags=["city life", "culture", "student", "science", "nature"],
         priority=4,
+        program="TASSEP - Friedrich Schiller Universität Jena",
         source_name="UF TASSEP Jena program page"
     )
 ]
@@ -1806,6 +1900,7 @@ vienna_tips = [
         short_description="Imperial city, vibrant culture, green spaces, student life.",
         tags=["city life", "imperial", "culture", "green space", "students"],
         priority=0,
+        program="TASSEP - Technische Universität Wien",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -1813,7 +1908,12 @@ vienna_tips = [
         category="academics",
         title="Technische Universität Wien: Science exchange via TASSEP",
         content="UF science students can study at TU Wien via TASSEP, a consortium of EU, Canadian, and US universities. TASSEP allows students to take most junior-level courses abroad and graduate on time. Departments include Astronomy, Biochemistry, Biology, Chemistry, Geological Sciences, Horticultural Sciences, Mathematics, Microbiology, Physics, Plant Sciences, and Statistics.",
-        ),
+        short_description="Science exchange, TASSEP, multiple departments.",
+        tags=["science", "exchange", "TASSEP", "TU Wien", "Vienna"],
+        priority=1,
+        program="TASSEP - Technische Universität Wien",
+        source_name="UF TASSEP Vienna program page"
+    ),
     # Vienna TASSEP tips
     CityTipCreate(
         city_slug="vienna",
@@ -1823,6 +1923,7 @@ vienna_tips = [
         short_description="All majors, 2.5+ GPA, good standing required.",
         tags=["eligibility", "GPA", "requirements"],
         priority=2,
+        program="TASSEP - Technische Universität Wien",
         source_name="UF TASSEP Vienna program page"
     ),
     CityTipCreate(
@@ -1833,6 +1934,7 @@ vienna_tips = [
         short_description="TASSEP app, academic advising, credit transfer.",
         tags=["application", "TASSEP", "advising", "credit"],
         priority=3,
+        program="TASSEP - Technische Universität Wien",
         source_name="UF TASSEP Vienna program page"
     ),
     CityTipCreate(
@@ -1843,6 +1945,7 @@ vienna_tips = [
         short_description="Imperial city, vibrant culture, green spaces, student life.",
         tags=["city life", "culture", "student", "imperial", "green space"],
         priority=4,
+        program="TASSEP - Technische Universität Wien",
         source_name="UF TASSEP Vienna program page"
     ),
     CityTipCreate(
@@ -1853,6 +1956,7 @@ vienna_tips = [
         short_description="Student housing at TU Wien, apply early.",
         tags=["housing", "TU Wien", "apply early"],
         priority=5,
+        program="TASSEP - Technische Universität Wien",
         source_name="UF TASSEP Vienna program page"
     ),
     # Vienna Sport Management tips
@@ -1934,6 +2038,7 @@ zurich_tips = [
         short_description="Financial/cultural hub, high quality of life, arts, Alps.",
         tags=["city life", "culture", "arts", "Alps", "students"],
         priority=0,
+        program="UF in Switzerland and Austria",
         source_name="General city info"
     ),
     CityTipCreate(
@@ -2026,4 +2131,608 @@ vienna_tips += [
         priority=13,
         source_name="UF CJC Vienna program page"
     )
+]
+
+leipzig_tips = [
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Living in Leipzig: Music, culture, creativity, and affordability",
+        content=(
+            "Leipzig is one of Germany's most dynamic and affordable cities, known for its rich musical heritage (Bach, Mendelssohn, Schumann), "
+            "thriving arts scene, and creative energy. The city played a pivotal role in the Peaceful Revolution of 1989 and today attracts students, "
+            "artists, and entrepreneurs from around the world. Leipzig offers excellent public transit, abundant green spaces, and a vibrant nightlife."
+        ),
+        short_description="Dynamic, affordable city with rich music and arts heritage.",
+        tags=["city life", "music", "culture", "affordable", "creative", "students"],
+        priority=0,
+        program="General - Universität Leipzig",
+        source_name="General city info"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="academics",
+        title="Universität Leipzig: One of Germany's oldest universities",
+        content=(
+            "Founded in 1409, Universität Leipzig is one of the oldest universities in Europe. It offers a wide range of programs across the sciences, "
+            "humanities, social sciences, and medicine. The university has a strong international office that supports exchange students with orientation, "
+            "language courses, and academic advising. Many courses are available in English, especially at the graduate level."
+        ),
+        short_description="Historic university with strong international support and English-taught courses.",
+        tags=["academics", "university", "historic", "international", "English courses"],
+        priority=1,
+        program="General - Universität Leipzig",
+        source_name="General Leipzig university info"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="housing",
+        title="Student housing in Leipzig: Affordable and accessible",
+        content=(
+            "Leipzig is one of the most affordable cities in Germany for student housing. The Studentenwerk Leipzig manages several residence halls with "
+            "rooms ranging from €200–€350/month. Private apartments and shared flats (WGs) are also widely available at reasonable prices. "
+            "Popular student neighborhoods include Südvorstadt, Connewitz, Plagwitz, and Lindenau."
+        ),
+        short_description="Affordable student housing through Studentenwerk or private WGs.",
+        tags=["housing", "affordable", "Studentenwerk", "WG", "student neighborhoods"],
+        priority=2,
+        program="General - Universität Leipzig",
+        source_name="General Leipzig housing info"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="transportation",
+        title="Getting around Leipzig: Public transit and cycling",
+        content=(
+            "Leipzig has an excellent public transit system (LVB) with trams, buses, and S-Bahn connections. A semester ticket is typically included "
+            "in university fees, giving students unlimited travel within the city and surrounding region. Leipzig is also very bike-friendly, with "
+            "extensive cycling paths throughout the city. Leipzig/Halle Airport (LEJ) is about 18 km from the city center."
+        ),
+        short_description="Great public transit, semester ticket included, bike-friendly city.",
+        tags=["transportation", "tram", "cycling", "semester ticket", "airport"],
+        priority=3,
+        program="General - Universität Leipzig",
+        source_name="General Leipzig transportation info"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Student life and culture in Leipzig",
+        content=(
+            "Leipzig has a vibrant student scene with over 40,000 students across its universities. The city is famous for its music heritage "
+            "(Thomaskirche, Gewandhaus Orchestra), the Spinnerei arts district, Karl-Liebknecht-Straße nightlife, and numerous festivals. "
+            "Outdoor activities include the Leipzig lake district, Clara-Zetkin-Park, and easy day trips to Dresden and Berlin."
+        ),
+        short_description="Vibrant student life, music heritage, arts scene, outdoor activities.",
+        tags=["city life", "culture", "music", "arts", "nightlife", "outdoor", "festivals"],
+        priority=4,
+        program="General - Universität Leipzig",
+        source_name="General Leipzig culture info"
+    )
+]
+
+# Tips for UF Exchange - University of Bern
+bern_tips = [
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Living in Bern: Switzerland's capital, a UNESCO World Heritage medieval gem",
+        content=(
+            "Bern is Switzerland's capital, located in the middle of the country near the French-German language border. "
+            "Its beautiful sandstone buildings make the city center one of the finest examples of medieval architecture in Europe, "
+            "listed as a UNESCO World Heritage site. The Berner Oberland, with breathtaking views and magnificent mountains, "
+            "is just an hour away by train. With a population of only 140,000, it takes just minutes by bicycle to reach the surrounding countryside. "
+            "The city offers countless cafés and bars, swimming in the Aare river, art shows, plays, and concerts."
+        ),
+        short_description="UNESCO capital, medieval charm, Alps nearby, vibrant café culture.",
+        tags=["city life", "UNESCO", "capital", "medieval", "Alps", "students", "Aare"],
+        priority=0,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="academics",
+        title="UF Exchange - University of Bern Program Overview",
+        content=(
+            "The University of Bern has played a leading role in space sciences, international trade, fundamental physics, preventive medicine, "
+            "and sustainable development research. Albert Einstein received his physics professorship here and formulated his Theory of Relativity. "
+            "Today the university has more than 19,000 students across 8 faculties. All study fields except Medicine and Veterinary Medicine are open to exchange students. "
+            "Most English courses are at Master's level, but many Bachelor's courses in English are available (Computer Science, English, Biology, Business, Economics, Social Sciences, Philosophy, Chemistry). "
+            "As a UF Exchange program, credits can satisfy major, minor, and elective requirements with prior approval. UF GPA credit is granted for all courses taken."
+        ),
+        short_description="Leading research university; UF Exchange with GPA credit; broad English course options.",
+        tags=["academics", "exchange", "research", "Einstein", "UF GPA credit", "English courses"],
+        priority=1,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="eligibility",
+        title="Eligibility & Requirements (University of Bern)",
+        content=(
+            "Required GPA: 3.0. Open to all UF majors. Science majors (including pre-med, dental, & vet) are encouraged to apply. "
+            "Must have completed 12 hours of coursework at UF. Meet with Dr. Brian Harfe, Program Director. One letter of recommendation required. "
+            "Graduate and undergraduate levels. Not open to non-UF students. Program Type: UF Exchange."
+        ),
+        short_description="3.0 GPA, all majors, 12 UF credits, letter of rec, UF only.",
+        tags=["eligibility", "GPA", "requirements", "all majors", "science", "UF only"],
+        priority=2,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="academics",
+        title="Introduction Week and Student Life at University of Bern",
+        content=(
+            "Bern offers an Introduction Week for exchange students one week prior to the semester, including a general information event, campus tour, "
+            "city tour, students' union lunch, and day trip. During the semester, the exchange student network ESN offers events and excursions "
+            "(international dinner, hiking trips, ski weekend, language café, chocolate factory visit). A buddy program is available. "
+            "A big variety of sports classes are offered at the university, most of them free of charge."
+        ),
+        short_description="Orientation week, ESN events, buddy program, free sports classes.",
+        tags=["academics", "orientation", "ESN", "buddy program", "sports", "excursions"],
+        priority=3,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="housing",
+        title="Housing in Bern (University of Bern)",
+        content=(
+            "The University of Bern does not offer accommodation for students. However, there are various independent privately organized "
+            "student lodging companies in Bern that rent out rooms and studios to students. The university cannot guarantee accommodation "
+            "in these student lodgings — contact the lodging company directly. Start searching early."
+        ),
+        short_description="No university housing; private student lodging companies available.",
+        tags=["housing", "private", "lodging", "Bern", "independent"],
+        priority=4,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="planning",
+        title="Visas for Studying in Switzerland",
+        content=(
+            "If you are studying in Switzerland for longer than three months and you aren't from the EU/EEA, you'll need a National Visa D. "
+            "Apply as soon as you receive your host institution acceptance letter. "
+            "EU/EEA students simply need to register within two weeks of arriving in Switzerland to obtain a residence permit. "
+            "The process and cost vary depending on which country you are currently living in. Check the Swiss government's website for exact steps."
+        ),
+        short_description="Non-EU students need National Visa D; apply early after acceptance.",
+        tags=["visa", "planning", "Switzerland", "National Visa D", "EU", "EEA"],
+        priority=5,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="costs",
+        title="Costs & Financial Aid (University of Bern)",
+        content=(
+            "As a UF Exchange student, you pay UF tuition for the semester. Housing, meals, and other expenses are paid directly to the host or third-party. "
+            "A $525 nonrefundable administrative charge is due at application. "
+            "Most financial aid can be applied; eligibility is determined by SFA. Contact SFA at (352) 392-1275 or sfa-help@mail.ufl.edu (subject: 'Study Abroad')."
+        ),
+        short_description="Pay UF tuition; $525 admin charge; financial aid may apply.",
+        tags=["costs", "tuition", "financial aid", "SFA", "UF Exchange"],
+        priority=6,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="costs",
+        title="Scholarships (University of Bern)",
+        content=(
+            "The Brian and Kate Harfe International Exchange Scholarship is available for this program. Preference given to students spending an entire year abroad. "
+            "The Heyning-Roelli Foundation also offers scholarships. "
+            "UFIC sponsors a large number of study abroad scholarships. Students who apply for UFIC scholarships are considered for all eligible scholarships. "
+            "Check the UFIC Scholarship Application page for eligibility requirements."
+        ),
+        short_description="Harfe scholarship, Heyning-Roelli Foundation, UFIC scholarships available.",
+        tags=["scholarships", "Harfe", "Heyning-Roelli", "UFIC", "financial aid"],
+        priority=7,
+        program="UF Exchange - University of Bern",
+        source_name="UF Bern program page"
+    ),
+]
+
+# Tips for UF Exchange - Eastern Switzerland University of Applied Sciences (OST)
+rapperswil_tips = [
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Living in Rapperswil: Mediterranean charm on Lake Zurich",
+        content=(
+            "Rapperswil has a Mediterranean holiday atmosphere and is a beautiful town located on Lake Zurich, 30 minutes by train from Zurich. "
+            "Close to mountains, it offers great possibilities for hiking and sports. The town features a medieval castle, rose gardens, "
+            "and a charming old town with lake views."
+        ),
+        short_description="Charming lakeside town, 30 min from Zurich, hiking and sports.",
+        tags=["city life", "Lake Zurich", "Mediterranean", "hiking", "castle", "students"],
+        priority=0,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="academics",
+        title="UF Exchange - OST Program Overview",
+        content=(
+            "OST (Eastern Switzerland University of Applied Sciences) offers studies at Bachelor's and Master's level in technology and planning sciences "
+            "at a breathtakingly scenic campus on Lake Zurich. Practice-oriented programmes include civil engineering, electrical engineering, "
+            "renewable energies, environmental engineering, computer science, landscape architecture, mechanical engineering, and industrial engineering. "
+            "Program Type: UF Exchange. Experience Type: Traditional Study. Duration: Ten or more weeks. "
+            "Best suited for 3rd year and up students in Mechanical and Aerospace Engineering, Electrical Engineering, and Computer Science."
+        ),
+        short_description="Practice-oriented engineering and CS programs on Lake Zurich campus.",
+        tags=["academics", "exchange", "engineering", "computer science", "OST", "UF GPA credit"],
+        priority=1,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="eligibility",
+        title="Eligibility & Requirements (OST)",
+        content=(
+            "Open to all majors. 3.0 GPA required. Students must be in good standing. "
+            "Best suited for 3rd year and up students in Mechanical and Aerospace Engineering, Electrical Engineering, and Computer Science. "
+            "Undergraduate and graduate levels. Not open to non-UF students."
+        ),
+        short_description="All majors, 3.0 GPA, good standing; best for engineering/CS 3rd year+.",
+        tags=["eligibility", "GPA", "requirements", "engineering", "computer science", "UF only"],
+        priority=2,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="academics",
+        title="Academics & Courses at OST",
+        content=(
+            "OST is academically rigorous. Some courses are taught in English and some in German. "
+            "Application deadlines: June 1 (Fall), November 1 (Spring). "
+            "Exchange students can also enroll for project work during their exchange semester — projects are normally based on industrial demands. "
+            "Language of instruction: English and German. Type of Credit: UF GPA."
+        ),
+        short_description="Rigorous academics, English and German courses, project work available.",
+        tags=["academics", "courses", "English", "German", "project work", "rigorous"],
+        priority=3,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="housing",
+        title="Housing at OST Rapperswil",
+        content=(
+            "OST offers rooms in a student dorm located 10 minutes by bus from campus and close to Lake Zurich (Oberseestrasse 99, Jona). "
+            "You can apply for accommodation in your application. Budget around $800 per month depending on the exchange rate. "
+            "OST has dormitories specifically for international students."
+        ),
+        short_description="Student dorm near Lake Zurich, ~$800/month, apply in application.",
+        tags=["housing", "dorm", "Lake Zurich", "international students", "budget"],
+        priority=4,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="costs",
+        title="Costs & Financial Aid (OST)",
+        content=(
+            "As a UF Exchange student, you pay UF tuition. Housing, meals, and other expenses are paid directly to host or third-party. "
+            "A $525 nonrefundable administrative charge is due at application. "
+            "Most financial aid can be applied; eligibility determined by SFA. Contact SFA at (352) 392-1275 or sfa-help@mail.ufl.edu. "
+            "UFIC sponsors many study abroad scholarships — check the UFIC Scholarship Application page."
+        ),
+        short_description="Pay UF tuition; $525 admin charge; financial aid and UFIC scholarships available.",
+        tags=["costs", "tuition", "financial aid", "SFA", "UFIC", "scholarships"],
+        priority=5,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="planning",
+        title="Visas for Studying in Switzerland (OST)",
+        content=(
+            "If studying in Switzerland for longer than three months and not from the EU/EEA, you need a National Visa D. "
+            "Apply as soon as you receive your host institution acceptance letter. "
+            "EU/EEA students register within two weeks of arriving for a residence permit. Check the Swiss government's website for exact steps."
+        ),
+        short_description="Non-EU students need National Visa D; apply after acceptance.",
+        tags=["visa", "planning", "Switzerland", "National Visa D"],
+        priority=6,
+        program="UF Exchange - Eastern Switzerland University of Applied Sciences (OST)",
+        source_name="UF OST program page"
+    ),
+]
+
+# Tips for UF Exchange - ZHAW School of Engineering (Winterthur)
+winterthur_tips = [
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Living in Winterthur: Vibrant Swiss city 20 minutes from Zurich",
+        content=(
+            "Winterthur is a vibrant Swiss city with excellent public transport connections, just a 20-minute train ride from Zurich. "
+            "Zurich Airport is located right next to Winterthur, making many European destinations approximately 2 hours away. "
+            "The city offers a thriving cultural scene, world-class art collections, a charming old town, and easy access to the Swiss countryside."
+        ),
+        short_description="Vibrant city near Zurich, great transport, cultural scene.",
+        tags=["city life", "Winterthur", "Zurich", "transport", "culture", "students"],
+        priority=0,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="academics",
+        title="UF Exchange - ZHAW School of Engineering Program Overview",
+        content=(
+            "The Zürcher Hochschule für Angewandte Wissenschaften (ZHAW) is one of the leading universities of applied sciences in Switzerland. "
+            "The ZHAW School of Engineering offers Bachelor modules for exchange students taught in English (Fall and Spring). "
+            "Students can spend 1 or 2 semesters. ZHAW's strength is real-world oriented education based on a sound natural science background. "
+            "Exchange students can enroll for project work based on industrial demands. "
+            "Program Type: UF Exchange. Undergraduate. Field of Study: Computer & Information Science, Engineering. "
+            "Best suited for 3rd year and up students in Mechanical and Aerospace Engineering, Electrical Engineering, and Computer Science."
+        ),
+        short_description="Leading Swiss applied sciences university; English-taught engineering modules; project work.",
+        tags=["academics", "exchange", "engineering", "computer science", "ZHAW", "applied sciences"],
+        priority=1,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="eligibility",
+        title="Eligibility & Requirements (ZHAW)",
+        content=(
+            "Best suited for 3rd year and up students in Mechanical and Aerospace Engineering, Electrical Engineering, and Computer Science. "
+            "Must have a GPA of 3.0 or higher and be in good disciplinary standing. Undergraduate level. Not open to non-UF students."
+        ),
+        short_description="Engineering/CS 3rd year+, 3.0 GPA, good standing, UF only.",
+        tags=["eligibility", "GPA", "requirements", "engineering", "computer science", "UF only"],
+        priority=2,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="costs",
+        title="ZHAW Scholarship Opportunity",
+        content=(
+            "ZHAW offers a scholarship of up to 3,000 CHF (approx. $3,000) per semester with very high chances of success. "
+            "Monthly living costs including accommodation are around 1,500 CHF (approx. $1,500). "
+            "As a UF Exchange student, you pay UF tuition. A $525 nonrefundable administrative charge is due at application. "
+            "UFIC also sponsors many study abroad scholarships."
+        ),
+        short_description="ZHAW scholarship up to 3,000 CHF/semester; ~$1,500/month living costs.",
+        tags=["scholarship", "ZHAW", "costs", "financial aid", "CHF", "UFIC"],
+        priority=3,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="housing",
+        title="Housing in Winterthur (ZHAW)",
+        content=(
+            "Students stay in off-campus apartments close to the university. Apartments can be found through WOKO, "
+            "a student apartment sharing organisation. ZHAW's International Relations Office provides support during your stay in Winterthur."
+        ),
+        short_description="Off-campus apartments via WOKO; international office support.",
+        tags=["housing", "apartments", "WOKO", "off-campus", "Winterthur"],
+        priority=4,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="academics",
+        title="Academics & Exams at ZHAW",
+        content=(
+            "ZHAW will arrange exams for incoming students so that academic schedules fit. "
+            "Bachelor modules for exchange students are taught in English. "
+            "Contacts: Study Abroad Advisor Morgan Williams-Franklin, Program Director Pingchien Neo (pneo@eng.ufl.edu)."
+        ),
+        short_description="Exams arranged to fit schedules; English-taught modules.",
+        tags=["academics", "exams", "English", "modules", "contacts"],
+        priority=5,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="planning",
+        title="Visas for Studying in Switzerland (ZHAW)",
+        content=(
+            "If studying in Switzerland for longer than three months and not from the EU/EEA, you need a National Visa D. "
+            "Apply as soon as you receive your host institution acceptance letter. "
+            "EU/EEA students register within two weeks of arriving for a residence permit. Check the Swiss government's website for exact steps."
+        ),
+        short_description="Non-EU students need National Visa D; apply after acceptance.",
+        tags=["visa", "planning", "Switzerland", "National Visa D"],
+        priority=6,
+        program="UF Exchange - ZHAW School of Engineering",
+        source_name="UF ZHAW program page"
+    ),
+]
+
+# Tips for UF students studying abroad in Mannheim (UF Exchange - University of Mannheim)
+mannheim_tips = [
+    CityTipCreate(
+        city_slug="mannheim",
+        category="academics",
+        title="UF Exchange - University of Mannheim Program Overview",
+        content=(
+            "UF's College of Liberal Arts and Sciences offers all UF students the opportunity to study at the University of Mannheim on exchange. "
+            "Housed in a stunning 18th-century baroque palace, Mannheim has been called 'The Harvard of Germany' by Die Zeit. "
+            "Mannheim's renowned economics and social science programs are closely intertwined with humanities, law, mathematics, and computer science. "
+            "Courses are available in English and German. ECTS credits typically convert 2:1 to UF credits (e.g., 6 ECTS ≈ 3 UF credits). "
+            "Contact Morgan Williams-Franklin, the Study Abroad Advisor, for credit conversion details."
+        ),
+        short_description="UF exchange at the 'Harvard of Germany'; courses in English & German; ECTS 2:1 to UF credits.",
+        tags=["UF-specific", "Mannheim", "exchange", "CLAS", "academics", "ECTS"],
+        priority=10,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="eligibility",
+        title="Eligibility & Requirements (Mannheim UF Exchange)",
+        content=(
+            "Open to all majors. Minimum 2.5 GPA. Must be in good disciplinary standing. "
+            "Students who have not previously studied German language are required to attend a mandatory German language and culture program "
+            "(International Summer Academy for fall, International Winter Academy for spring) before the start of their official exchange semester. "
+            "The Academy costs approximately 685€ and earns transfer credit."
+        ),
+        short_description="All majors, 2.5+ GPA; mandatory pre-semester German Academy for non-German speakers (685€).",
+        tags=["eligibility", "GPA", "requirements", "German language", "Academy", "UF only"],
+        priority=11,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="academics",
+        title="Courses & Fields of Study (Mannheim UF Exchange)",
+        content=(
+            "The University of Mannheim offers a large selection of courses taught in English. "
+            "Subjects include Business Administration, Social Sciences, Humanities, Economics, and Law. "
+            "Additional fields: Anthropology, Art History, Classical Studies, Criminology, Cultural Studies, Education, English, "
+            "European Studies, Film & Media Studies, History, Interdisciplinary Studies, International Studies, Linguistics, "
+            "Literature, Philosophy, Political Science, Psychology, Religion, and Sociology. "
+            "When browsing courses, 'EN' means English-taught and 'DE' means German-taught."
+        ),
+        short_description="Wide range of English-taught courses across business, social sciences, humanities, economics, and law.",
+        tags=["academics", "courses", "English-taught", "business", "social sciences", "humanities", "law", "economics"],
+        priority=12,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="academics",
+        title="Pre-Semester German Language Academy (Mannheim UF Exchange)",
+        content=(
+            "Students without prior German language study must attend the International Summer Academy (fall semester) or "
+            "International Winter Academy (spring semester) before starting courses. "
+            "This pre-semester program introduces exchange students to German language and culture and allows arrival about a month earlier than other exchange students. "
+            "Students with prior German study may also participate voluntarily. "
+            "Enrollment is through the University of Mannheim directly; the fee is approximately 685€. "
+            "Transfer credit is earned, and it counts toward the semester's total credits."
+        ),
+        short_description="Mandatory pre-semester German Academy for non-German speakers; optional for others; 685€ for transfer credit.",
+        tags=["academics", "German language", "Academy", "pre-semester", "transfer credit", "language course"],
+        priority=13,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="housing",
+        title="Student Housing in Mannheim (UF Exchange)",
+        content=(
+            "The International Office at the University of Mannheim provides housing for exchange students in residence halls. "
+            "Rooms are very limited, so apply as early as possible. "
+            "Most students live in shared apartments (WGs) with their own bedroom but shared kitchen and bathroom (2–8 students per apartment). "
+            "A small number of single apartments with private kitchen and bathroom are available. "
+            "Rent including utilities is approximately $350–$500 per month."
+        ),
+        short_description="University residence halls with shared or single apartments; $350–$500/month including utilities.",
+        tags=["housing", "student housing", "residence hall", "shared apartment", "rent", "WG"],
+        priority=14,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim City Overview (UF Exchange)",
+        content=(
+            "Situated between the Rhine and Neckar Rivers, Mannheim has an energetic cultural scene, a landmark baroque palace (Barockschloss Mannheim), "
+            "and a busy city center. It is one of Europe's largest inland ports. "
+            "Mannheim is home to the National Theatre, schools of music and drama, the Reiss-Engelhorn Museums, and an annual folk festival in May. "
+            "The city is also known as the capital of German pop music. "
+            "The main train station provides easy connections to Frankfurt, Berlin, Munich, and other cities."
+        ),
+        short_description="Energetic cultural city with baroque palace, National Theatre, museums, and great rail connections.",
+        tags=["city life", "culture", "palace", "theatre", "museums", "transport", "Rhine", "Neckar"],
+        priority=15,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="dialect",
+        title="Kurpfälzisch Dialect in Mannheim",
+        content=(
+            "Mannheim is located in the Kurpfalz (Electoral Palatinate) region, and the local dialect is Kurpfälzisch. "
+            "It's a warm, melodic Franconian dialect that softens many Standard German sounds — for example, 'ich' often becomes 'isch'. "
+            "Don't worry: Standard German (Hochdeutsch) is universally understood, and most university courses are taught in standard German or English. "
+            "Locals appreciate any effort to learn a few Kurpfälzisch phrases!"
+        ),
+        short_description="Local Kurpfälzisch dialect softens sounds; Hochdeutsch and English widely understood.",
+        tags=["dialect", "Kurpfälzisch", "language", "Hochdeutsch", "Franconian"],
+        priority=16,
+        program="UF Exchange - University of Mannheim",
+        source_name="General Mannheim info"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="dates",
+        title="Important Dates & Deadlines (Mannheim UF Exchange)",
+        content=(
+            "Fall 2026: Application deadline April 6, 2026; program runs August 1 – December 22, 2026. "
+            "Spring 2027: Application deadline October 6, 2026; program runs February 1 – June 19, 2027. "
+            "Academic Year 2027: Application deadline April 6, 2026; program runs August 1, 2026 – June 19, 2027. "
+            "Pre-semester Academy starts about one month before the official semester."
+        ),
+        short_description="Fall deadline April 6; Spring deadline October 6; Academic Year option available.",
+        tags=["dates", "deadlines", "application", "fall", "spring", "academic year"],
+        priority=17,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="travel",
+        title="Travel & Transportation from Mannheim",
+        content=(
+            "Mannheim's Hauptbahnhof (main train station) is a major ICE hub with fast connections to Frankfurt (30 min), "
+            "Heidelberg (15 min), Stuttgart (35 min), Cologne (1.5 hrs), Berlin (4 hrs), and Munich (3 hrs). "
+            "Frankfurt Airport (FRA) is about 75 km away and reachable in under an hour by train. "
+            "Germany borders France, Belgium, Luxembourg, Netherlands, Austria, Czech Republic, Denmark, Poland, and Switzerland — "
+            "making Mannheim an ideal base for European travel."
+        ),
+        short_description="Major ICE rail hub; Frankfurt Airport under 1 hour; ideal for European travel.",
+        tags=["travel", "transportation", "train", "ICE", "Frankfurt Airport", "European travel"],
+        priority=18,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="contact",
+        title="Program Contacts (Mannheim UF Exchange)",
+        content=(
+            "Program Advisor: Morgan Williams-Franklin (Study Abroad Office). "
+            "Academic Manager: Professor William Hasty (hasty@ufl.edu, 352-273-3780). "
+            "Credit type: UF GPA and Transfer credit. Program is UF-only (not open to non-UF students)."
+        ),
+        short_description="Advisor: Morgan Williams-Franklin; Academic Manager: Prof. William Hasty.",
+        tags=["contact", "advisor", "academic manager", "UF only"],
+        priority=19,
+        program="UF Exchange - University of Mannheim",
+        source_name="UF Mannheim program page"
+    ),
 ]
