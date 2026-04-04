@@ -1,151 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Globe, BookOpen, Users, MessageCircle, MapPin, GraduationCap, Info, Languages, Compass, Thermometer, DollarSign, Briefcase } from 'lucide-react';
 import logo from "../assets/MTBLogo.png";
 
-// City data for the map - focused on the 5 target cities
-const cities = [
-  {
-    id: 'berlin',
-    name: 'Berlin',
-    local_name: 'Berlin',
-    description: "Poor but sexy — art, history, and the world's best nightlife",
-    fullDescription: "Germany's capital and cultural heart, known for its vibrant arts scene, Cold War history, and thriving tech ecosystem.",
-    english_friendliness: "very_high",
-    cost_of_living_tier: "high",
-    known_for: [
-      "Berlin Wall and Cold War history",
-      "Museum Island (UNESCO World Heritage Site)",
-      "World-renowned club and nightlife scene",
-      "Thriving tech and startup ecosystem",
-      "Multicultural neighborhoods (Kreuzberg, Neukölln)",
-      "East Side Gallery",
-      "Brandenburg Gate"
-    ],
-    industries: ["Technology", "Creative industries", "Government", "Tourism", "Media"],
-    dialect: "Berlinerisch",
-    climate: {
-      type: "continental",
-      summers: "warm to hot",
-      winters: "cold, grey, occasional snow"
-    },
-    international_airport: "Berlin Brandenburg Airport (BER)"
-  },
-  {
-    id: 'munich',
-    name: 'Munich',
-    local_name: 'München',
-    description: "City of art, beer, and the Alps",
-    fullDescription: "Bavaria's beautiful capital blending traditional German culture with modern innovation and world-class universities.",
-    english_friendliness: "high",
-    cost_of_living_tier: "very_high",
-    known_for: [
-      "Oktoberfest",
-      "BMW headquarters",
-      "English Garden (Englischer Garten)",
-      "Neuschwanstein proximity",
-      "Bavarian culture",
-      "World-class art museums (Kunstareal)"
-    ],
-    industries: ["Automotive", "Engineering", "Technology", "Finance", "Tourism"],
-    dialect: "Bavarian (Bairisch / Bayerisch)",
-    climate: {
-      type: "continental",
-      summers: "warm",
-      winters: "cold and snowy",
-      note: "Close to Alps; can get significant snow"
-    },
-    international_airport: "Munich Airport (MUC)"
-  },
-  {
-    id: 'hamburg',
-    name: 'Hamburg',
-    local_name: 'Hamburg',
-    description: "Germany's gateway to the world — port city, media capital, maritime soul",
-    fullDescription: "Northern Germany's maritime metropolis with a rich trading history and vibrant cultural scene.",
-    english_friendliness: "high",
-    cost_of_living_tier: "high",
-    known_for: [
-      "Port of Hamburg (one of Europe's largest)",
-      "Elbphilharmonie concert hall",
-      "Reeperbahn entertainment district (St. Pauli)",
-      "Fischmarkt (Sunday fish market)",
-      "Speicherstadt warehouse district (UNESCO World Heritage Site)",
-      "HafenCity urban development",
-      "Beatles' early history (Reeperbahn)"
-    ],
-    industries: ["Logistics", "Shipping", "Media", "Aerospace", "Retail", "Tourism"],
-    dialect: "Low German influence (Plattdeutsch) / Missingsch",
-    climate: {
-      type: "maritime",
-      summers: "mild to warm",
-      winters: "mild but wet and grey",
-      note: "Most maritime climate — mild winters but frequent rain year-round"
-    },
-    international_airport: "Hamburg Airport (HAM)"
-  },
-  {
-    id: 'stuttgart',
-    name: 'Stuttgart',
-    local_name: 'Stuttgart',
-    description: "The cradle of the automobile, surrounded by vineyards",
-    fullDescription: "Swabian metropolis known for automotive excellence, surrounded by picturesque vineyards.",
-    english_friendliness: "moderate",
-    cost_of_living_tier: "high",
-    known_for: [
-      "Mercedes-Benz Museum",
-      "Porsche Museum",
-      "Württemberg wine region (vineyards within city limits)",
-      "Swabian cuisine (Maultaschen, Spätzle)",
-      "Cannstatter Volksfest",
-      "Stuttgart Ballet",
-      "Staatsgalerie Stuttgart"
-    ],
-    industries: ["Automotive", "Mechanical engineering", "Manufacturing", "Finance", "Logistics"],
-    dialect: "Swabian (Schwäbisch)",
-    climate: {
-      type: "continental",
-      summers: "warm to hot",
-      winters: "mild to cold",
-      note: "Located in a valley (Kessel) which traps air — can feel warmer in summer and foggy in winter"
-    },
-    international_airport: "Stuttgart Airport (STR)"
-  },
-  {
-    id: 'vienna',
-    name: 'Vienna',
-    local_name: 'Wien',
-    description: "Imperial grandeur, coffee houses, and classical music",
-    fullDescription: "Austria's elegant capital, where imperial history meets modern European culture and quality of life.",
-    english_friendliness: "high",
-    cost_of_living_tier: "high",
-    known_for: [
-      "Vienna Philharmonic",
-      "Vienna State Opera (Staatsoper)",
-      "Imperial palaces (Schönbrunn, Hofburg, Belvedere)",
-      "Coffee house culture (UNESCO recognized)",
-      "Ball Season",
-      "Naschmarkt",
-      "Heurigen wine taverns"
-    ],
-    industries: ["Tourism", "Government", "Culture", "Finance", "Education"],
-    dialect: "Viennese (Wienerisch)",
-    climate: {
-      type: "continental",
-      summers: "warm to hot",
-      winters: "cold, occasional snow",
-      note: "Four distinct seasons; humid in summer, cold and grey in winter"
-    },
-    international_airport: "Vienna International Airport (VIE)"
-  }
-];
+const mapIdToCitySlug = {
+  0: "berlin",
+  1: "munich",
+  2: "vienna",
+  3: "stuttgart",
+  4: "hamburg",
+};
+
+const normalizeCity = (city) => ({
+  id: city.slug,
+  slug: city.slug,
+  name: city.name,
+  local_name: city.local_name || city.name,
+  description: city.tagline || city.description || "",
+  fullDescription: city.description || city.tagline || "",
+  english_friendliness: city.english_friendliness || "moderate",
+  cost_of_living_tier: city.cost_of_living_tier || "moderate",
+  known_for: city.known_for || [],
+  industries: city.industries || [],
+  dialect: city.dialect || "N/A",
+  climate: city.climate || { type: "unknown" },
+  international_airport: city.international_airport || "N/A",
+});
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [cities, setCities] = useState([]);
+  const [citiesError, setCitiesError] = useState("");
   const [selectedCity, setSelectedCity] = useState(null);
+  const [cityPhrases, setCityPhrases] = useState([]);
+  const [cityTips, setCityTips] = useState([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
   // Load external map scripts
+
+useEffect(() => {
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get("/api/cities", {
+        params: { limit: 100 },
+      });
+      const cityData = response?.data?.data || [];
+      setCities(cityData.map(normalizeCity));
+    } catch (error) {
+      console.error("Failed to load cities", error);
+      setCitiesError("Could not load city data from the server.");
+    }
+  };
+
+  fetchCities();
+}, []);
 
 useEffect(() => {
   // Load from local files in public/maps folder
@@ -180,15 +89,7 @@ useEffect(() => {
   const handleCitySelection = (event) => {
     const locationId = event.detail.locationId;
 
-    const mapIdToCity = {
-      0: "berlin",
-      1: "munich",
-      2: "vienna",
-      3: "stuttgart",
-      4: "hamburg"
-    };
-
-    const cityId = mapIdToCity[locationId];
+    const cityId = mapIdToCitySlug[locationId];
 
     const city = cities.find(c => c.id === cityId);
 
@@ -204,7 +105,37 @@ useEffect(() => {
     window.removeEventListener("citySelected", handleCitySelection);
   };
 
-}, []);
+}, [cities]);
+
+useEffect(() => {
+  if (!selectedCity?.slug) {
+    setCityPhrases([]);
+    setCityTips([]);
+    return;
+  }
+
+  const fetchCityDetails = async () => {
+    try {
+      const [phrasesResponse, tipsResponse] = await Promise.all([
+        axios.get("/api/phrases", {
+          params: { city_slug: selectedCity.slug, limit: 5 },
+        }),
+        axios.get("/api/tips", {
+          params: { city_slug: selectedCity.slug, limit: 5 },
+        }),
+      ]);
+
+      setCityPhrases(phrasesResponse?.data?.phrases || []);
+      setCityTips(tipsResponse?.data?.data || []);
+    } catch (error) {
+      console.error(`Failed to load phrase/tip data for ${selectedCity.slug}`, error);
+      setCityPhrases([]);
+      setCityTips([]);
+    }
+  };
+
+  fetchCityDetails();
+}, [selectedCity?.slug]);
 
 
 const handleSectionChange = (section) => {
@@ -217,7 +148,7 @@ const sectionContent = {
       <p>{selectedCity?.fullDescription}</p>
 
       <ul>
-        {selectedCity?.known_for.map((item, index) => (
+        {(selectedCity?.known_for || []).map((item, index) => (
           <li key={index}>{item}</li>
         ))}
       </ul>
@@ -234,6 +165,16 @@ const sectionContent = {
       <p>
         Local dialect: <strong>{selectedCity?.dialect}</strong>
       </p>
+
+      {cityPhrases.length > 0 && (
+        <ul>
+          {cityPhrases.map((phrase) => (
+            <li key={phrase._id || `${phrase.german_phrase}-${phrase.english_translation}`}>
+              <strong>{phrase.german_phrase}</strong> — {phrase.english_translation}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   ),
 
@@ -246,8 +187,18 @@ const sectionContent = {
       </p>
 
       <p>
-        Industries: {selectedCity?.industries.join(", ")}
+        Industries: {(selectedCity?.industries || []).join(", ")}
       </p>
+
+      {cityTips.length > 0 && (
+        <ul>
+          {cityTips.map((tip) => (
+            <li key={tip._id || `${tip.city_slug}-${tip.title}`}>
+              <strong>{tip.title}</strong>: {tip.short_description || tip.content}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 };
@@ -463,6 +414,7 @@ const sectionContent = {
                     </button>
                   ))}
                 </div>
+                {citiesError && <p style={styles.placeholderText}>{citiesError}</p>}
               </div>
             )}
           </div>
