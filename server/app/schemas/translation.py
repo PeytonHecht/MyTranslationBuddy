@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 from enum import Enum
@@ -17,14 +17,15 @@ class TranslationCreate(BaseModel):
     source_language: LanguageCode
     target_language: LanguageCode
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "source_text": "Hello, how are you?",
                 "source_language": "en",
-                "target_language": "es"
+                "target_language": "es",
             }
         }
+    )
 
 class TranslationResponse(BaseModel):
     id: str = Field(alias="_id")
@@ -35,15 +36,16 @@ class TranslationResponse(BaseModel):
     target_language: str
     created_at: datetime
     
-    class Config:
-        populate_by_name = True
-        json_schema_extra = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        json_schema_extra={
             "example": {
                 "_id": "507f1f77bcf86cd799439012",
                 "user_id": "507f1f77bcf86cd799439011",
                 "source_text": "Hello",
                 "translated_text": "Hola",
                 "source_language": "en",
-                "target_language": "es"
+                "target_language": "es",
             }
-        }
+        },
+    )

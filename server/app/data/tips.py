@@ -2027,3 +2027,460 @@ vienna_tips += [
         source_name="UF CJC Vienna program page"
     )
 ]
+
+# ---------------------------------------------------------------------------
+# Non-program city essentials and fun tips (city-specific, practical)
+# ---------------------------------------------------------------------------
+
+bonn_tips += [
+    CityTipCreate(
+        city_slug="bonn",
+        category="transportation",
+        title="Use the SWB app for real-time trams and buses in Bonn",
+        content="Download Bonn's local transit app (SWB/Verkehr) and save your frequent tram and bus routes. It helps a lot for late classes and weekend trips across Bonn and nearby Cologne.",
+        short_description="Real-time local transit routing for daily student commuting.",
+        tags=["bonn", "transport", "tram", "student life"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Cherry blossom season in Altstadt is beautiful and crowded",
+        content="In spring, the Heerstraße/Altstadt area becomes very busy during cherry blossom peak. Go early in the morning for photos and quieter walks.",
+        short_description="Best timing tip for Bonn's famous cherry blossom streets.",
+        tags=["bonn", "spring", "cherry blossoms", "fun"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+]
+
+wurzburg_tips += [
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Walk to the Alte Mainbrücke at sunset",
+        content="The Old Main Bridge is a local favorite for sunset views, student meetups, and relaxed evenings by the river. It's a great social starting point in Würzburg.",
+        short_description="Classic local hangout with river and city views.",
+        tags=["wurzburg", "social", "sunset", "main river"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="transportation",
+        title="Validate local transport tickets correctly",
+        content="If you use regional tickets or day passes, check validation rules before boarding. Keep your ticket accessible for inspection, especially on trams and regional trains.",
+        short_description="Avoid fines by understanding local ticket validation.",
+        tags=["wurzburg", "transport", "tickets", "budget"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+]
+
+ebs_tips += [
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="Treat EBS as a two-location experience: Wiesbaden + Oestrich-Winkel",
+        content="Plan your week around both locations and commute times. Save key addresses in your map app and leave extra buffer before first-time campus trips.",
+        short_description="Practical planning for EBS's split-location routine.",
+        tags=["ebs", "wiesbaden", "oestrich-winkel", "planning"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="networking",
+        title="Use local business events and alumni meetups early",
+        content="Wiesbaden and nearby Frankfurt host regular startup and business events. Join at least one event in your first month to build local professional contacts quickly.",
+        short_description="Early networking creates internship and project opportunities.",
+        tags=["ebs", "networking", "business", "career"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+]
+
+eltville_tips += [
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville is calm—plan errands around nearby larger hubs",
+        content="Eltville is peaceful and small. For bigger shopping runs or specialized services, many students plan periodic trips to Wiesbaden or Frankfurt.",
+        short_description="Smart weekly planning for a smaller-town routine.",
+        tags=["eltville", "planning", "shopping", "wiesbaden"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="wellbeing",
+        title="Use the riverside routes for decompression",
+        content="The Rhine promenade is great for short walks between study sessions. Many students use it as a low-cost way to reset and manage stress.",
+        short_description="Simple local wellness habit with no extra cost.",
+        tags=["eltville", "wellbeing", "rhine", "student life"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+]
+
+salzburg_tips += [
+    CityTipCreate(
+        city_slug="salzburg",
+        category="transportation",
+        title="Get comfortable with Salzburg's bus network quickly",
+        content="Most day-to-day movement in Salzburg is by bus. Save your common routes and stop names so weekend travel and evening returns are less stressful.",
+        short_description="Faster local navigation with saved routes and stops.",
+        tags=["salzburg", "transport", "bus", "daily life"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Use student discounts at museums and music venues",
+        content="Carry your student ID whenever you explore Salzburg's museums, concerts, or cultural events—discounts are common and add up over the semester.",
+        short_description="Student ID can significantly cut cultural activity costs.",
+        tags=["salzburg", "culture", "student discount", "budget"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+]
+
+mannheim_tips = [
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Living in Mannheim: Grid city layout and strong student energy",
+        content="Mannheim's city center uses a block-grid system (quadrants), which feels unusual at first but becomes very efficient once you learn it. The city has an active student scene and easy links to Heidelberg and Frankfurt.",
+        short_description="Grid layout + strong regional rail connectivity for students.",
+        tags=["mannheim", "city life", "students", "regional travel"],
+        priority=0,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="transportation",
+        title="Use tram and S-Bahn combinations for daily travel",
+        content="Mannheim is very connected by trams and regional rail. Learn your nearest interchange station early, especially if your housing and campus are in different districts.",
+        short_description="Transit strategy tip for fast daily commutes.",
+        tags=["mannheim", "tram", "sbahn", "commute"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="housing",
+        title="Start housing search early and compare neighborhood tradeoffs",
+        content="Compare rent, tram access, and evening safety when choosing neighborhoods. A slightly higher rent can be worth it if commute time drops significantly.",
+        short_description="Balance price, commute, and comfort in housing choices.",
+        tags=["mannheim", "housing", "rent", "planning"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="food_drink",
+        title="Look for daily lunch menus near campus",
+        content="Many cafes and canteens offer lower-priced weekday lunch specials. Keep a shortlist of budget spots for high-workload weeks.",
+        short_description="Budget-friendly meal planning tip for students.",
+        tags=["mannheim", "food", "budget", "student life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="fun",
+        title="Explore both industrial-modern and baroque sides of the city",
+        content="Mannheim combines modern urban spaces with historical architecture around the palace area. Exploring both gives you a much better sense of local identity.",
+        short_description="Quick local-culture orientation beyond classes.",
+        tags=["mannheim", "culture", "history", "fun"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+]
+
+leipzig_tips = [
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Living in Leipzig: Creative, affordable, and student-friendly",
+        content="Leipzig is known for relatively affordable living, a strong student culture, and creative neighborhoods like Plagwitz and Südvorstadt. It's a great city for balancing study, social life, and budget.",
+        short_description="Affordable, creative city with a strong student atmosphere.",
+        tags=["leipzig", "city life", "students", "budget"],
+        priority=0,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="transportation",
+        title="Leipzig's tram + S-Bahn network can cover most routines",
+        content="Plan around one or two main interchange stations and save route favorites in your transit app. This makes daily campus commutes and weekend plans much easier.",
+        short_description="Transit setup tip for efficient everyday mobility.",
+        tags=["leipzig", "transport", "tram", "sbahn"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="housing",
+        title="Search housing with commute time and neighborhood vibe in mind",
+        content="Leipzig has diverse neighborhoods with different atmospheres and price ranges. Compare rent, noise level, and night transit access before signing.",
+        short_description="Choose housing by both budget and day-to-day lifestyle.",
+        tags=["leipzig", "housing", "planning", "student life"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="food_drink",
+        title="Keep a shortlist of budget lunch spots around your routes",
+        content="Leipzig has many student-friendly cafes and bakeries. Build a list of affordable options near campus and transit lines to save time and money.",
+        short_description="Practical food budgeting strategy for busy weeks.",
+        tags=["leipzig", "food", "budget", "daily life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="fun",
+        title="Use free/low-cost cultural events to learn the city quickly",
+        content="Leipzig has frequent galleries, music events, and neighborhood festivals with low or no entry fees. They're ideal for meeting people and getting local context fast.",
+        short_description="Low-cost social and cultural integration strategy.",
+        tags=["leipzig", "events", "culture", "social"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+]
+
+# Additional non-program boosters for undercovered cities
+hamburg_tips += [
+    CityTipCreate(
+        city_slug="hamburg",
+        category="transportation",
+        title="Ferries can be part of your normal commute in Hamburg",
+        content="Hamburg's harbor ferries are part of the public transport system on some routes. They can be practical and scenic when moving between river-adjacent neighborhoods.",
+        short_description="Use ferry routes strategically for commuting and city orientation.",
+        tags=["hamburg", "transport", "ferry", "city life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="fun",
+        title="Explore neighborhood markets for low-cost local food",
+        content="Hamburg has weekly markets across districts with affordable produce and snacks. They're great for budget cooking and discovering local staples.",
+        short_description="Weekly markets help with budget and local integration.",
+        tags=["hamburg", "markets", "budget", "food"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+]
+
+bonn_tips += [
+    CityTipCreate(
+        city_slug="bonn",
+        category="food_drink",
+        title="Use student canteens and lunch specials to control costs",
+        content="Canteens and daily lunch menus can cut food spending significantly during exam periods. Keep a shortlist near your common routes.",
+        short_description="Low-effort meal budgeting strategy for students.",
+        tags=["bonn", "food", "budget", "student life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="planning",
+        title="Day-trip planning: Cologne and Düsseldorf are easy from Bonn",
+        content="Bonn's rail connections make short cultural day trips simple. Plan around regional day passes to save money on weekend travel.",
+        short_description="Practical nearby travel strategy for weekends.",
+        tags=["bonn", "regional travel", "budget", "weekend"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="fun",
+        title="Use the Rhine promenade for easy social meetups",
+        content="The riverside areas are convenient, low-cost places to meet classmates, walk, and decompress after long study days.",
+        short_description="Simple social routine with no reservation needed.",
+        tags=["bonn", "rhine", "social", "wellbeing"],
+        priority=5,
+        source_name="City Essentials Guide"
+    ),
+]
+
+wurzburg_tips += [
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="food_drink",
+        title="Use weekday lunch menus near campus to save",
+        content="Many student-friendly places in Würzburg run weekday lunch deals. Tracking a few favorites can reduce weekly food costs.",
+        short_description="Reliable budget-food strategy for busy weeks.",
+        tags=["wurzburg", "food", "budget", "student life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="planning",
+        title="Weather-ready shoes matter on hills and older streets",
+        content="Würzburg has hilly sections and historic surfaces, so waterproof shoes and layers make daily commutes much easier in colder months.",
+        short_description="Comfort and mobility tip for seasonal conditions.",
+        tags=["wurzburg", "weather", "planning", "daily life"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="fun",
+        title="Build a low-cost weekend routine around river walks and viewpoints",
+        content="A lot of Würzburg's best experiences are free: walks by the Main, old-town exploration, and scenic lookout points.",
+        short_description="Affordable way to enjoy the city regularly.",
+        tags=["wurzburg", "free", "weekend", "city life"],
+        priority=5,
+        source_name="City Essentials Guide"
+    ),
+]
+
+ebs_tips += [
+    CityTipCreate(
+        city_slug="ebs",
+        category="transportation",
+        title="Plan commute buffers between class blocks",
+        content="Because EBS activities can span Wiesbaden and Oestrich-Winkel, leave realistic transit buffers to avoid missing sessions or networking events.",
+        short_description="Commute-buffer planning prevents avoidable stress.",
+        tags=["ebs", "transport", "planning", "student life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="food_drink",
+        title="Set a weekday meal routine near campus hubs",
+        content="Choose 2-3 reliable lunch spots near your most frequent locations to save time and keep daily spending predictable.",
+        short_description="Consistent meal strategy for high-workload weeks.",
+        tags=["ebs", "food", "budget", "routine"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="fun",
+        title="Use Rhine-area walks and small town centers for reset days",
+        content="Short local outings in the Rheingau area are a great way to recover from intense coursework while still staying close to campus commitments.",
+        short_description="Low-cost recovery and social activity option.",
+        tags=["ebs", "rheingau", "wellbeing", "social"],
+        priority=5,
+        source_name="City Essentials Guide"
+    ),
+]
+
+eltville_tips += [
+    CityTipCreate(
+        city_slug="eltville",
+        category="transportation",
+        title="Coordinate train timing for classes and errands",
+        content="In smaller towns like Eltville, timing matters. Check return schedules before heading out so evening plans don't become long waits.",
+        short_description="Simple schedule habit that saves hours each week.",
+        tags=["eltville", "transport", "planning", "train"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="food_drink",
+        title="Keep basic groceries stocked for limited-hour days",
+        content="Store hours and options can feel limited compared with large cities. A weekly grocery rhythm helps avoid expensive last-minute choices.",
+        short_description="Budget and convenience tip for smaller-city living.",
+        tags=["eltville", "groceries", "budget", "daily life"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="fun",
+        title="Use vineyard and riverside routes for low-cost weekend plans",
+        content="Local walks and short trips in the Rheingau area offer good social options without major planning or spending.",
+        short_description="Easy, affordable weekend activity pattern.",
+        tags=["eltville", "weekend", "rheingau", "social"],
+        priority=5,
+        source_name="City Essentials Guide"
+    ),
+]
+
+salzburg_tips += [
+    CityTipCreate(
+        city_slug="salzburg",
+        category="food_drink",
+        title="Track student-friendly lunch menus near central routes",
+        content="Salzburg can get pricey in tourist-heavy zones, so keeping a list of student-value lunch places helps maintain a realistic budget.",
+        short_description="Smart food budgeting in a high-traffic city center.",
+        tags=["salzburg", "food", "budget", "student life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="planning",
+        title="Peak tourist seasons require earlier bookings",
+        content="Popular periods increase demand for transport, events, and some services. Plan essentials a bit earlier than usual during major festival windows.",
+        short_description="Seasonal planning tip to avoid logistical stress.",
+        tags=["salzburg", "planning", "tourism", "events"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="fun",
+        title="Use nearby nature routes for low-cost recharge days",
+        content="Short hikes and nearby viewpoints are a major advantage of Salzburg. They're ideal for low-cost social plans between assignment deadlines.",
+        short_description="Affordable outdoor option for wellbeing and social time.",
+        tags=["salzburg", "nature", "wellbeing", "weekend"],
+        priority=5,
+        source_name="City Essentials Guide"
+    ),
+]
+
+zurich_tips += [
+    CityTipCreate(
+        city_slug="zurich",
+        category="transportation",
+        title="Public transport is excellent—learn fare zones early",
+        content="Zurich's transit is extremely reliable, but fare zones matter. Understanding zones early helps avoid overpaying and simplifies daily travel.",
+        short_description="Zone awareness saves money in a high-cost city.",
+        tags=["zurich", "transport", "zones", "budget"],
+        priority=1,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="food_drink",
+        title="Plan a realistic food budget from week one",
+        content="Zurich prices can surprise new students. Combining grocery prep with occasional set lunch offers keeps spending sustainable.",
+        short_description="Early food budgeting prevents monthly overspend.",
+        tags=["zurich", "food", "budget", "planning"],
+        priority=2,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Use lakefront and neighborhood libraries for study breaks",
+        content="Mixing focused study blocks with short lake or library breaks is a common local rhythm and helps with workload management.",
+        short_description="Balanced study routine tip used by many students.",
+        tags=["zurich", "study", "wellbeing", "daily life"],
+        priority=3,
+        source_name="City Essentials Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="fun",
+        title="Take advantage of free/low-cost city festivals and public events",
+        content="Zurich hosts seasonal events and neighborhood festivals that are good for meeting people without high recurring costs.",
+        short_description="Social integration without expensive nightlife every weekend.",
+        tags=["zurich", "events", "social", "budget"],
+        priority=4,
+        source_name="City Essentials Guide"
+    ),
+]

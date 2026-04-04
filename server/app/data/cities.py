@@ -50,8 +50,8 @@ from app.schemas.city import CityCreate
 
 bonn_city = CityCreate(
     slug="bonn",
-    name="Rheinische Friedrich-Wilhelms Universität Bonn",
-    local_name="Rheinische Friedrich-Wilhelms Universität Bonn",
+    name="Bonn",
+    local_name="Bonn",
     country="Germany",
     country_code="DE",
     region="Rhine-Ruhr",
@@ -189,8 +189,8 @@ hamburg_city = CityCreate(
 
 ebs_city = CityCreate(
     slug="ebs",
-    name="EBS Universität für Wirtschaft und Recht",
-    local_name="EBS Universität für Wirtschaft und Recht",
+    name="Wiesbaden / Oestrich-Winkel",
+    local_name="Wiesbaden / Oestrich-Winkel",
     country="Germany",
     country_code="DE",
     region="Hesse",
@@ -642,6 +642,45 @@ jena_city = CityCreate(
     }
 )
 
+leipzig_city = CityCreate(
+    slug="leipzig",
+    name="Leipzig",
+    local_name="Leipzig",
+    country="Germany",
+    country_code="DE",
+    region="Saxony",
+    region_type="city",
+    is_city_state=False,
+    capital_of_region=False,
+    population=620000,
+    population_approx=True,
+    coordinates={"lat": 51.3397, "lng": 12.3731},
+    timezone="Europe/Berlin",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="Saxon",
+    english_friendliness="moderate",
+    tagline="Creative university city known for affordable living, music history, and startup energy",
+    known_for=[
+        "Leipzig University",
+        "Music heritage (Bach, Gewandhaus)",
+        "Plagwitz and alternative culture",
+        "Strong startup and creative scene",
+        "Fast rail links to Berlin and Dresden"
+    ],
+    industries=["Education", "Technology", "Creative Industries", "Logistics", "Research"],
+    cost_of_living_tier="moderate",
+    expat_friendliness="high",
+    international_airport="Leipzig/Halle Airport (LEJ)",
+    airport_distance_km=18,
+    climate={
+        "type": "temperate",
+        "summers": "warm",
+        "winters": "cool",
+        "note": "Leipzig has four seasons and generally affordable urban living for students."
+    }
+)
+
 vienna_city = CityCreate(
     slug="vienna",
     name="Vienna",
@@ -685,5 +724,128 @@ vienna_city = CityCreate(
         "summers": "warm",
         "winters": "cold",
         "note": "Imperial city with vibrant culture, excellent infrastructure, and abundant green space."
+    }
+)
+
+zurich_city = CityCreate(
+    slug="zurich",
+    name="Zurich",
+    local_name="Zürich",
+    country="Switzerland",
+    country_code="CH",
+    region="Canton of Zurich",
+    region_type="canton_capital",
+    is_city_state=False,
+    capital_of_region=True,
+    population=435000,
+    population_approx=True,
+    coordinates={"lat": 47.3769, "lng": 8.5417},
+    timezone="Europe/Zurich",
+    currency="CHF",
+    languages_official=["German"],
+    dialect="Swiss German (Züritüütsch)",
+    english_friendliness="high",
+    tagline="Switzerland's largest city with top public transit, universities, and a high quality of life",
+    known_for=[
+        "Lake Zurich",
+        "Financial center",
+        "ETH Zurich and universities",
+        "Museums and arts",
+        "Gateway to the Alps"
+    ],
+    industries=[
+        "Finance",
+        "Technology",
+        "Education",
+        "Media",
+        "Tourism"
+    ],
+    cost_of_living_tier="very_high",
+    expat_friendliness="high",
+    international_airport="Zurich Airport (ZRH)",
+    airport_distance_km=12,
+    climate={
+        "type": "temperate",
+        "summers": "mild to warm",
+        "winters": "cool and often wet",
+        "note": "Zurich has four seasons and excellent year-round mobility for students."
+    }
+)
+
+wurzburg_city = CityCreate(
+    slug="wurzburg",
+    name="Würzburg",
+    local_name="Würzburg",
+    country="Germany",
+    country_code="DE",
+    region="Bavaria",
+    region_type="city",
+    is_city_state=False,
+    capital_of_region=False,
+    population=128000,
+    population_approx=True,
+    coordinates={"lat": 49.7913, "lng": 9.9534},
+    timezone="Europe/Berlin",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="Franconian",
+    english_friendliness="moderate",
+    tagline="Historic Bavarian university city known for wine culture and baroque architecture",
+    known_for=[
+        "University of Würzburg",
+        "Franconian wine region",
+        "Baroque architecture",
+        "Main River",
+        "Romantic Road gateway"
+    ],
+    industries=["Education", "Tourism", "Wine", "Research"],
+    cost_of_living_tier="moderate",
+    expat_friendliness="moderate",
+    international_airport="Frankfurt Airport (FRA)",
+    airport_distance_km=120,
+    climate={
+        "type": "temperate",
+        "summers": "warm",
+        "winters": "cool",
+        "note": "Würzburg has warm summers and cool winters in a river valley climate."
+    }
+)
+
+salzburg_city = CityCreate(
+    slug="salzburg",
+    name="Salzburg",
+    local_name="Salzburg",
+    country="Austria",
+    country_code="AT",
+    region="Salzburg",
+    region_type="state_capital",
+    is_city_state=False,
+    capital_of_region=True,
+    population=155000,
+    population_approx=True,
+    coordinates={"lat": 47.8095, "lng": 13.0550},
+    timezone="Europe/Vienna",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="Austro-Bavarian",
+    english_friendliness="high",
+    tagline="Alpine cultural city famous for music, history, and UNESCO heritage",
+    known_for=[
+        "Mozart",
+        "UNESCO old town",
+        "Festivals and concerts",
+        "Alpine setting",
+        "Austrian-German cultural crossroads"
+    ],
+    industries=["Tourism", "Culture", "Education", "Hospitality"],
+    cost_of_living_tier="high",
+    expat_friendliness="high",
+    international_airport="Salzburg Airport (SZG)",
+    airport_distance_km=4,
+    climate={
+        "type": "continental",
+        "summers": "mild to warm",
+        "winters": "cold",
+        "note": "Salzburg has four distinct seasons and nearby Alpine weather influence."
     }
 )

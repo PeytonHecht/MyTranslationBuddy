@@ -1,12 +1,45 @@
-from app.schemas.user import UserCreate, UserUpdate, UserResponse, Token
-from app.schemas.translation import TranslationCreate, TranslationResponse, LanguageCode
+from app.schemas.base import SuccessResponse, ErrorResponse, TimestampedModel
+from app.schemas.city import Climate, CityBase, CityCreate, CityInDB, Coordinates
+from app.schemas.phrase import (
+    PhraseBase,
+    PhraseBookmark,
+    PhraseCategory,
+    PhraseCreate,
+    PhraseInDB,
+    PhraseRegister,
+    PhraseSearchRequest,
+    PhraseUpdate,
+)
+from app.schemas.tip import CityTipBase, CityTipCreate, CityTipInDB
+from app.schemas.translation import LanguageCode, TranslationCreate, TranslationResponse
+from app.schemas.user import Token, UserCreate, UserResponse, UserRole, UserUpdate
 
 __all__ = [
+    "SuccessResponse",
+    "ErrorResponse",
+    "TimestampedModel",
+    "Coordinates",
+    "Climate",
+    "CityBase",
+    "CityCreate",
+    "CityInDB",
+    "PhraseCategory",
+    "PhraseRegister",
+    "PhraseBase",
+    "PhraseCreate",
+    "PhraseUpdate",
+    "PhraseInDB",
+    "PhraseBookmark",
+    "PhraseSearchRequest",
+    "CityTipBase",
+    "CityTipCreate",
+    "CityTipInDB",
+    "LanguageCode",
+    "TranslationCreate",
+    "TranslationResponse",
+    "UserRole",
     "UserCreate",
     "UserUpdate",
     "UserResponse",
     "Token",
-    "TranslationCreate",
-    "TranslationResponse",
-    "LanguageCode"
 ]

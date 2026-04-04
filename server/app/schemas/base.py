@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Generic, TypeVar, Optional
 from datetime import datetime
 
@@ -10,14 +10,15 @@ class SuccessResponse(BaseModel, Generic[T]):
     message: str = "Operation successful"
     data: Optional[T] = None
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": True,
                 "message": "Operation successful",
-                "data": {}
+                "data": {},
             }
         }
+    )
 
 class ErrorResponse(BaseModel):
     """Error response wrapper"""
@@ -25,14 +26,15 @@ class ErrorResponse(BaseModel):
     message: str
     error_code: Optional[str] = None
     
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "success": False,
                 "message": "An error occurred",
-                "error_code": "UNKNOWN_ERROR"
+                "error_code": "UNKNOWN_ERROR",
             }
         }
+    )
 
 class TimestampedModel(BaseModel):
     """Base model with timestamp fields"""
