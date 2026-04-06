@@ -189,6 +189,80 @@ async def get_city_by_slug(city_slug: str):
     return _serialize_doc(city)
 
 
+@router.get("/{city_slug}/full", response_model=dict)
+async def get_city_full_details(city_slug: str):
+    """
+    Get complete city details with organized tips.
+    
+    Returns city information plus:
+    - general_tips: Applicable to all students studying in this city
+    - program_tips: Specific advice for different programs/universities
+    
+    This is the comprehensive endpoint for the city details page.
+    """
+    city_slug = city_slug.strip().lower()
+    
+    city = await db.cities_info.cities.find_one({"slug": city_slug})
+    if not city:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"City not found: {city_slug}",
+        )
+
+    # Fetch ALL tips for the city
+    all_tips = (
+        await db.cities_info.city_tips.find({"city_slug": city_slug})
+        .sort("priority", -1)
+        .to_list(None)
+    )
+
+    # Separate general tips from program-specific tips
+    general_tips = []
+    program_tips_map = {}
+
+    for tip in all_tips:
+        program = tip.get("program")
+        if not program or program.strip() == "":
+            # No program = general tip for all students
+            general_tips.append(_serialize_doc(tip))
+        else:
+            # Program-specific tip
+            if program not in program_tips_map:
+                program_tips_map[program] = []
+            program_tips_map[program].append(_serialize_doc(tip))
+
+    # Sort program tips by priority within each program
+    for program in program_tips_map:
+        program_tips_map[program].sort(key=lambda t: t.get("priority", 0), reverse=True)
+
+    # Format program tips as a list of objects with program name and tips
+    program_tips_list = [
+        {
+            "program": program_name,
+            "tips": tips,
+            "count": len(tips)
+        }
+        for program_name, tips in sorted(program_tips_map.items())
+    ]
+
+    city_with_serialization = _serialize_doc(city)
+
+    return {
+        "city": city_with_serialization,
+        "general_tips": {
+            "count": len(general_tips),
+            "description": "Tips applicable to all students studying in this city",
+            "data": general_tips,
+        },
+        "program_tips": {
+            "count": len(program_tips_list),
+            "description": "Tips specific to different programs and universities",
+            "data": program_tips_list,
+        },
+        "total_tips": len(all_tips),
+    }
+
+
 @router.get("/{city_slug}/tips", response_model=dict)
 async def get_city_tips(
     city_slug: str,
@@ -226,4 +300,84 @@ async def get_city_tips(
         "total": total,
         "skip": skip,
         "limit": limit,
+    }
+
+
+@router.get("/{city_slug}/tips-organized", response_model=dict)
+async def get_city_tips_organized_by_program(
+    city_slug: str,
+    category: Optional[str] = None,
+):
+    """
+    Get city tips organized by program type.
+    
+    Returns:
+    - general_tips: Tips with no program specified (applicable to all students)
+    - program_tips: Tips grouped by specific program name
+    
+    This allows students to see both general city info AND program-specific advice.
+    """
+    city_slug = city_slug.strip().lower()
+    category = _normalize_optional(category)
+
+    city = await db.cities_info.cities.find_one({"slug": city_slug})
+    if not city:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"City not found: {city_slug}",
+        )
+
+    query_filter: dict = {"city_slug": city_slug}
+    if category:
+        query_filter["category"] = category.lower()
+
+    # Fetch ALL tips for the city (no skip/limit for organized view)
+    all_tips = (
+        await db.cities_info.city_tips.find(query_filter)
+        .sort("priority", -1)
+        .to_list(None)
+    )
+
+    # Separate general tips from program-specific tips
+    general_tips = []
+    program_tips_map = {}
+
+    for tip in all_tips:
+        program = tip.get("program")
+        if not program or program.strip() == "":
+            # No program = general tip for all students
+            general_tips.append(_serialize_doc(tip))
+        else:
+            # Program-specific tip
+            if program not in program_tips_map:
+                program_tips_map[program] = []
+            program_tips_map[program].append(_serialize_doc(tip))
+
+    # Sort program tips by priority within each program
+    for program in program_tips_map:
+        program_tips_map[program].sort(key=lambda t: t.get("priority", 0), reverse=True)
+
+    # Format program tips as a list of objects with program name and tips
+    program_tips_list = [
+        {
+            "program": program_name,
+            "tips": tips,
+            "count": len(tips)
+        }
+        for program_name, tips in sorted(program_tips_map.items())
+    ]
+
+    return {
+        "city_slug": city_slug,
+        "city": {"slug": city["slug"], "name": city.get("name")},
+        "general_tips": {
+            "count": len(general_tips),
+            "data": general_tips,
+        },
+        "program_tips": {
+            "count": len(program_tips_list),
+            "data": program_tips_list,
+        },
+        "total_tips": len(all_tips),
+        "category_filter": category if category else None,
     }
