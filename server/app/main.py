@@ -8,7 +8,7 @@ from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, init_indexes
 from app.exceptions import AppException
 from app.middleware.error_handler import exception_handler
-from app.routes import health
+from app.routes import health, translate
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -53,6 +53,7 @@ app.add_exception_handler(Exception, exception_handler)
 
 # Include routers
 app.include_router(health.router)
+app.include_router(translate.router)
 
 # Additional health endpoint
 @app.get("/api/v1/health")
