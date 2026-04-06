@@ -1220,6 +1220,61 @@ city_locked_mastery_phrases = [
         difficulty_level=3,
         tags=["ebs", "transport", "wiesbaden", "commute"]
     ),
+    PhraseCreate(
+        german_phrase="Können Sie mich empfehlen?",
+        english_translation="Can you recommend me?",
+        pronunciation="KUN-nen zee meekh emp-FAY-len?",
+        category=PhraseCategory.ACADEMIC,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "vienna", "aachen"],
+        usage_context="Asking professor for professional recommendation",
+        difficulty_level=2,
+        tags=["academic", "recommendation", "professional"]
+    ),
+    PhraseCreate(
+        german_phrase="Das ist sehr hilfreich.",
+        english_translation="That's very helpful.",
+        pronunciation="Dahs ist ZAIR HILF-raikhe.",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "vienna", "hamburg"],
+        usage_context="Expressing gratitude for assistance",
+        difficulty_level=1,
+        tags=["social", "gratitude", "expression"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich freue mich auf deine Antwort.",
+        english_translation="I look forward to your response.",
+        pronunciation="Eekh FROI-eh meekh owf DINE-eh AHN-tvort.",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["vienna", "berlin"],
+        usage_context="Polite closing for emails or conversations",
+        difficulty_level=2,
+        tags=["formal", "communication", "writing"]
+    ),
+    PhraseCreate(
+        german_phrase="Das kostet eine kleine Vermögen!",
+        english_translation="That costs a fortune!",
+        pronunciation="Dahs KOS-tet AY-neh KLINE-eh Fair-MERN-gen!",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["munich", "vienna", "zurich"],
+        usage_context="Expressing shock at high prices in expensive cities",
+        difficulty_level=2,
+        tags=["shopping", "money", "expression", "expensive"]
+    ),
+    PhraseCreate(
+        german_phrase="Kann ich dich später anrufen?",
+        english_translation="Can I call you later?",
+        pronunciation="Kahn eekh deekh SHPAY-ter AHN-roo-fen?",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["berlin", "munich", "vienna"],
+        usage_context="Making plans to contact someone later",
+        difficulty_level=1,
+        tags=["social", "communication", "planning"]
+    ),
 ]
 
 
