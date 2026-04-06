@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "/src/assets/SFLogo.png";
+// Ensure this path matches your logo file
+import logo from "../assets/MTBLogo.png";
 
 const UpdatePassword = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +15,11 @@ const UpdatePassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (new_password !== confirm_password) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
     const payload = {
       email,
       new_password,
@@ -21,22 +27,24 @@ const UpdatePassword = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/update-password", {
+      // Using the Vite proxy to route to your FastAPI backend
+      const response = await fetch("/api/update-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const data = await response.json();
+
       if (response.ok) {
         setMessage("Password updated successfully! You can now log in with your new password.");
         setTimeout(() => navigate("/login"), 1500);
       } else {
-        setMessage(data.error || "Something went wrong.");
+        setMessage(data.error || data.detail || "Something went wrong.");
       }
     } catch (error) {
-      setMessage("Unexpected Error. Please try again");
       console.error("Update password error:", error);
+      setMessage("Could not connect to the server. Please try again.");
     }
   };
 
@@ -48,7 +56,7 @@ const UpdatePassword = () => {
     <div style={styles.container}>
       <img
         src={logo}
-        alt="StayFit Logo"
+        alt="MyTranslationBuddy Logo"
         style={styles.logo}
         onClick={() => navigate("/")}
       />
@@ -144,6 +152,7 @@ const styles = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: "2rem",
     position: "relative",
+    boxSizing: "border-box",
   },
   logo: {
     position: "absolute",
@@ -162,9 +171,10 @@ const styles = {
     padding: "2.5rem",
     borderRadius: "12px",
     backgroundColor: "#fff",
-    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 10px 25px rgba(0, 0, 0, 0.05)",
     width: "100%",
     maxWidth: "500px",
+    boxSizing: "border-box",
   },
   title: {
     fontSize: "1.8rem",
@@ -198,12 +208,8 @@ const styles = {
     border: "1px solid #ced4da",
     fontSize: "1rem",
     width: "100%",
+    boxSizing: "border-box",
     transition: "all 0.2s ease",
-    ":focus": {
-      outline: "none",
-      borderColor: "#3a7bd5",
-      boxShadow: "0 0 0 3px rgba(58, 123, 213, 0.1)",
-    },
   },
   passwordContainer: {
     position: "relative",
@@ -211,17 +217,13 @@ const styles = {
   },
   passwordInput: {
     padding: "0.9rem",
-    paddingRight: "px",
+    paddingRight: "2.5rem", // Fixed typo and gave room for the eye icon
     borderRadius: "8px",
     border: "1px solid #ced4da",
     fontSize: "1rem",
     width: "100%",
+    boxSizing: "border-box",
     transition: "all 0.2s ease",
-    ":focus": {
-      outline: "none",
-      borderColor: "#3a7bd5",
-      boxShadow: "0 0 0 3px rgba(58, 123, 213, 0.1)",
-    },
   },
   eyeButton: {
     position: "absolute",
@@ -251,16 +253,12 @@ const styles = {
     padding: "0.9rem 1.5rem",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: "#20c997",
+    backgroundColor: "#3a7bd5", // Matched theme color
     color: "white",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "600",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#12b886",
-      transform: "translateY(-1px)",
-    },
   },
   secondaryButton: {
     padding: "0.9rem 1.5rem",
@@ -272,9 +270,6 @@ const styles = {
     fontSize: "1rem",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#f8f9fa",
-    },
   },
   successMessage: {
     color: "#28a745",

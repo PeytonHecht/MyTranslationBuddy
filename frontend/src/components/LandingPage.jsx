@@ -1,93 +1,105 @@
-import React, { useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import logo from "../assets/SFLogo.png";
-import dev1 from "../assets/saanjhs.jpg";
-import dev2 from "../assets/peytonhs.jpg";
-import dev3 from "../assets/aidenhs.jpg";
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from "../assets/MTBLogo.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const teamSectionRef = useRef(null);
 
-  const developers = [
-    {
-      id: 1,
-      name: "Saanj Patel",
-      role: "Product Manager",
-      image: dev1,
-    },
-    {
-      id: 2,
-      name: "Peyton Hecht",
-      role: "Scrum Master",
-      image: dev2,
-    },
-    {
-      id: 3,
-      name: "Aiden Everage",
-      role: "Developer Team Member",
-      image: dev3,
-    },
-  ];
+  useEffect(() => {
+    // 1. Map Data Configuration
+    window.simplemaps_europemap_mapdata = {
+      main_settings: {
+        width: "responsive",
+        background_color: "#FFFFFF",
+        background_transparent: "yes",
+        border_color: "#ffffff",
+        popups: "detect",
+        state_description: "State description",
+        state_color: "#88A4BC",
+        state_hover_color: "#3B729F",
+        state_url: "",
+        border_size: 1.5,
+        all_states_inactive: "no",
+        all_states_zoomable: "yes",
+        location_description: "Location description",
+        location_color: "#FF0000",
+        location_opacity: 0.8,
+        location_hover_opacity: 1,
+        location_url: "",
+        location_size: 25,
+        location_type: "circle",
+        location_border_color: "#FFFFFF",
+        location_border: 2,
+        location_hover_border: 2.5,
+        all_locations_inactive: "no",
+        all_locations_hidden: "no",
+        label_color: "#d5ddec",
+        label_hover_color: "#d5ddec",
+        label_size: 22,
+        label_font: "Arial",
+        hide_labels: "no",
+        manual_zoom: "no",
+        back_image: "no",
+        arrow_color: "#cecece",
+        arrow_color_border: "#808080",
+        initial_back: "no",
+        initial_zoom: 0,
+        initial_zoom_solo: "yes",
+        region_opacity: 1,
+        region_hover_opacity: 0.6,
+        zoom_out_incrementally: "yes",
+        zoom_percentage: 0.99,
+        zoom_time: 0.5,
+        popup_color: "white",
+        popup_opacity: 0.9,
+        popup_shadow: 1,
+        popup_corners: 5,
+        popup_font: "12px/1.5 Verdana, Arial, Helvetica, sans-serif",
+        popup_nocss: "no",
+        div: "map", // ID of the div below
+        auto_load: "yes",
+        url_new_tab: "no",
+        images_directory: "default",
+        fade_time: 0.1,
+        link_text: "View Website",
+      },
+      state_specific: {
+        AT: { name: "Austria", hide: "no", inactive: "no" },
+        DE: { name: "Germany", hide: "no", inactive: "no" }
+      },
+      locations: {
+        "0": { lat: 52.516, lng: 13.377, name: "Berlin", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "1": { lat: 48.136, lng: 11.578, name: "Munich", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "2": { lat: 48.203, lng: 16.368, name: "Vienna", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "3": { lat: 48.768, lng: 9.172, name: "Stuttgart", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "4": { lat: 53.556, lng: 9.987, name: "Hamburg", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } }
+      }
+    };
+
+    // 2. Load the script using the correct path from your screenshot
+    const script = document.createElement("script");
+    script.src = "/maps/europemap.js"; // <-- UPDATED PATH based on your screenshot
+    script.async = true;
+    document.body.appendChild(script);
+
+    // 3. Setup the redirect event
+    const handleRedirect = () => navigate('/login');
+    window.addEventListener("mapClick", handleRedirect);
+
+    return () => {
+      document.body.removeChild(script);
+      window.removeEventListener("mapClick", handleRedirect);
+    };
+  }, [navigate]);
 
   return (
     <div style={styles.container}>
-      <img
-        src={logo}
-        alt="StayFit Logo"
-        style={styles.logo}
-        onClick={() => navigate("/")}
-      />
+      <img src={logo} alt="MTB Logo" style={styles.logo} />
+      <h1 style={styles.title}>Study Abroad Map</h1>
+      <p style={styles.subtitle}>Click a city to log in and see your guides</p>
 
-      <div style={styles.navButtons}>
-        <button
-          onClick={() =>
-            teamSectionRef.current?.scrollIntoView({ behavior: "smooth" })
-          }
-          style={styles.navButton}
-        >
-          About Us
-        </button>
-        <button onClick={() => navigate("/register")} style={styles.navButton}>
-          Register
-        </button>
-        <button onClick={() => navigate("/login")} style={styles.navButton}>
-          Login
-        </button>
-      </div>
-
-      <div style={styles.content}>
-        <h1 style={styles.title}>StayFit</h1>
-        <p style={styles.subtitle}>Your personal fitness companion</p>
-      </div>
-
-      <div style={styles.curveBackground}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-          <path
-            fill="#3a7bd5"
-            fillOpacity="0.1"
-            d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          ></path>
-        </svg>
-      </div>
-
-      <div ref={teamSectionRef} style={styles.aboutSection}>
-        <h2 style={styles.sectionTitle}>About Us</h2>
-        <div style={styles.developersContainer}>
-          {developers.map((developer) => (
-            <div key={developer.id} style={styles.developerCard}>
-              <div style={styles.headshotCircle}>
-                <img
-                  src={developer.image}
-                  alt={developer.name}
-                  style={styles.headshotImage}
-                />
-              </div>
-              <h3 style={styles.developerName}>{developer.name}</h3>
-              <p style={styles.developerRole}>{developer.role}</p>
-            </div>
-          ))}
-        </div>
+      <div style={styles.mapContainer}>
+        <div id="map" style={{ minHeight: "500px", width: "100%" }}></div>
       </div>
     </div>
   );
@@ -96,129 +108,24 @@ const LandingPage = () => {
 const styles = {
   container: {
     minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     backgroundColor: "#f8f9fa",
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-    position: "relative",
+    padding: "2rem"
   },
-  logo: {
-    position: "absolute",
-    top: "2rem",
-    left: "2rem",
-    height: "50px",
-    cursor: "pointer",
-    zIndex: 10,
-  },
-  navButtons: {
-    position: "absolute",
-    top: "2rem",
-    right: "2rem",
-    display: "flex",
-    gap: "1rem",
-    zIndex: 10,
-  },
-  navButton: {
-    padding: "0.75rem 1.5rem",
-    borderRadius: "8px",
-    border: "none",
-    backgroundColor: "transparent",
-    color: "#495057",
-    cursor: "pointer",
-    fontSize: "1rem",
-    fontWeight: "500",
-    transition: "all 0.2s ease",
-  },
-  content: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-    textAlign: "center",
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "2rem",
-    position: "relative",
-    zIndex: 1,
-  },
-  title: {
-    fontSize: "4rem",
-    fontWeight: "800",
-    background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    marginBottom: "1rem",
-    fontFamily: "'Poppins', sans-serif",
-  },
-  subtitle: {
-    fontSize: "1.5rem",
-    color: "#6c757d",
-    marginBottom: "2rem",
-    fontWeight: "300",
-  },
-  curveBackground: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
+  logo: { height: "60px", marginBottom: "1rem" },
+  title: { fontSize: "2.5rem", fontWeight: "800", color: "#1e3a8a", margin: 0 },
+  subtitle: { color: "#6c757d", marginBottom: "2rem" },
+  mapContainer: {
     width: "100%",
-    overflow: "hidden",
-    zIndex: 0,
-  },
-  aboutSection: {
-    position: "relative",
-    backgroundColor: "rgba(58, 123, 213, 0.1)",
-    padding: "4rem 2rem",
-    textAlign: "center",
-    zIndex: 2,
-  },
-  sectionTitle: {
-    fontSize: "2.5rem",
-    fontWeight: "700",
-    color: "#3a7bd5",
-    marginBottom: "3rem",
-    fontFamily: "'Poppins', sans-serif",
-  },
-  developersContainer: {
-    display: "flex",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    gap: "3rem",
-    maxWidth: "1200px",
-    margin: "0 auto",
-  },
-  developerCard: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    maxWidth: "250px",
-  },
-  headshotCircle: {
-    width: "150px",
-    height: "150px",
-    borderRadius: "50%",
+    maxWidth: "900px",
     backgroundColor: "#fff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-    marginBottom: "1.5rem",
-  },
-  headshotImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-  },
-  developerName: {
-    fontSize: "1.5rem",
-    fontWeight: "600",
-    color: "#212529",
-    marginBottom: "0.5rem",
-  },
-  developerRole: {
-    fontSize: "1rem",
-    color: "#6c757d",
-    fontWeight: "400",
-  },
+    padding: "1rem",
+    borderRadius: "20px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    minHeight: "520px"
+  }
 };
 
 export default LandingPage;

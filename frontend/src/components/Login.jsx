@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/SFLogo.png";
+// Ensure this path matches your logo file
+import logo from "../assets/MTBLogo.png";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,9 +13,10 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/login", {
-        email,
-        password
+      // Using the Vite proxy to talk to the backend securely
+      const response = await axios.post("/api/login", {
+        email: email,
+        password: password
       });
 
       if (response.status === 200) {
@@ -23,43 +25,51 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response && error.response.data) {
-        setErrorMsg(error.response.data.error || "Login error");
+        // Checking for standard error formats
+        setErrorMsg(error.response.data.error || error.response.data.detail || "Invalid login credentials.");
       } else {
-        setErrorMsg("An unexpected error occurred.");
+        setErrorMsg("Could not connect to the server. Is the backend running?");
       }
     }
   };
 
   return (
     <div style={styles.container}>
-      <img 
-        src={logo} 
-        alt="StayFit Logo" 
-        style={styles.logo} 
+      <img
+        src={logo}
+        alt="MyTranslationBuddy Logo"
+        style={styles.logo}
         onClick={() => navigate("/")}
       />
 
       <div style={styles.content}>
-        <h1 style={styles.title}>StayFit</h1>
-        
+        <h1 style={styles.title}>Welcome Back</h1>
+        <p style={styles.subtitle}>Log in to access your translation guides</p>
+
         <div style={styles.formGroup}>
           {errorMsg && <p style={styles.errorText}>{errorMsg}</p>}
-          
+
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (errorMsg) setErrorMsg("");
+            }}
             style={styles.input}
           />
-          
+
           <div style={styles.passwordContainer}>
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{...styles.input, paddingRight: '40px'}}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (errorMsg) setErrorMsg("");
+              }}
+              style={styles.passwordInput}
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
@@ -68,13 +78,13 @@ const Login = () => {
               {showPassword ? "👁️" : "👁️‍🗨️"}
             </button>
           </div>
-          
+
           <button onClick={handleLogin} style={styles.primaryButton}>
             Login
           </button>
-          
+
           <button onClick={() => navigate("/register")} style={styles.secondaryButton}>
-            Sign Up
+            Don't have an account? Sign Up
           </button>
         </div>
       </div>
@@ -89,6 +99,7 @@ const styles = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
     padding: "2rem",
     position: "relative",
+    boxSizing: "border-box",
   },
   logo: {
     position: "absolute",
@@ -102,19 +113,24 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "calc(100vh - 8rem)",
+    minHeight: "calc(100vh - 4rem)",
     textAlign: "center",
-    maxWidth: "500px",
+    maxWidth: "400px",
     margin: "0 auto",
   },
   title: {
-    fontSize: "3rem",
+    fontSize: "2.5rem",
     fontWeight: "800",
     background: "linear-gradient(90deg, #3a7bd5, #00d2ff)",
     WebkitBackgroundClip: "text",
     WebkitTextFillColor: "transparent",
-    marginBottom: "2rem",
+    marginBottom: "0.5rem",
     fontFamily: "'Poppins', sans-serif",
+  },
+  subtitle: {
+    fontSize: "1rem",
+    color: "#6c757d",
+    marginBottom: "2rem",
   },
   formGroup: {
     width: "100%",
@@ -128,18 +144,24 @@ const styles = {
     borderRadius: "8px",
     border: "1px solid #ced4da",
     fontSize: "1rem",
+    boxSizing: "border-box", // Prevents input from overflowing
     transition: "border-color 0.2s",
-    ":focus": {
-      outline: "none",
-      borderColor: "#3a7bd5",
-      boxShadow: "0 0 0 3px rgba(58, 123, 213, 0.1)",
-    },
   },
   passwordContainer: {
     position: "relative",
-    width: "107%",
+    width: "100%", // Fixed from 107%
     display: "flex",
     alignItems: "center",
+  },
+  passwordInput: {
+    width: "100%",
+    padding: "1rem",
+    paddingRight: "40px", // Leaves space for the eye icon
+    borderRadius: "8px",
+    border: "1px solid #ced4da",
+    fontSize: "1rem",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s",
   },
   eyeButton: {
     position: "absolute",
@@ -156,42 +178,38 @@ const styles = {
     justifyContent: "center",
   },
   primaryButton: {
-    width: "107%",
+    width: "100%", // Fixed from 107%
     padding: "1rem",
     borderRadius: "8px",
     border: "none",
-    backgroundColor: "#20c997",
+    backgroundColor: "#3a7bd5", // Matched blue theme
     color: "white",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "600",
-    marginTop: "1rem",
+    marginTop: "0.5rem",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#12b886",
-      transform: "translateY(-1px)",
-    },
   },
   secondaryButton: {
-    width: "107%",
+    width: "100%", // Fixed from 107%
     padding: "1rem",
     borderRadius: "8px",
     border: "1px solid #ced4da",
     backgroundColor: "transparent",
     color: "#495057",
     cursor: "pointer",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     fontWeight: "500",
     transition: "all 0.2s ease",
-    ":hover": {
-      backgroundColor: "#f8f9fa",
-    },
   },
   errorText: {
     color: "#dc3545",
+    backgroundColor: "rgba(220, 53, 69, 0.1)",
+    padding: "0.8rem",
+    borderRadius: "8px",
     fontSize: "0.9rem",
     textAlign: "center",
-    margin: "0 0 1rem 0",
+    margin: "0",
   },
 };
 

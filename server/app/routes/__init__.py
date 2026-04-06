@@ -1,1 +1,1 @@
-# Routes module
+"""Routes module for MyTranslationBuddy API"""
