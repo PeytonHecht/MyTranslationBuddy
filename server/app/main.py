@@ -1,15 +1,13 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel  # <-- Added this import for our user data model
 import logging
 
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, init_indexes
 from app.exceptions import AppException
 from app.middleware.error_handler import exception_handler
-from app.routes import health
+from app.routes import health, phrases, cities, tips
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -56,6 +54,9 @@ app.add_exception_handler(Exception, exception_handler)
 
 # Include routers
 app.include_router(health.router)
+app.include_router(phrases.router)
+app.include_router(cities.router)
+app.include_router(tips.router)
 
 
 # Additional health endpoint
@@ -64,30 +65,3 @@ async def api_health():
     """API health endpoint"""
     return {"status": "ok", "service": "MyTranslationBuddy"}
 
-
-# --- AUTHENTICATION ROUTES ---
-
-# 1. Define the structure of the data React is sending
-class UserAuth(BaseModel):
-    email: str
-    password: str
-
-
-# 2. Catch the Register request
-@app.post("/api/register")
-async def register(user: UserAuth):
-    logger.info(f"Frontend successfully sent registration for: {user.email}")
-
-    # TODO: Connect to MongoDB here to actually save the user!
-    # For now, we return a success response so your React app navigates to the login page.
-    return {"message": "User registered successfully", "email": user.email}
-
-
-# 3. Catch the Login request
-@app.post("/api/login")
-async def login(user: UserAuth):
-    logger.info(f"Frontend successfully sent login for: {user.email}")
-
-    # TODO: Connect to MongoDB here to check if the password matches!
-    # For now, we return a fake success response so your React app logs in.
-    return {"message": "Login successful", "email": user.email}
