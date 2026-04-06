@@ -38,9 +38,11 @@ class PhraseBase(BaseModel):
     category: PhraseCategory = Field(..., description="Phrase category")
     register: PhraseRegister = Field(default=PhraseRegister.NEUTRAL, description="Formality level")
     
-    # Dialects and regions
-    city_slugs: List[str] = Field(default_factory=list, description="Cities where this phrase is used")
-    dialect_name: Optional[str] = Field(None, description="e.g., 'Bavarian', 'Berlin dialect'")
+    # Geographic scope: can be general (all German-speaking), regional, or city-specific
+    country_codes: List[str] = Field(default_factory=list, description="Country codes (DE, AT, CH) - empty = general/all countries")
+    regions: List[str] = Field(default_factory=list, description="Regions (Bavaria, Berlin, Vorarlberg, etc.) - empty = general/all regions")
+    city_slugs: List[str] = Field(default_factory=list, description="Cities where this phrase is used - empty = general/all cities")
+    dialect_name: Optional[str] = Field(None, description="e.g., 'Bavarian', 'Berlin dialect', 'Viennese'")
     
     # Context and usage
     usage_context: str = Field(..., description="When and where to use this phrase")
@@ -75,6 +77,37 @@ class PhraseBase(BaseModel):
             return None
         stripped = value.strip()
         return stripped if stripped else None
+
+    @field_validator("country_codes")
+    @classmethod
+    def normalize_country_codes(cls, values: List[str]) -> List[str]:
+        normalized: List[str] = []
+        seen = set()
+        for raw in values:
+            item = raw.strip().upper()
+            if not item or len(item) != 2:
+                continue
+            if item in seen:
+                continue
+            seen.add(item)
+            normalized.append(item)
+        return normalized
+
+    @field_validator("regions")
+    @classmethod
+    def normalize_regions(cls, values: List[str]) -> List[str]:
+        normalized: List[str] = []
+        seen = set()
+        for raw in values:
+            item = raw.strip()
+            if not item:
+                continue
+            key = item.casefold()
+            if key in seen:
+                continue
+            seen.add(key)
+            normalized.append(item)
+        return normalized
 
     @field_validator("city_slugs")
     @classmethod

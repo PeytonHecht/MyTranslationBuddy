@@ -263,6 +263,140 @@ async def get_city_full_details(city_slug: str):
     }
 
 
+@router.get("/{city_slug}/complete", response_model=dict)
+async def get_city_complete_details(city_slug: str):
+    """
+    Get COMPLETE city details: city info + organized tips + relevant phrases.
+    
+    Returns:
+    - city: Full city information with geographic/cultural data
+    - tips: Organized by general + program-specific
+    - phrases: 
+      - country_phrases: Phrases for the country (e.g., all Germany-wide phrases)
+      - region_phrases: Phrases for the region (e.g., Bavaria, Austria, etc.)
+      - city_phrases: Phrases specific to this city
+    
+    This is the ALL-IN-ONE endpoint for complete city page with learning materials.
+    """
+    city_slug = city_slug.strip().lower()
+    
+    # Get city
+    city = await db.cities_info.cities.find_one({"slug": city_slug})
+    if not city:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"City not found: {city_slug}",
+        )
+
+    # Get city tips (general + program-specific)
+    all_tips = (
+        await db.cities_info.city_tips.find({"city_slug": city_slug})
+        .sort("priority", -1)
+        .to_list(None)
+    )
+
+    general_tips = []
+    program_tips_map = {}
+
+    for tip in all_tips:
+        program = tip.get("program")
+        if not program or program.strip() == "":
+            general_tips.append(_serialize_doc(tip))
+        else:
+            if program not in program_tips_map:
+                program_tips_map[program] = []
+            program_tips_map[program].append(_serialize_doc(tip))
+
+    for program in program_tips_map:
+        program_tips_map[program].sort(key=lambda t: t.get("priority", 0), reverse=True)
+
+    program_tips_list = [
+        {
+            "program": program_name,
+            "tips": tips,
+            "count": len(tips)
+        }
+        for program_name, tips in sorted(program_tips_map.items())
+    ]
+
+    # Get phrases: city-specific, region-specific, and country-wide
+    country = city.get("country", "").lower()
+    region = city.get("region", "").lower()
+    
+    # Phrases specific to this city
+    city_phrases = (
+        await db.phrases_vocabulary.phrases.find({
+            "city_slugs": city_slug
+        }).sort("difficulty_level", 1).to_list(None)
+    )
+    
+    # Phrases for the region (e.g., Bavaria, Austria)
+    # Filter by region name in dialect_name or region tags
+    region_phrases = (
+        await db.phrases_vocabulary.phrases.find({
+            "$or": [
+                {"dialect_name": {"$regex": region, "$options": "i"}},
+                {"tags": {"$in": [region]}}
+            ]
+        }).sort("difficulty_level", 1).to_list(None)
+    )
+    
+    # Phrases for the country (all general phrases) - these are phrases without city_slugs
+    # or phrases that apply broadly to the country
+    country_phrases = (
+        await db.phrases_vocabulary.phrases.find({
+            "city_slugs": {"$size": 0}
+        }).sort("difficulty_level", 1).to_list(None)
+    )
+
+    def serialize_phrase(p):
+        if p and "_id" in p:
+            p["_id"] = str(p["_id"])
+        return p
+
+    city_with_serialization = _serialize_doc(city)
+
+    return {
+        "city": city_with_serialization,
+        "tips": {
+            "general": {
+                "count": len(general_tips),
+                "description": "Tips applicable to all students in this city",
+                "data": general_tips,
+            },
+            "by_program": {
+                "count": len(program_tips_list),
+                "description": "Tips specific to programs and universities in this city",
+                "data": program_tips_list,
+            },
+            "total": len(all_tips),
+        },
+        "phrases": {
+            "city_specific": {
+                "count": len(city_phrases),
+                "description": f"Phrases specifically useful in {city.get('name')}",
+                "data": [serialize_phrase(p) for p in city_phrases[:20]],  # Limit to top 20
+            },
+            "region_relevant": {
+                "count": len(region_phrases),
+                "description": f"Phrases from {region} region/dialect",
+                "data": [serialize_phrase(p) for p in region_phrases[:20]],
+            },
+            "country_general": {
+                "count": len(country_phrases),
+                "description": f"General German phrases for all {country}",
+                "data": [serialize_phrase(p) for p in country_phrases[:20]],
+            },
+            "total_available": len(city_phrases) + len(region_phrases) + len(country_phrases),
+        },
+        "metadata": {
+            "country": city.get("country"),
+            "region": city.get("region"),
+            "region_type": city.get("region_type"),
+        }
+    }
+
+
 @router.get("/{city_slug}/tips", response_model=dict)
 async def get_city_tips(
     city_slug: str,
