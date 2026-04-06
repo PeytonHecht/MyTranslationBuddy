@@ -1,98 +1,131 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Volume2, MessageSquare, Coffee } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import logo from "../assets/MTBLogo.png";
 
-// Mock phrase data (eventually you can fetch this from your backend API)
-const dialectData = {
-  berlin: {
-    name: "Berlin",
-    dialect: "Berlinerisch",
-    greeting: "Icke",
-    phrases: [
-      { local: "Na?", standard: "Wie geht es dir?", english: "How are you? / What's up?", context: "The ultimate Berlin greeting. Acknowledge with another 'Na'." },
-      { local: "Icke", standard: "Ich", english: "I / Me", context: "Classic Berlinerisch pronoun replacement." },
-      { local: "Späti", standard: "Spätkauf", english: "Late-night convenience store", context: "Crucial for student life; where you buy drinks after hours." }
-    ]
-  },
-  vienna: {
-    name: "Vienna",
-    dialect: "Wienerisch",
-    greeting: "Servus",
-    phrases: [
-      { local: "Servus", standard: "Hallo / Tschüss", english: "Hello / Goodbye", context: "Friendly, versatile greeting used across Austria and Bavaria." },
-      { local: "Oida", standard: "Alter", english: "Dude / Man (Contextual)", context: "Can mean anything from 'wow' to 'are you kidding me?' depending on tone." },
-      { local: "Leiwand", standard: "Toll / Super", english: "Awesome / Great", context: "Used to describe something really good." }
-    ]
-  }
-  // Add Munich, Hamburg, Stuttgart...
-};
-
-const CityDetails = () => {
-  const { cityId } = useParams();
+const LandingPage = () => {
   const navigate = useNavigate();
-  const city = dialectData[cityId] || dialectData['berlin']; // Fallback for demo
+
+  useEffect(() => {
+    // 1. Map Data Configuration
+    window.simplemaps_europemap_mapdata = {
+      main_settings: {
+        width: "responsive",
+        background_color: "#FFFFFF",
+        background_transparent: "yes",
+        border_color: "#ffffff",
+        popups: "detect",
+        state_description: "State description",
+        state_color: "#88A4BC",
+        state_hover_color: "#3B729F",
+        state_url: "",
+        border_size: 1.5,
+        all_states_inactive: "no",
+        all_states_zoomable: "yes",
+        location_description: "Location description",
+        location_color: "#FF0000",
+        location_opacity: 0.8,
+        location_hover_opacity: 1,
+        location_url: "",
+        location_size: 25,
+        location_type: "circle",
+        location_border_color: "#FFFFFF",
+        location_border: 2,
+        location_hover_border: 2.5,
+        all_locations_inactive: "no",
+        all_locations_hidden: "no",
+        label_color: "#d5ddec",
+        label_hover_color: "#d5ddec",
+        label_size: 22,
+        label_font: "Arial",
+        hide_labels: "no",
+        manual_zoom: "no",
+        back_image: "no",
+        arrow_color: "#cecece",
+        arrow_color_border: "#808080",
+        initial_back: "no",
+        initial_zoom: 0,
+        initial_zoom_solo: "yes",
+        region_opacity: 1,
+        region_hover_opacity: 0.6,
+        zoom_out_incrementally: "yes",
+        zoom_percentage: 0.99,
+        zoom_time: 0.5,
+        popup_color: "white",
+        popup_opacity: 0.9,
+        popup_shadow: 1,
+        popup_corners: 5,
+        popup_font: "12px/1.5 Verdana, Arial, Helvetica, sans-serif",
+        popup_nocss: "no",
+        div: "map", // ID of the div below
+        auto_load: "yes",
+        url_new_tab: "no",
+        images_directory: "default",
+        fade_time: 0.1,
+        link_text: "View Website",
+      },
+      state_specific: {
+        AT: { name: "Austria", hide: "no", inactive: "no" },
+        DE: { name: "Germany", hide: "no", inactive: "no" }
+      },
+      locations: {
+        "0": { lat: 52.516, lng: 13.377, name: "Berlin", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "1": { lat: 48.136, lng: 11.578, name: "Munich", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "2": { lat: 48.203, lng: 16.368, name: "Vienna", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "3": { lat: 48.768, lng: 9.172, name: "Stuttgart", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } },
+        "4": { lat: 53.556, lng: 9.987, name: "Hamburg", onclick: function() { window.dispatchEvent(new CustomEvent("mapClick")); } }
+      }
+    };
+
+    // 2. Load the script using the correct path from your screenshot
+    const script = document.createElement("script");
+    script.src = "/maps/europemap.js"; // <-- UPDATED PATH based on your screenshot
+    script.async = true;
+    document.body.appendChild(script);
+
+    // 3. Setup the redirect event
+    const handleRedirect = () => navigate('/login');
+    window.addEventListener("mapClick", handleRedirect);
+
+    return () => {
+      document.body.removeChild(script);
+      window.removeEventListener("mapClick", handleRedirect);
+    };
+  }, [navigate]);
 
   return (
-    <div style={styles.pageContainer}>
-      <header style={styles.header}>
-        <button onClick={() => navigate(-1)} style={styles.backButton}>
-          <ArrowLeft size={20} />
-          Back to Map
-        </button>
-        <h1 style={styles.title}>{city.name} Dialect Guide</h1>
-      </header>
+    <div style={styles.container}>
+      <img src={logo} alt="MTB Logo" style={styles.logo} />
+      <h1 style={styles.title}>Study Abroad Map</h1>
+      <p style={styles.subtitle}>Click a city to log in and see your guides</p>
 
-      <main style={styles.main}>
-        <div style={styles.heroCard}>
-          <MessageSquare size={32} color="#3B82F6" />
-          <h2>Mastering {city.dialect}</h2>
-          <p>
-            Understanding the local slang will make navigating campus, ordering food,
-            and making friends significantly easier.
-          </p>
-        </div>
-
-        <h3 style={styles.sectionTitle}>Essential Student Phrases</h3>
-        <div style={styles.grid}>
-          {city.phrases.map((phrase, idx) => (
-            <div key={idx} style={styles.card}>
-              <div style={styles.cardHeader}>
-                <h4 style={styles.localPhrase}>{phrase.local}</h4>
-                <button style={styles.audioButton} title="Listen to pronunciation">
-                  <Volume2 size={18} color="#6B7280" />
-                </button>
-              </div>
-              <div style={styles.translations}>
-                <p><strong>Standard German:</strong> {phrase.standard}</p>
-                <p><strong>English:</strong> {phrase.english}</p>
-              </div>
-              <div style={styles.contextBox}>
-                <Coffee size={14} />
-                <span>{phrase.context}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
+      <div style={styles.mapContainer}>
+        <div id="map" style={{ minHeight: "500px", width: "100%" }}></div>
+      </div>
     </div>
   );
 };
 
 const styles = {
-  pageContainer: { fontFamily: "'Inter', sans-serif", backgroundColor: "#F9FAFB", minHeight: "100vh", padding: "2rem" },
-  header: { maxWidth: "1000px", margin: "0 auto 2rem", display: "flex", flexDirection: "column", gap: "1rem" },
-  backButton: { display: "flex", alignItems: "center", gap: "0.5rem", background: "none", border: "none", color: "#4B5563", cursor: "pointer", fontSize: "1rem", padding: "0" },
-  title: { fontSize: "2.5rem", color: "#111827", margin: 0 },
-  main: { maxWidth: "1000px", margin: "0 auto" },
-  heroCard: { backgroundColor: "#DBEAFE", padding: "2rem", borderRadius: "1rem", marginBottom: "2rem" },
-  sectionTitle: { fontSize: "1.5rem", color: "#374151", marginBottom: "1rem" },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "1.5rem" },
-  card: { backgroundColor: "#ffffff", padding: "1.5rem", borderRadius: "0.75rem", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" },
-  cardHeader: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" },
-  localPhrase: { fontSize: "1.5rem", fontWeight: "bold", color: "#2563EB", margin: 0 },
-  audioButton: { background: "#F3F4F6", border: "none", padding: "0.5rem", borderRadius: "50%", cursor: "pointer" },
-  translations: { fontSize: "0.9rem", color: "#4B5563", marginBottom: "1rem", display: "flex", flexDirection: "column", gap: "0.25rem" },
-  contextBox: { display: "flex", gap: "0.5rem", alignItems: "flex-start", padding: "0.75rem", backgroundColor: "#F3F4F6", borderRadius: "0.5rem", fontSize: "0.85rem", color: "#374151" }
+  container: {
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    backgroundColor: "#f8f9fa",
+    padding: "2rem"
+  },
+  logo: { height: "60px", marginBottom: "1rem" },
+  title: { fontSize: "2.5rem", fontWeight: "800", color: "#1e3a8a", margin: 0 },
+  subtitle: { color: "#6c757d", marginBottom: "2rem" },
+  mapContainer: {
+    width: "100%",
+    maxWidth: "900px",
+    backgroundColor: "#fff",
+    padding: "1rem",
+    borderRadius: "20px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    minHeight: "520px"
+  }
 };
 
-export default CityDetails;
+export default LandingPage;
