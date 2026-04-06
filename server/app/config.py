@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     cors_origins: List[str] = ["http://localhost:3000", "http://localhost:8000"]
 
     translation_api_base_url: str = "http://localhost:5000"
+    translation_timeout: int = 20
 
     class Config:
         env_file = ".env"

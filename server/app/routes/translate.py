@@ -31,7 +31,7 @@ async def translate(payload: TranslateRequest) -> TranslateResponse:
     }
 
     try:
-        async with httpx.AsyncClient(timeout=20) as client:
+        async with httpx.AsyncClient(timeout=settings.translation_timeout) as client:
             r = await client.post(url, json=body)
     except httpx.RequestError as e:
         raise HTTPException(
@@ -42,7 +42,7 @@ async def translate(payload: TranslateRequest) -> TranslateResponse:
     if r.status_code != 200:
         try:
             err = r.json()
-        except Exception:
+        except httpx.DecodingError:
             err = r.text
         raise HTTPException(status_code=502, detail=err)
 
