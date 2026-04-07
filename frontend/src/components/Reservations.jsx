@@ -217,11 +217,12 @@ const styles = {
     transition: "all 0.2s ease",
   },
   content: {
-    margin: "5rem auto 0",
+    marginTop: "5rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     maxWidth: "900px",
+    margin: "0 auto",
   },
   title: {
     fontSize: "2.5rem",

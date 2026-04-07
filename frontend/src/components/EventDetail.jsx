@@ -75,7 +75,7 @@ const EventDetail = () => {
     return (
       <div style={styles.container}>
         <div style={styles.header}>
-          <button onClick={() => navigate(-1)} style={styles.navButton}>← Back</button>
+          <button onClick={() => navigate("/events")} style={styles.navButton}>← Back</button>
         </div>
         <div style={styles.errorContainer}>
           <p style={styles.errorText}>{error}</p>
@@ -106,7 +106,7 @@ const EventDetail = () => {
           style={styles.logo}
           onClick={() => navigate("/")}
         />
-        <button onClick={() => navigate(-1)} style={styles.navButton}>
+        <button onClick={() => navigate("/events")} style={styles.navButton}>
           ← Back to Events
         </button>
       </div>
