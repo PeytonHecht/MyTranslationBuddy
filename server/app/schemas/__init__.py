@@ -11,8 +11,6 @@ from app.schemas.phrase import (
     PhraseUpdate,
 )
 from app.schemas.tip import CityTipBase, CityTipCreate, CityTipInDB
-from app.schemas.translation import LanguageCode, TranslationCreate, TranslationResponse
-from app.schemas.user import Token, UserCreate, UserResponse, UserRole, UserUpdate
 
 __all__ = [
     "SuccessResponse",
@@ -34,12 +32,4 @@ __all__ = [
     "CityTipBase",
     "CityTipCreate",
     "CityTipInDB",
-    "LanguageCode",
-    "TranslationCreate",
-    "TranslationResponse",
-    "UserRole",
-    "UserCreate",
-    "UserUpdate",
-    "UserResponse",
-    "Token",
 ]

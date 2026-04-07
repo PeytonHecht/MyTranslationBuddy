@@ -2,11 +2,14 @@ import asyncio
 from app.database import connect_to_mongo, close_mongo_connection, db
 from app.data.cities import (
     hamburg_city, berlin_city, detmold_city, osnabruck_city, vallendar_city, stuttgart_city, aachen_city, lemgo_city, munich_city, jena_city, vienna_city,
-    bonn_city, ebs_city, eltville_city, mannheim_city, zurich_city, wurzburg_city, salzburg_city, leipzig_city
+    bonn_city, ebs_city, eltville_city, mannheim_city, zurich_city, wurzburg_city, salzburg_city, leipzig_city,
+    bern_city, rapperswil_city, winterthur_city
 )
 from app.data.tips import (
     hamburg_tips, berlin_tips, detmold_tips, osnabruck_tips, vallendar_tips, stuttgart_tips, aachen_tips, lemgo_tips, munich_tips, jena_tips, vienna_tips,
-    bonn_tips, wurzburg_tips, ebs_tips, eltville_tips, munich_pharmacy_tips, salzburg_tips, salzburg_music_tips, zurich_tips, leipzig_tips, mannheim_tips
+    bonn_tips, wurzburg_tips, ebs_tips, eltville_tips, munich_pharmacy_tips, salzburg_tips, salzburg_music_tips, zurich_tips, leipzig_tips, mannheim_tips,
+    wu_vienna_tips, wu_vienna_undergrad_tips,
+    bern_tips, rapperswil_tips, winterthur_tips
 )
 from app.data.phrases import all_phrases
 
@@ -33,6 +36,9 @@ async def seed_cities():
         wurzburg_city.model_dump(),
         salzburg_city.model_dump(),
         leipzig_city.model_dump(),
+        bern_city.model_dump(),
+        rapperswil_city.model_dump(),
+        winterthur_city.model_dump()
     ]
 
     for city in cities:
@@ -51,6 +57,8 @@ async def seed_tips():
     tips = (
         hamburg_tips + berlin_tips + detmold_tips + osnabruck_tips + vallendar_tips + stuttgart_tips + aachen_tips + lemgo_tips + munich_tips + jena_tips + vienna_tips
         + bonn_tips + wurzburg_tips + ebs_tips + eltville_tips + munich_pharmacy_tips + salzburg_tips + salzburg_music_tips + zurich_tips + leipzig_tips + mannheim_tips
+        + wu_vienna_tips + wu_vienna_undergrad_tips
+        + bern_tips + rapperswil_tips + winterthur_tips
     )
 
     for tip in tips:

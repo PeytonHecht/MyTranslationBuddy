@@ -1,3 +1,2 @@
-from app.models.user import User, UserRole
-
-__all__ = ["User", "UserRole"]
+# Models package - currently empty
+# Add user authentication models here when auth feature is implemented

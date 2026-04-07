@@ -2484,3 +2484,1662 @@ zurich_tips += [
         source_name="City Essentials Guide"
     ),
 ]
+
+# ============================================================================
+# CULTURAL TIPS AND CULTURAL GUIDES
+# ============================================================================
+# These tips provide deeper cultural insights, communication styles, social norms,
+# and practical cultural navigation advice for students abroad.
+
+# VIENNA CULTURAL TIPS
+vienna_cultural_tips = [
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Understanding Viennese Formality and Communication Style",
+        content=(
+            "Viennese culture values politeness, respect, and formal address. Use 'Herr' and 'Frau' with titles until invited otherwise. "
+            "While Austrians are generally warm, they maintain a certain professional distance initially. Directness is appreciated but delivered diplomatically. "
+            "Small talk is less common than in the US—conversations often jump to deeper topics. Don't take brief replies as coldness; it's simply directness. "
+            "Humor tends toward wit and irony rather than overt jokes."
+        ),
+        short_description="Formal etiquette, diplomatic directness, Austrian warmth with professional boundaries.",
+        tags=["culture", "communication", "etiquette", "vienna", "social norms"],
+        priority=100,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Viennese Café Culture and Daily Social Life",
+        content=(
+            "Cafés are central to Viennese life—not just for coffee, but as a social space and tradition dating back centuries. "
+            "Expect to spend 1-2 hours over a single coffee without feeling rushed (staff won't push you out). "
+            "Ordering: request 'Wiener Melange' (cappuccino-like), 'Schwarzer' (black coffee), or 'Brauner' (coffee with milk). "
+            "Bring your own laptop or book casually—working in cafés is normalized. "
+            "Tipping: round up or leave 5-10% for full service, though not mandatory."
+        ),
+        short_description="Café as cultural pillar, coffee terminology, social time norms, tipping customs.",
+        tags=["culture", "café", "social", "vienna", "daily life"],
+        priority=101,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="University Culture and Classroom Expectations",
+        content=(
+            "Austrian universities are more formal than US schools: professors expect punctuality and respect. Call instructors 'Herr Professor' or 'Frau Professora' unless told otherwise. "
+            "Class size varies; large lectures are common, but seminars are discussion-based. Preparation is valued—show you've done the reading. "
+            "Skipping class regularly is frowned upon and can affect your grade or standing. "
+            "Exam culture: oral exams are standard in some programs; practice explaining concepts clearly in German if possible. "
+            "Group work is common in seminars; Austrians expect organized planning and punctuality in group meetings."
+        ),
+        short_description="Formal professor relations, attendance expectations, exam preparation, group work norms.",
+        tags=["academics", "culture", "classroom", "vienna", "expectations"],
+        priority=102,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Social Norms and Dinner Etiquette",
+        content=(
+            "Dining is more formal than US casual eating. If invited to a Viennese home, arrive on time (being 5-10 minutes late is acceptable, earlier is rude). Bring flowers or wine as a hostess gift. "
+            "Table manners matter: keep both hands visible on the table when not eating, eat slowly, and don't start until the host. "
+            "Splitting bills: Dutch-style 'Spaltung' is not common; one person typically pays or it's discussed beforehand. "
+            "Compliment the food genuinely; 'Sehr lecker' (very tasty) is appreciated. "
+            "Religious/dietary restrictions are respected but mention them early when planning meals together."
+        ),
+        short_description="Dinner invitations, table etiquette, gifting norms, payment expectations, dietary respect.",
+        tags=["culture", "etiquette", "dining", "vienna", "social"],
+        priority=103,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Navigating Bureaucracy with Viennese Efficiency and Procedure",
+        content=(
+            "Austria runs on systems and procedures. When dealing with administration (housing, residence permits, banking), follow instructions exactly. "
+            "Bring all required documents on your first visit—Austrian officials dislike unnecessary return trips. "
+            "Forms matter: fill them out completely and accurately. Handwritten vs. typed documents have specific rules. "
+            "Appointments: many offices require them; book online or by phone first. Walk-ins may be turned away. "
+            "Even though the process feels rigid, Austrians respect when you follow procedures correctly—it speeds everything up."
+        ),
+        short_description="Document-heavy systems, appointment culture, exact procedure adherence, efficiency value.",
+        tags=["culture", "bureaucracy", "practicality", "vienna", "administration"],
+        priority=104,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Punctuality, Scheduling, and Time Management",
+        content=(
+            "Austrians—especially Viennese—place high value on punctuality. Arriving more than 5 minutes late is disrespectful and requires an apology. "
+            "Plan travel with buffer time; assume public transport could be slightly delayed (even if rare). "
+            "Scheduled plans (class, meetings, social events) start and end on time. Don't arrive early for casual plans, but arrive on time. "
+            "Cancellations: if you can't make something, notify people as soon as possible. Last-minute cancellations can damage relationships. "
+            "Time blocking: Austrians respect other people's time; don't let informal hangouts run over into scheduled activities."
+        ),
+        short_description="On-time culture, scheduling respect, buffer planning, cancellation protocol.",
+        tags=["culture", "time", "punctuality", "vienna", "planning"],
+        priority=105,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Environmental Consciousness and Sustainability",
+        content=(
+            "Austrians and especially Viennese take environmental responsibility seriously. Recycling is mandatory and strictly organized by type (paper, plastic, metal, organic). "
+            "Public transport use is the norm; driving a car is less common and can be viewed critically. Walk or bike when possible. "
+            "Food waste is minimized; many people shop for groceries more frequently (smaller quantities, less packaging). "
+            "Plastic bags and unnecessary packaging are discouraged—bring reusable bags. "
+            "Joining in these practices shows respect for local values and helps integration."
+        ),
+        short_description="Rigorous recycling, public transit priority, food waste minimization, anti-plastic culture.",
+        tags=["culture", "environment", "sustainability", "vienna", "values"],
+        priority=106,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Greeting Customs and Physical Boundaries",
+        content=(
+            "Greetings vary by context: 'Guten Morgen/Tag/Abend' (good morning/day/evening) is standard in public and professional settings. "
+            "In casual settings, 'Hallo' or 'Servus' (South Austrian, very casual) are common. Don't use 'Servus' with strangers. "
+            "Handshakes: appropriate in professional and formal settings. In casual or social settings, a wave or verbal greeting suffices. "
+            "Cheek kissing (one kiss) is common among close friends and family, not with strangers or acquaintances. "
+            "Personal space: Austrians respect distance; standing too close can feel invasive."
+        ),
+        short_description="Formal/casual greetings, handshake norms, kiss protocol, personal space respect.",
+        tags=["culture", "etiquette", "greeting", "vienna", "boundaries"],
+        priority=107,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't assume everyone speaks English—always ask politely first in German. "
+            "❌ Avoid loud or boisterous behavior in public; quiet confidence is valued. "
+            "❌ Don't discuss politics or history casually; Austrians can be sensitive about WWII and are often neutral politically. "
+            "❌ Don't touch someone's personal items without asking—Austrians value autonomy. "
+            "❌ Avoid excessive compliments about appearance; it can feel inappropriate. Professional or situational compliments are better. "
+            "❌ Don't underestimate formality in first meetings—you can always become more casual, but starting too casual is harder to recover from."
+        ),
+        short_description="Etiquette pitfalls: language, volume, politics, boundaries, formality.",
+        tags=["culture", "mistakes", "avoid", "vienna", "integration"],
+        priority=108,
+        source_name="Cultural Guide"
+    ),
+]
+
+# BERLIN CULTURAL TIPS
+berlin_cultural_tips = [
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Berlin's Direct Communication and Casual Attitude",
+        content=(
+            "Berlin culture is notably more direct and informal than Vienna. Formality in address is less rigid; many people use 'Du' (informal you) quickly. "
+            "Directness is valued and not seen as rudeness—criticism is objective feedback, not personal attack. Don't take bluntness as coldness. "
+            "Irony and sarcasm are very common; understanding context helps avoid misinterpretation. "
+            "Berlin attracts creative, independent thinkers who value authenticity over polish. Being genuine matters more than appearing polished. "
+            "Conversations can jump between topics; Germans like substantive discussion and debate."
+        ),
+        short_description="Casual 'Du' culture, direct feedback, sarcasm, authenticity over formality.",
+        tags=["culture", "communication", "berlin", "social norms", "directness"],
+        priority=110,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Berlin's Diverse Neighborhoods and Subcultural Identity",
+        content=(
+            "Berlin neighborhoods have strong identities: Kreuzberg is edgy and alternative, Charlottenburg is affluent and traditional, Friedrichshain is bohemian and creative, Neukölln is multicultural and vibrant. "
+            "Each area has its own vibe, politics, and social scene. Locals are proud of their neighborhood identity and often spend most social time locally. "
+            "The 'real Berlin' spirit values individuality, street art, small independent venues, and community. "
+            "Gentrification is a sensitive topic; many Berliners are concerned about preserving the alternative culture. Be respectful when discussing neighborhood changes."
+        ),
+        short_description="Neighborhood identities, subcultural pride, alternative spirit, gentrification sensitivity.",
+        tags=["culture", "neighborhoods", "berlin", "community", "identity"],
+        priority=111,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Classroom Culture and Academic Informality",
+        content=(
+            "Berlin universities are more informal than Vienna: professors often prefer 'Du' and may ask students to call them by first name. "
+            "Large lectures are common, but seminars encourage discussion and debate. Professor-student hierarchy is flatter. "
+            "Attendance is less rigidly enforced than Vienna; some professors only care about exam performance. Check the syllabus. "
+            "Preparation is still important, but the culture is more forgiving of differing viewpoints. Debate is encouraged. "
+            "Office hours are more flexible; email or chat with professors casually about course questions."
+        ),
+        short_description="Informal professor relations, flat hierarchy, debate-friendly, flexible structure.",
+        tags=["academics", "culture", "berlin", "classroom", "informality"],
+        priority=112,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Berlin's Nightlife, Techno Culture, and Late Nights",
+        content=(
+            "Berlin's nightlife is legendary, especially techno and electronic music clubs. Clubs often don't open until 23:00 and go until morning. "
+            "Dress codes are minimal for most clubs; authenticity matters more than expensive clothing. "
+            "Cover charges (€5-15) are standard; some venues are free. Drinks are cheaper than major Western cities. "
+            "The culture is very inclusive and LGBTQ+ friendly. Many venues cater to specific communities; research before going. "
+            "Social hierarchy at clubs is minimal; anyone can join the dancefloor. Consent and respect for others' space is expected. "
+            "Warning: Use extreme caution with drugs and alcohol; Berlin's party scene can be intense."
+        ),
+        short_description="Late-night clubs, techno scene, affordable drinks, inclusive culture, drug/alcohol caution.",
+        tags=["culture", "nightlife", "social", "berlin", "lifestyle"],
+        priority=113,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Discussing History, Politics, and WWII in Berlin",
+        content=(
+            "Berlin's history—especially WWII and the Cold War—is deeply personal and political. Many Berliners have family histories tied to the city's traumas. "
+            "It's acceptable to discuss history and ask genuine questions, but do so respectfully and with sensitivity. "
+            "Avoid jokes about WWII or casually comparing things to the Nazi era. "
+            "Political discussions are normal and encouraged; Berliners value critical thinking. Leftist/green politics dominate the city; be aware of this context. "
+            "Visit memorials and museums (Holocaust Memorial, Topography of Terror) to understand the depth of local engagement with history. "
+            "Show respect for these spaces; they're not tourist attractions but places of reflection."
+        ),
+        short_description="Sensitive history, respectful discussion norms, political engagement, memorial etiquette.",
+        tags=["culture", "history", "politics", "berlin", "sensitivity"],
+        priority=114,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Food Culture and Eating Out in Berlin",
+        content=(
+            "Berlin has excellent street food and international cuisine. Döner, currywurst, and falafel wraps are cheap, tasty, and ubiquitous. "
+            "Restaurant culture is casual; no dress code except at upscale places. Many restaurants don't have dress codes or reservations needed. "
+            "Tipping: add 5-10% or round up. Card payments are increasingly common but cash is still widely used. "
+            "Veganism and vegetarianism are very common; almost all restaurants have options. "
+            "Eating out is cheaper than Vienna or Zurich. Happy hours and specials are advertised on menus and social media. "
+            "Coffee culture is trendy; third-wave cafés and specialty roasters are popular."
+        ),
+        short_description="Cheap street food, casual dining, international options, vegan-friendly, affordable.",
+        tags=["culture", "food", "dining", "berlin", "lifestyle"],
+        priority=115,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Housing and Living Arrangements",
+        content=(
+            "Berlin has a strong house-share (WG) culture for students. Living with roommates is the norm and a social space as much as housing. "
+            "Rental contracts are crucial: always get written agreements. Deposit protection is required by law (usually 1 month's rent). "
+            "Landlord-tenant relationships can be formal. If you have an issue, document it and communicate in writing. "
+            "Neighborhoods: live centrally if budget allows (Mitte, Kreuzberg, Friedrichshain); outer areas require longer commutes. "
+            "Utilities (Nebenkosten) are separate from rent and can surprise you; ask specifics before renting."
+        ),
+        short_description="WG culture, housing contracts, deposit law, neighborhood selection, utility clarity.",
+        tags=["culture", "housing", "living", "berlin", "practical"],
+        priority=116,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid in Berlin",
+        content=(
+            "❌ Don't assume everyone is fine with English; many locals resent the 'English takes over' trend. Try German first. "
+            "❌ Don't fetishize or romanticize Berlin's subcultural scene as a tourist; respect it as a living community. "
+            "❌ Avoid making light of WWII, the Holocaust, or the Berlin Wall; these are serious historical traumas. "
+            "❌ Don't be loud or disruptive in public spaces; while Berlin is casual, respect for others' space is expected. "
+            "❌ Don't assume all Berliners are left-wing or alternative; there's a full spectrum of politics. "
+            "❌ Don't tip excessively; it's appreciated but unusual (unlike the US) and can feel condescending."
+        ),
+        short_description="Language effort, cultural respect, history sensitivity, noise awareness, political diversity.",
+        tags=["culture", "mistakes", "avoid", "berlin", "integration"],
+        priority=117,
+        source_name="Cultural Guide"
+    ),
+]
+
+# MUNICH CULTURAL TIPS
+munich_cultural_tips = [
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Bavarian Pride, Tradition, and Lederhosen",
+        content=(
+            "Munich and Bavaria have a distinct identity separate from Germany. Bavarian pride runs deep; locals often see themselves as Bavarian first, German second. "
+            "Traditional dress (Lederhosen, Dirndl) is worn at festivals and some social occasions, not as a costume but as cultural expression. "
+            "Oktoberfest is a massive celebration, but it's also deeply local and traditional, not just a tourist event. Participate respectfully. "
+            "Religious traditions are strong (Catholic-majority region); Christmas and Easter markets are major celebrations. "
+            "Alpine culture influences everything: tradition, efficiency, craftsmanship, and respect for nature are core values."
+        ),
+        short_description="Bavarian pride, traditional dress, festival participation, religious traditions, Alpine values.",
+        tags=["culture", "bavarian", "tradition", "munich", "identity"],
+        priority=120,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Munich's Formality and Reserved Nature",
+        content=(
+            "Munich is more formal than Berlin but less formal than Vienna. Bavarians value politeness, respect, and proper address. "
+            "Use titles initially ('Herr', 'Frau') until invited to 'Du.' Bavarians warm up to people but keep initial distance. "
+            "Conversations are thoughtful and substantive; small talk is less common. Bavarians appreciate genuine interest in topics. "
+            "Hierarchy and order are respected; don't challenge authority casually. "
+            "Humor is dry and often self-deprecating; sarcasm is used but be careful not to overdo it."
+        ),
+        short_description="Formal politeness, title respect, meaningful conversation, order/hierarchy value.",
+        tags=["culture", "communication", "munich", "formality", "social norms"],
+        priority=121,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Bavarian Cuisine and Beer Culture",
+        content=(
+            "Munich's food is hearty: Leberkäse (meatloaf), Weißwurst (white sausage), pretzels, dumplings, and schnitzel are staples. "
+            "Beer is more than a drink; it's part of Bavarian culture. Beer gardens (Biergärten) are social spaces for all ages, not just for drinking. "
+            "The local beer culture has rules: beer is served in large mugs (Maß = 1 liter), and you order in German. Tipping the server after opening gets you better service. "
+            "Restaurants often have 'Bavarian' sections with traditional food; expect hearty portions. "
+            "Coffee culture exists but beer gardens are the primary social venues. Lunch is the main meal; dinner is lighter."
+        ),
+        short_description="Hearty cuisine, beer gardens as social spaces, beer etiquette, meal timing.",
+        tags=["culture", "food", "beer", "munich", "social"],
+        priority=122,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Classroom Culture and Academic Expectations",
+        content=(
+            "Munich universities blend formality and modern teaching. Professors expect respect and proper address ('Herr Professor'/'Frau Professorin'). "
+            "Attendance is important and can be tracked; repeated absences may affect grades or standing. "
+            "Large lectures are common with smaller seminars. Seminars expect active participation and preparation. "
+            "Exams are rigorous; the culture values deep understanding over memorization. "
+            "Group projects are common; Germans expect high-quality work and on-time delivery. Organize early and divide tasks clearly."
+        ),
+        short_description="Formal professor relations, attendance importance, quality-focused exams, group project standards.",
+        tags=["academics", "culture", "munich", "classroom", "expectations"],
+        priority=123,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Social Life and Making Friends",
+        content=(
+            "Bavarians are friendly once you're accepted into a group, but initial connections can be harder than in more casual cultures. "
+            "Join clubs (sports, hobby, language) early—this is the primary way students make friends and integrate. "
+            "Invite people to do things; Bavarians don't always initiate but are happy to accept invitations. "
+            "Outdoor activities (hiking, cycling) are huge parts of social life, especially outside the city. "
+            "Student pubs and beer gardens are social hubs. Show up regularly to see the same people; consistency builds friendships. "
+            "Sports clubs are accessible and affordable; volleyball, cycling, and running clubs are popular."
+        ),
+        short_description="Group integration through clubs, outdoor activities, regular hangouts, sports participation.",
+        tags=["culture", "social", "friendship", "munich", "lifestyle"],
+        priority=124,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Outdoor Culture and Nature Connection",
+        content=(
+            "Bavarians have a deep connection to nature. The Alps are nearby, and weekend hiking/skiing is a major social activity. "
+            "Walking and cycling are normalized—Munich has excellent bike infrastructure, and many people commute by bike year-round. "
+            "Environmental consciousness is high; respect for nature is a cultural value. Don't litter or damage hiking trails. "
+            "Outdoor markets, parks, and gardens are central to summer social life. "
+            "If you're invited to a hiking day or outdoor activity, it's a significant social opportunity—prioritize attending."
+        ),
+        short_description="Alpine proximity, hiking/skiing culture, bike-friendly infrastructure, nature respect.",
+        tags=["culture", "outdoor", "nature", "munich", "lifestyle"],
+        priority=125,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't disrespect Bavarian tradition or make jokes about traditional dress; it's not a costume. "
+            "❌ Avoid being loud or boisterous in public; quiet confidence and respect for space is valued. "
+            "❌ Don't discuss politics casually; Bavarians can be sensitive about regional identity. "
+            "❌ Don't assume everyone likes beer or Oktoberfest; ask about preferences. "
+            "❌ Don't arrive significantly late to plans; punctuality is very important. "
+            "❌ Avoid touching or taking photos of locals in traditional dress without permission."
+        ),
+        short_description="Tradition respect, volume awareness, political sensitivity, beer assumptions, punctuality.",
+        tags=["culture", "mistakes", "avoid", "munich", "integration"],
+        priority=126,
+        source_name="Cultural Guide"
+    ),
+]
+
+# SALZBURG CULTURAL TIPS
+salzburg_cultural_tips = [
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Salzburg's Alpine Culture and Austrian Charm",
+        content=(
+            "Salzburg embodies Alpine charm and Austrian hospitality. The city blends Baroque heritage with mountain culture. "
+            "Traditional dress and customs are visible, especially during local festivals. Dirndls and Lederhosen aren't costumes here. "
+            "The connection to Mozart and classical music is deep; respect for artistic tradition is cultural value. "
+            "Religious heritage (Salzburg is Catholic) influences festivals and daily life. Christmas and Easter markets are major events. "
+            "The city is smaller and more relaxed than Vienna; people are generally warmer and less formal in initial interactions."
+        ),
+        short_description="Alpine charm, Mozart tradition, Catholic heritage, warmer hospitality than Vienna.",
+        tags=["culture", "alpine", "tradition", "salzburg", "identity"],
+        priority=130,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Salzburg's Music Festival and Classical Culture",
+        content=(
+            "The Salzburg Festival (July-August) is a world-renowned event attracting musicians and opera lovers globally. "
+            "Classical music performances happen year-round; they're not 'touristy' but deeply embedded in local culture. "
+            "Even casual restaurants and cafés often have music references or posters. Attend at least one concert or performance while there. "
+            "The city's connection to Mozart is everywhere; respect this heritage without reducing Salzburg to a 'Sound of Music' stereotype. "
+            "Music tickets can be expensive, but student discounts are available for concerts and performances."
+        ),
+        short_description="World-class festival, classical music culture, Mozart legacy, concert opportunities.",
+        tags=["culture", "music", "arts", "salzburg", "lifestyle"],
+        priority=131,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Classroom Culture and Academic Expectations",
+        content=(
+            "Salzburg universities blend Alpine informality with Austrian academic standards. Professors expect respect but are often approachable. "
+            "Use titles ('Herr', 'Frau') initially, but informality comes faster than in Vienna. "
+            "Class sizes are manageable; seminars encourage participation and debate. Preparation is expected but mistakes are forgiven if you try. "
+            "Exam culture: oral exams are common; practice explaining concepts clearly. "
+            "Group work is valued; Germans and Austrians expect organized collaboration. Plan early and meet regularly."
+        ),
+        short_description="Moderate formality, participation-focused, manageable classes, team-work emphasis.",
+        tags=["academics", "culture", "salzburg", "classroom", "expectations"],
+        priority=132,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Social Life and Making Friends in Salzburg",
+        content=(
+            "Salzburg's student community is tight-knit and welcoming. Join clubs or groups early—sports, language exchanges, cultural activities. "
+            "Student bars and cafés near the university are social hubs where the same people gather regularly. Show up consistently. "
+            "Outdoor activities (hiking, cycling around nearby lakes) are huge social events, especially in warmer months. "
+            "Salzburg is a gateway to the Salzkammergut region (lakes and mountains); weekend trips are common and affordable. Invite yourself or ask to join. "
+            "Locals are more spontaneous and friendly than Vienna. Building friendships is easier if you're genuine and show interest."
+        ),
+        short_description="Tight student community, outdoor activities, local bars as hubs, friendly culture.",
+        tags=["culture", "social", "salzburg", "friendship", "lifestyle"],
+        priority=133,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Local Food and Café Culture",
+        content=(
+            "Salzburg's regional food reflects Alpine tradition: Mozartkugel (chocolate balls), Erdäpfelsuppe (potato soup), Wiener schnitzel, Salzburger Nockerl (sweet dumplings). "
+            "Café culture is strong; spend time in cafés with your books and laptop. Staff won't rush you out. "
+            "Beer gardens are social spaces for all ages, not just for drinking. Family-friendly and affordable. "
+            "Local bakeries (Bäckerei) are excellent for breakfast and snacks; buy fresh pastries in the morning. "
+            "Tipping: add 5-10% or round up. Not mandatory but appreciated in full-service restaurants."
+        ),
+        short_description="Alpine cuisine, café culture, beer gardens, local bakeries, tipping norms.",
+        tags=["culture", "food", "salzburg", "café", "lifestyle"],
+        priority=134,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't reduce Salzburg to 'The Sound of Music' alone; it's a rich city with its own identity. "
+            "❌ Avoid loud behavior in public; quiet respect for space is valued. "
+            "❌ Don't disrespect traditional dress or treat it as a costume. "
+            "❌ Avoid casual discussion of politics or religion; Salzburg is conservative in some aspects. "
+            "❌ Don't assume all locals are musicians or into classical music; that's a stereotype. "
+            "❌ Avoid arriving significantly late to plans; punctuality matters but less rigidly than Vienna."
+        ),
+        short_description="Sound of Music stereotype, volume awareness, tradition respect, late-arrival impact.",
+        tags=["culture", "mistakes", "avoid", "salzburg", "integration"],
+        priority=135,
+        source_name="Cultural Guide"
+    ),
+]
+
+# HAMBURG CULTURAL TIPS
+hamburg_cultural_tips = [
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Hamburg's Maritime Heritage and Port City Identity",
+        content=(
+            "Hamburg's identity is built on its role as Germany's gateway to the world. The port, canals, and maritime history define the city. "
+            "Respect for international commerce and openness to the world are cultural values. The city is less nationalist and more cosmopolitan than inland cities. "
+            "The harbor is a social and recreational space, not just commercial. Walks along the Elbe and canal tours are normal weekend activities. "
+            "Hamburg locals are proud of their independence; the city has a distinct identity separate from Berlin or Munich."
+        ),
+        short_description="Port city identity, international openness, harbor as social space, civic pride.",
+        tags=["culture", "hamburg", "maritime", "identity", "values"],
+        priority=140,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Hamburg's Business Culture and Work Ethic",
+        content=(
+            "Hamburg is Germany's business hub after Frankfurt. Efficiency, professionalism, and work ethic are valued. "
+            "The culture balances work seriousness with social warmth; Germans are professional but approachable. "
+            "Long business lunches (sometimes 1.5-2 hours) are normal; meetings aren't rushed. "
+            "Networking is important; professional associations and business events are regular. "
+            "Students from business-focused programs find Hamburg naturally aligned with their field."
+        ),
+        short_description="Business hub culture, efficiency, professional networking, social balance.",
+        tags=["culture", "business", "hamburg", "work ethic", "networking"],
+        priority=141,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Classroom Culture and Academic Expectations",
+        content=(
+            "Hamburg universities are modern and pragmatic. Professors are often approachable and use less formal titles than Vienna. "
+            "Classes emphasize practical application alongside theory. Large lectures with practical seminars are common. "
+            "Attendance expectations vary by professor; check the syllabus. Preparation and participation are valued. "
+            "Group projects are common and expected to be high-quality; divide work clearly and communicate regularly. "
+            "Exams can be written or oral; both test deep understanding rather than memorization."
+        ),
+        short_description="Pragmatic approach, practical orientation, approachable professors, quality expectations.",
+        tags=["academics", "culture", "hamburg", "classroom", "expectations"],
+        priority=142,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Social Life and Nightlife in Hamburg",
+        content=(
+            "Hamburg has a vibrant nightlife: clubs, bars, and music venues are abundant, especially in Reeperbahn area (red-light district but with all entertainment). "
+            "The student scene is lively; younger crowds frequent different areas than the city center. Sternschanze and Altona are trendy student neighborhoods. "
+            "Sports culture is huge: hamburgers support the local football club (HSV), and rugby, hockey, and sailing are popular. "
+            "Outdoor activities: sailing, cycling, and harbor tours are major social activities. "
+            "Live music venues and festivals are regular; Hamburg attracts international performers year-round."
+        ),
+        short_description="Vibrant nightlife, football culture, water sports, music venues, student scene.",
+        tags=["culture", "social", "hamburg", "nightlife", "lifestyle"],
+        priority=143,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Food Culture and Local Dining",
+        content=(
+            "Hamburg's food reflects its position as a port city: seafood is a staple (fish sandwiches from harbor vendors are iconic). "
+            "Fish markets (like Fischmarkt) are early-morning social events, not just shopping; arrive early for the vibe. "
+            "International cuisine is abundant due to the multicultural, business-focused population. "
+            "Casual dining is the norm; dress codes are rare except at upscale restaurants. "
+            "Tipping: add 5-10%. Card payments are increasingly common but some places prefer cash."
+        ),
+        short_description="Seafood-centric, fresh fish markets, international cuisine, casual dining norm.",
+        tags=["culture", "food", "hamburg", "dining", "lifestyle"],
+        priority=144,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't assume Hamburg is like Berlin; it has a different identity (business-focused, international, port city). "
+            "❌ Avoid being loud in public spaces; respect and professionalism are valued. "
+            "❌ Don't disrespect the football club (HSV) casually; locals are passionate about sports. "
+            "❌ Avoid assuming everyone speaks English; always ask in German first. "
+            "❌ Don't venture into the red-light district (Reeperbahn) with disrespect; it's a working neighborhood with specific norms. "
+            "❌ Avoid late arrivals to professional or academic appointments; punctuality is crucial."
+        ),
+        short_description="Distinct identity, professionalism, sports respect, language effort, red-light etiquette.",
+        tags=["culture", "mistakes", "avoid", "hamburg", "integration"],
+        priority=145,
+        source_name="Cultural Guide"
+    ),
+]
+
+# GENERIC GERMAN EXCHANGE CITY CULTURAL TIPS (for cities without unique tips yet)
+# These apply broadly to Bonn, Würzburg, Stuttgart, Aachen, etc.
+german_exchange_cultural_tips = [
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="German University Culture and Academic Norms Across Cities",
+        content=(
+            "German universities emphasize research, independent learning, and deep understanding over grades. The system expects you to self-motivate. "
+            "Professors are addressed formally initially ('Herr Professor', 'Frau Professorin') but become approachable once you engage. "
+            "Large lectures (100+ students) are common in introductory courses; seminars (10-30 students) are smaller and discussion-based. "
+            "Exams are rigorous and cumulative. Oral exams test your ability to explain concepts, not just recall facts. "
+            "Study groups are normalized and encouraged. Library time and group projects are core to student life across German universities. "
+            "Plagiarism is taken very seriously; always cite sources and understand proper academic integrity norms."
+        ),
+        short_description="Research focus, formal then approachable professors, rigorous exams, group learning.",
+        tags=["academics", "culture", "germany", "classroom", "student life"],
+        priority=150,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="German Directness, Feedback, and Communication Style",
+        content=(
+            "Germans are known for directness; criticism is objective feedback, not personal attack. Don't interpret bluntness as rudeness. "
+            "Small talk is less common than substantive conversation. Germans like to discuss real topics—politics, philosophy, current events. "
+            "Honesty is valued; 'white lies' for politeness are less common than in the US. "
+            "Sarcasm and dry humor are used frequently but can be hard to catch; context matters. "
+            "Formal politeness (using 'Sie' rather than 'du') with strangers is the default; wait to be invited to informal speech. "
+            "Written communication (email) is often formal and detail-oriented; check your tone."
+        ),
+        short_description="Directness, substantive conversation, sarcasm, formal politeness with strangers.",
+        tags=["culture", "communication", "germany", "social norms", "feedback"],
+        priority=151,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="Punctuality, Efficiency, and Time Management Across German Cities",
+        content=(
+            "Punctuality is fundamental to German culture. Arriving 5+ minutes late is disrespectful and requires an apology. "
+            "Even public transport is expected to be on time; if a train is 5 minutes late, it's considered a delay. "
+            "Scheduled activities (classes, meetings, social plans) start exactly on time. Don't arrive early casually, but arrive on time. "
+            "Cancellations require advance notice; last-minute cancellations damage relationships and professional standing. "
+            "Time blocking is respected; don't let informal plans run over into scheduled commitments."
+        ),
+        short_description="On-time culture, public transport reliability, cancellation protocol, time blocking.",
+        tags=["culture", "time", "punctuality", "germany", "planning"],
+        priority=152,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="German Sustainability and Environmental Consciousness",
+        content=(
+            "Germans (and Austrians) take environmental responsibility seriously. Recycling is mandatory and organized by type (paper, plastic, glass, metal, organic). "
+            "Trash sorting is important; violations can result in fines. Ask locals about correct sorting if unsure. "
+            "Plastic bags and disposable packaging are discouraged. Bring reusable bags to shopping. "
+            "Public transport use is the norm; having a car is less common and can be viewed as environmentally inconsiderate. "
+            "Energy conservation is valued; turning off lights and closing windows during heating is expected. "
+            "Food waste is minimized; composting and garden culture are common."
+        ),
+        short_description="Mandatory recycling, plastic minimization, public transit norm, energy conservation.",
+        tags=["culture", "environment", "sustainability", "germany", "values"],
+        priority=153,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="Housing and Living Arrangements Across German Cities",
+        content=(
+            "Shared apartments (WGs) are common and affordable for students. Living with roommates is normalized and a social space. "
+            "Rental contracts are crucial; get written agreements. Deposits are legally protected (usually 1 month's rent plus any utilities deposit). "
+            "Landlord-tenant relationships can be formal. Document issues in writing and communicate professionally. "
+            "Housing costs vary significantly by city (Berlin and Leipzig cheaper, Munich and Frankfurt expensive). "
+            "Utilities (Nebenkosten) are separate from rent; ask specifics before committing. Heating costs can be high in winter."
+        ),
+        short_description="WG culture, legal housing contracts, deposit protection, utility costs, regional variation.",
+        tags=["culture", "housing", "living", "germany", "practical"],
+        priority=154,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="culture",
+        title="Common Cultural Mistakes Across German Cities",
+        content=(
+            "❌ Don't assume everyone speaks English; always ask politely in German first. "
+            "❌ Avoid loud behavior in public spaces; Germans value quiet respect for shared spaces. "
+            "❌ Don't treat German directness as coldness; it's honesty and professional. "
+            "❌ Avoid late arrivals; punctuality is non-negotiable culturally. "
+            "❌ Don't make light of WWII or Nazi history; it's a serious historical trauma. "
+            "❌ Avoid tipping excessively; it's appreciated but unusual (unlike US) and can feel condescending. "
+            "❌ Don't assume all Germans are serious; they have humor, just different from American style."
+        ),
+        short_description="Language effort, volume control, directness respect, punctuality, history sensitivity.",
+        tags=["culture", "mistakes", "avoid", "germany", "integration"],
+        priority=155,
+        source_name="Cultural Guide"
+    ),
+]
+
+# VALLENDAR/RHEINGAU CULTURAL TIPS (WHU - Otto Beisheim School of Management)
+vallendar_cultural_tips = [
+    CityTipCreate(
+        city_slug="vallendar",
+        category="culture",
+        title="Rhineland Hospitality and Wine Region Culture",
+        content=(
+            "Vallendar sits in the scenic Central Rhine Valley (UNESCO World Heritage site), a region steeped in wine culture and tradition. "
+            "The Rheingau is known for its Riesling wines and centuries-old winemaking heritage. Respect for tradition and craftsmanship are core values. "
+            "Locals are warm and welcoming; the pace of life is slower than larger cities. Personal relationships are valued over quick transactions. "
+            "Regional pride runs deep; locals refer to themselves as 'Rheingau people' before German identity. "
+            "The wine culture extends to daily social life—vineyard walks and wine tastings are normal weekend activities."
+        ),
+        short_description="Wine heritage, regional pride, warm hospitality, tradition-focused community.",
+        tags=["culture", "vallendar", "rheingau", "wine", "tradition", "hospitality"],
+        priority=160,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="culture",
+        title="Business School Formality and Professional Culture at WHU",
+        content=(
+            "WHU attracts ambitious business students from across Germany and internationally. The culture is professional, goal-oriented, and formal. "
+            "Professors expect business casual dress and formal address initially. Punctuality and preparation are non-negotiable. "
+            "Networking is emphasized; building professional relationships is part of the curriculum. "
+            "Competitiveness exists but is balanced with collaboration; group projects are common. "
+            "Case studies and real-world business problems are central to teaching, not just theory. "
+            "Student clubs often focus on business, entrepreneurship, and international finance."
+        ),
+        short_description="Professional atmosphere, networked mindset, business-focused culture, formal expectations.",
+        tags=["academics", "culture", "business", "vallendar", "whu", "professional"],
+        priority=161,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="culture",
+        title="Two-Location Campus Life and Commuting Culture",
+        content=(
+            "WHU operates on two campuses: Vallendar (main, scenic) and nearby Oestrich-Winkel (historic wine town). "
+            "Students regularly commute between locations for different classes or cohorts. Plan commute times into your schedule. "
+            "The split campuses create different social scenes: Vallendar is quieter and focused, Oestrich-Winkel is more vibrant and social. "
+            "Many students live in one location and travel to the other; housing choices should consider commute preferences. "
+            "The regional train system is reliable but plan buffers between campuses for back-to-back activities."
+        ),
+        short_description="Two-campus system, strategic location choice, reliable regional transit.",
+        tags=["culture", "practical", "commute", "vallendar", "whu", "housing"],
+        priority=162,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="culture",
+        title="Wine Culture and Dining in the Rheingau",
+        content=(
+            "Wine is not just a beverage but part of Rheingau identity and daily social life. Wine tastings are common social events. "
+            "Local restaurants feature Rheingau Riesling prominently; trying local wines shows cultural respect. "
+            "Small wine taverns (Weinstubes) are gathering places where locals spend hours over wine and simple food. "
+            "Seasonal wine festivals (summer and fall) are major community events; attending shows cultural engagement. "
+            "Food in the region is hearty but lighter than Bavarian; local dishes often feature fish and regional produce. "
+            "Tipping: add 5-10% in restaurants; round up in cafés."
+        ),
+        short_description="Wine as culture, Weinstubes as social spaces, seasonal festivals, local dining.",
+        tags=["culture", "food", "wine", "vallendar", "dining", "social"],
+        priority=163,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't dismiss the wine culture as just tourism; it's integral to local identity. "
+            "❌ Avoid loud or boisterous behavior; the region values quiet, respectful atmosphere. "
+            "❌ Don't underestimate formality at WHU; maintain professional dress and address. "
+            "❌ Avoid arriving late to business school events; punctuality is paramount. "
+            "❌ Don't disrespect regional traditions or architecture; heritage is taken seriously. "
+            "❌ Avoid assuming everyone commutes easily; plan for transit delays on two-campus days."
+        ),
+        short_description="Wine respect, professional formality, punctuality, tradition appreciation.",
+        tags=["culture", "mistakes", "avoid", "vallendar", "whu", "integration"],
+        priority=164,
+        source_name="Cultural Guide"
+    ),
+]
+
+# ZURICH CULTURAL TIPS (CJC in Switzerland)
+zurich_cultural_tips = [
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Swiss Precision, Directness, and High Standards",
+        content=(
+            "Swiss culture values precision, punctuality, and efficiency to an extreme level. Everything is planned, organized, and runs on time. "
+            "Swiss people are direct—more so than Germans—but with underlying politeness. Feedback is objective and meant constructively. "
+            "Quality is non-negotiable; 'good enough' doesn't exist. This applies to work, products, and even casual interactions. "
+            "Privacy and personal space are highly respected; don't pry into personal matters or stand too close physically. "
+            "Neutrality is a Swiss value; avoid strong political statements or taking sides in conflicts."
+        ),
+        short_description="Precision culture, extreme punctuality, quality focus, privacy respect, neutrality value.",
+        tags=["culture", "communication", "zurich", "switzerland", "social norms", "values"],
+        priority=170,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Zurich's Multilingual and Multicultural Environment",
+        content=(
+            "Zurich is Switzerland's most international city with four official languages (German, French, Italian, Romansh) and many expatriates. "
+            "Many Zurich residents speak English fluently, but making effort to speak German is still appreciated. "
+            "The city attracts people from around the world; international perspectives are normalized and valued. "
+            "However, Swiss identity is strong; locals appreciate respect for Swiss traditions and values despite the international atmosphere. "
+            "Student communities (university, international) are quite active and welcoming. Many students and young professionals create social groups."
+        ),
+        short_description="Multilingual, international, English-friendly, Swiss identity strong, student networks vibrant.",
+        tags=["culture", "language", "zurich", "international", "community", "diversity"],
+        priority=171,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Work-Life Balance and Sunday Culture",
+        content=(
+            "Switzerland is famous for quality of life and work-life balance. Work is important but not all-consuming. "
+            "Sundays are sacred for rest and family; most shops close, and activities are quiet and calm. "
+            "Evening events (dinners, meetings) typically start and end early (7-9 pm). Late-night hangouts are less common than other countries. "
+            "Exercise and outdoor activities are a major part of life; hiking, cycling, and skiing are normalized hobbies. "
+            "Time off is respected; taking vacation is encouraged and protected by law. "
+            "Workaholism is viewed negatively; balance is valued."
+        ),
+        short_description="Work-life balance, sacred Sundays, outdoor focus, early evening culture, respect for time off.",
+        tags=["culture", "lifestyle", "zurich", "switzerland", "values", "wellbeing"],
+        priority=172,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Dining, Tipping, and Restaurant Etiquette",
+        content=(
+            "Zurich is expensive; restaurant meals are costly. Many students cook at home or use affordable lunch options (set menus). "
+            "Restaurant service is formal and professional. Waiters don't hover; flag them with a hand gesture when ready. "
+            "Tipping in Switzerland is different: service charge is included in bills. Small tips (rounding up) are optional for good service, not expected like the US. "
+            "Swiss food reflects the Alps: cheese (fondue, raclette), bread, chocolate, and cured meats are staples. "
+            "Dining is a formal, seated experience; eating while walking is considered disrespectful. "
+            "Lunch is 12-1:30 pm; dinner is 7-8:30 pm. Outside these hours, few restaurants serve full meals."
+        ),
+        short_description="Expensive dining, formal service, minimal tipping, Alpine cuisine, meal timing importance.",
+        tags=["culture", "food", "dining", "zurich", "etiquette", "budget"],
+        priority=173,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Banking, Money, and Financial Responsibility",
+        content=(
+            "Switzerland's banking and financial systems are renowned for precision and privacy. "
+            "Opening a bank account as a student requires documentation; plan for this early. "
+            "Cash is still widely used despite being a wealthy city; many local businesses prefer cash. "
+            "Credit cards are accepted but not as universally as in the US. Maestro and PostCard are common. "
+            "Financial responsibility is a cultural value; debt is viewed negatively. Budgeting and saving are normalized. "
+            "Student discounts are common but require ID. Many services offer 'student rates' if you ask."
+        ),
+        short_description="Banking formality, cash-preferred culture, student discounts, financial responsibility value.",
+        tags=["culture", "practical", "money", "zurich", "banking", "budgeting"],
+        priority=174,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't arrive late; even 5 minutes is unacceptable. "
+            "❌ Avoid being loud in public spaces; quiet respect is paramount. "
+            "❌ Don't assume everyone speaks English; always ask in German/French first. "
+            "❌ Avoid discussing personal finances or income casually; it's private. "
+            "❌ Don't overstep personal space or ask invasive questions; Swiss privacy is strict. "
+            "❌ Avoid strong political statements; neutrality and respect for diverse views are valued. "
+            "❌ Don't tip like the US does; it's unnecessary and can feel condescending."
+        ),
+        short_description="Punctuality critical, quiet demeanor, privacy respect, language effort, tipping restraint.",
+        tags=["culture", "mistakes", "avoid", "zurich", "switzerland", "integration"],
+        priority=175,
+        source_name="Cultural Guide"
+    ),
+]
+
+# JENA CULTURAL TIPS (Friedrich Schiller Universität - TASSEP science students)
+jena_cultural_tips = [
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="University Town Spirit and Student-Centric Culture",
+        content=(
+            "Jena is a historic university city where student culture is central to the city's identity. "
+            "The university is woven into daily city life; many locals are academics or former students. "
+            "The culture is intellectual, research-focused, and values critical thinking. "
+            "Student organizations and clubs are vibrant; joining early helps with integration. "
+            "The pace is slower and more relaxed than major cities; focus is on learning and discourse rather than partying. "
+            "Local pride in the university (Friedrich Schiller Universität) is high; respect the institution."
+        ),
+        short_description="University-centric town, intellectual culture, student organizations, research focus.",
+        tags=["culture", "jena", "university", "academic", "student life", "community"],
+        priority=180,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="Eastern German History and Regional Identity",
+        content=(
+            "Jena was in East Germany (GDR) until 1990; this history deeply shapes local identity and values. "
+            "The city transitioned through significant economic and social changes; locals have resilience and resourcefulness. "
+            "Environmental consciousness is high (post-East German legacy of pollution awareness). "
+            "Community spirit and collective action are valued (legacy of different governance styles). "
+            "Students should understand this context—it's not Berlin or Munich's culture, but distinctly eastern German. "
+            "The Thuringia region has unique traditions; show interest in learning about local history."
+        ),
+        short_description="East German heritage, transition experience, community values, environmental consciousness.",
+        tags=["culture", "jena", "history", "identity", "region", "values"],
+        priority=181,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="Science and Research Culture",
+        content=(
+            "Jena has a legacy of scientific achievement (Ernst Abbe, Zeiss optical company). The city values innovation and research. "
+            "Professors expect deep engagement with research; labs and field work are core to learning. "
+            "Collaboration across departments is encouraged; interdisciplinary thinking is valued. "
+            "Science seminars and departmental lectures are regular; attending shows professional commitment. "
+            "Library and lab culture is respectful and quiet; focus and concentration are valued. "
+            "Group study is normalized; find study partners early in your program."
+        ),
+        short_description="Research legacy, interdisciplinary focus, lab culture, science seminars, collaboration.",
+        tags=["academics", "culture", "science", "jena", "research", "laboratory"],
+        priority=182,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="Affordable Living and Student Budget Culture",
+        content=(
+            "Jena is one of Germany's most affordable university cities; cost of living is significantly lower than western cities. "
+            "Student budgets are normalized; many students are financially tight and this is accepted. "
+            "Shared apartments (WGs) are the standard and very affordable (€200-350/month). "
+            "Student discounts are generous; always ask for 'student rate' at restaurants, museums, events. "
+            "Local cafés and student bars are inexpensive and social hubs. "
+            "Many students work part-time; this is normalized and expected."
+        ),
+        short_description="Affordable city, WG culture standard, generous student discounts, part-time work normalized.",
+        tags=["culture", "budget", "housing", "jena", "student life", "practical"],
+        priority=183,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="Local Food and Café Culture",
+        content=(
+            "Jena's food reflects Thuringia region: hearty, simple, affordable. Bratwurst, schnitzel, soups, and breads are staples. "
+            "Student cafeterias offer very cheap meals (€2-5) and are primary eating venues for students. "
+            "Cafés are social spaces; students spend hours with a single coffee. "
+            "Bakeries (Bäckerei) are excellent and cheap for breakfast and snacks. "
+            "Local specialty: Thüringer Rostbratwurst (grilled sausage); try it from street vendors. "
+            "Tipping: add 5-10% in restaurants; round up in cafés."
+        ),
+        short_description="Hearty Thuringia cuisine, cheap cafeterias, café culture, student-friendly food prices.",
+        tags=["culture", "food", "dining", "jena", "budget", "student life"],
+        priority=184,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't romanticize East German history; locals experienced real hardship during division. "
+            "❌ Avoid dismissing the city as 'small' or 'boring'; intellectual depth is the appeal. "
+            "❌ Don't skip departmental events or seminar visits; engagement is culturally valued. "
+            "❌ Avoid being loud in quiet study/lab spaces; respect is paramount. "
+            "❌ Don't assume everyone is poor; respect for financial diversity exists despite affordability. "
+            "❌ Avoid late arrivals to academic commitments; punctuality is important even in relaxed culture."
+        ),
+        short_description="History sensitivity, respect for intellectual culture, quiet demeanor, academic engagement.",
+        tags=["culture", "mistakes", "avoid", "jena", "integration", "academics"],
+        priority=185,
+        source_name="Cultural Guide"
+    ),
+]
+
+# Append cultural tips to city arrays
+vienna_tips.extend(vienna_cultural_tips)
+berlin_tips.extend(berlin_cultural_tips)
+munich_tips.extend(munich_cultural_tips)
+salzburg_tips.extend(salzburg_cultural_tips)
+hamburg_tips.extend(hamburg_cultural_tips)
+berlin_tips.extend(berlin_cultural_tips)
+munich_tips.extend(munich_cultural_tips)
+salzburg_tips.extend(salzburg_cultural_tips)
+hamburg_tips.extend(hamburg_cultural_tips)
+
+# STUTTGART CULTURAL TIPS (Media University / HdM)
+stuttgart_cultural_tips = [
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="culture",
+        title="Swabian Pride and Regional Identity",
+        content=(
+            "Stuttgart is the capital of Baden-Württemberg, a region with distinct Swabian identity separate from Bavaria or Prussia. "
+            "Swabians are stereotyped as hardworking, practical, and precise—values deeply embedded in the culture. "
+            "The region has industrial heritage (Daimler, Bosch, Porsche) with emphasis on engineering and quality craftsmanship. "
+            "Swabian dialect (Schwäbisch) is widely spoken and distinct from standard German; locals take pride in their language. "
+            "Regional traditions, food, and celebrations are important. Respect for Swabian heritage shows cultural integration."
+        ),
+        short_description="Swabian pride, industrial heritage, practical values, regional dialect, craftsmanship culture.",
+        tags=["culture", "stuttgart", "swabia", "identity", "regional", "pride"],
+        priority=190,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="culture",
+        title="Media and Design Culture in Stuttgart",
+        content=(
+            "Stuttgart is a major media and design hub. Creative industries, advertising, and technology thrive here. "
+            "HdM (Hochschule der Medien) attracts students focused on media production, design, and technology. "
+            "The student culture is project-focused and creative; collaboration between different disciplines is common. "
+            "Design thinking and user-centered approaches are emphasized in academics and industry. "
+            "Internships and industry partnerships are integral to studies; networking with local companies is expected. "
+            "The culture values innovation and practical application over theory alone."
+        ),
+        short_description="Media hub, design-focused culture, project-based learning, industry partnerships, innovation.",
+        tags=["academics", "culture", "media", "design", "stuttgart", "creative"],
+        priority=191,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="culture",
+        title="Festival Culture and Local Celebrations",
+        content=(
+            "Stuttgart hosts major festivals: Volksfest (folk festival), Weindorf (wine festival), and Oktoberfest-style celebrations. "
+            "These events are community traditions, not just tourist attractions; locals participate enthusiastically. "
+            "Attending festivals shows cultural engagement and helps with local integration. "
+            "Beer and wine gardens are social spaces year-round, not just at festivals. "
+            "Local markets (farmers markets, Christmas markets) are vibrant and important to community life. "
+            "Supporting local artisans and producers is a cultural value."
+        ),
+        short_description="Festival traditions, folk culture, beer gardens, local markets, community participation.",
+        tags=["culture", "festivals", "social", "stuttgart", "community", "traditions"],
+        priority=192,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="culture",
+        title="Work-Life Balance and Evening Culture",
+        content=(
+            "Stuttgart balances professional focus with relaxed social life. Evening culture is active but not as intense as Berlin. "
+            "Many people head to wine gardens or casual bars (Kneipen) after work. Social time is valued alongside professional commitment. "
+            "The nearby Swabian Alb and wine regions make weekend escapes very accessible and normalized. "
+            "Family-oriented culture; many locals prioritize family time and children. "
+            "Student life is balance of study and social activities; all-nighters and extreme party culture are less common."
+        ),
+        short_description="Professional + relaxed balance, wine garden culture, weekend escapes, family values.",
+        tags=["culture", "lifestyle", "work-life", "stuttgart", "social", "wellbeing"],
+        priority=193,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't mock or dismiss Swabian dialect; locals take pride in their language. "
+            "❌ Avoid underestimating precision and quality expectations in academic work. "
+            "❌ Don't skip team projects or collaborative work; it's central to HdM culture. "
+            "❌ Avoid loud behavior in public; Swabians value quiet professionalism. "
+            "❌ Don't assume industrial cities are boring; Stuttgart has vibrant cultural depth. "
+            "❌ Avoid arriving late to any commitment; punctuality is non-negotiable."
+        ),
+        short_description="Dialect respect, quality focus, collaboration, quiet demeanor, punctuality importance.",
+        tags=["culture", "mistakes", "avoid", "stuttgart", "integration", "swabia"],
+        priority=194,
+        source_name="Cultural Guide"
+    ),
+]
+
+# AACHEN CULTURAL TIPS (RWTH Aachen University - Global E3 engineering)
+aachen_cultural_tips = [
+    CityTipCreate(
+        city_slug="aachen",
+        category="culture",
+        title="Border City Identity and International Character",
+        content=(
+            "Aachen sits at the intersection of Germany, Belgium, and the Netherlands (Euregio region). This triple-border location creates unique identity. "
+            "The city is historic (Charlemagne's capital) but modern and international. Many students and residents are from neighboring countries. "
+            "Multilingual exposure is high; locals speak German, Dutch, and French. Learning phrases in multiple languages shows cultural respect. "
+            "Border proximity makes weekend travel to Belgium and Netherlands very easy and affordable. "
+            "The culture blends German precision with a more relaxed, international attitude from neighboring countries."
+        ),
+        short_description="Triple-border city, international character, multilingual, historic significance, easy travel.",
+        tags=["culture", "aachen", "international", "border", "history", "mobility"],
+        priority=200,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="culture",
+        title="Engineering Excellence and RWTH Culture",
+        content=(
+            "RWTH Aachen is one of Germany's top engineering universities, attracting ambitious students worldwide. The culture is academically rigorous. "
+            "Engineering is treated as a serious discipline; exams are challenging and cumulative. Preparation is non-negotiable. "
+            "Lab work and practical application are emphasized; hands-on skills are valued alongside theory. "
+            "Global E3 students work alongside German and international students; multicultural learning is normalized. "
+            "Professional development and industry internships are expected; networking with engineering firms is part of the culture. "
+            "Collaboration in projects is emphasized; group work quality is high."
+        ),
+        short_description="Top engineering university, rigorous academics, practical focus, global student base, labs.",
+        tags=["academics", "culture", "engineering", "aachen", "rwth", "excellence"],
+        priority=201,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="culture",
+        title="Carnival and Festive Culture",
+        content=(
+            "Aachen is known for its Carnival (Karneval) celebrations, especially in nearby Cologne and Düsseldorf regions. "
+            "The city celebrates Carnival enthusiastically; it's a genuine community tradition, not just tourism. "
+            "During Carnival season (January-February), cities erupt in parades, parties, and costumes. "
+            "Participating in Carnival is a fun way to integrate socially and understand local culture. "
+            "Outside Carnival, the city is quiet and academic; the contrast is striking. "
+            "Respect for festive traditions while understanding the academic seriousness is key."
+        ),
+        short_description="Carnival traditions, festive culture, community celebration, seasonal dynamics.",
+        tags=["culture", "aachen", "festivals", "carnival", "social", "traditions"],
+        priority=202,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="culture",
+        title="Thermal Springs and Wellness Culture",
+        content=(
+            "Aachen is famous for its natural thermal springs (Aachener Quellen). The city has wellness and spa culture. "
+            "Public baths and saunas are social spaces and wellness centers; using them is normalized and affordable. "
+            "Student discounts at spas and thermal baths are common. "
+            "The thermal water has been used since Roman times; respect for this heritage is appreciated. "
+            "Weekend spa trips are affordable and popular among students for relaxation and social time. "
+            "Understanding German sauna etiquette (nude in saunas, gender-separated areas) is important."
+        ),
+        short_description="Thermal springs, spa culture, wellness focus, social bathing, Roman heritage, student discounts.",
+        tags=["culture", "wellness", "social", "aachen", "practical", "health"],
+        priority=203,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't overestimate English availability; try German, French, or Dutch first. "
+            "❌ Avoid viewing Aachen as just a stepping stone to Belgium/Netherlands; it's a city with its own culture. "
+            "❌ Don't underestimate academic rigor at RWTH; it's one of Germany's toughest universities. "
+            "❌ Avoid being disrespectful during Carnival; it's a genuine tradition, not a tourist party. "
+            "❌ Don't assume engineering culture is dry; students have active social lives. "
+            "❌ Avoid arriving late to lab sessions or group meetings; punctuality is critical in engineering culture."
+        ),
+        short_description="Language effort, city respect, academic rigor, carnival etiquette, punctuality.",
+        tags=["culture", "mistakes", "avoid", "aachen", "integration", "rwth"],
+        priority=204,
+        source_name="Cultural Guide"
+    ),
+]
+
+# LEMGO/DETMOLD CULTURAL TIPS (TH OWL - Interior Design / Design students)
+design_exchange_cultural_tips = [
+    CityTipCreate(
+        city_slug="lemgo",
+        category="culture",
+        title="Design Culture and Creative Expression",
+        content=(
+            "The TH OWL region (Lemgo, Detmold) attracts design students and creative professionals. Design is taken seriously as a discipline. "
+            "Interior design, product design, and user experience are emphasized. Creativity balanced with technical skills is valued. "
+            "Students present design work regularly; constructive critique is a learning norm. Feedback is direct and expected. "
+            "Practical skills matter; studios are well-equipped with tools and technology. "
+            "Collaboration with local businesses and craftspeople is encouraged; real-world application is expected. "
+            "Design thinking extends beyond academics into local culture—respect for aesthetics and functionality is visible in daily life."
+        ),
+        short_description="Design-focused culture, creative emphasis, studio practice, practical skills, local collaboration.",
+        tags=["academics", "culture", "design", "lemgo", "detmold", "creativity"],
+        priority=210,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="culture",
+        title="Small Town Charm and Regional Heritage",
+        content=(
+            "Lemgo and Detmold are smaller towns in the Lippe region, quite different from major cities. "
+            "The pace is slower; people know each other; community is tight-knit and welcoming. "
+            "Historic architecture is well-preserved; the towns showcase regional heritage proudly. "
+            "Nature is immediately accessible; hiking, cycling, and outdoor activities are primary leisure. "
+            "Local traditions (folk festivals, craft traditions) are important; respecting heritage shows cultural engagement. "
+            "Student life is quieter than Berlin or Munich; focus is on studies and nature, not nightlife."
+        ),
+        short_description="Small-town charm, tight community, historic architecture, nature-focused, heritage pride.",
+        tags=["culture", "lemgo", "detmold", "small-town", "community", "tradition"],
+        priority=211,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="culture",
+        title="Craftsmanship Tradition and Maker Culture",
+        content=(
+            "The Lippe region has centuries-old craftsmanship traditions: woodworking, ceramics, textiles, etc. "
+            "This heritage influences student culture; respect for quality craftsmanship is embedded in design education. "
+            "Local artisans and makers are valued; learning from established craftspeople is encouraged. "
+            "DIY and maker culture is strong; workshops and shared studio spaces are accessible to students. "
+            "Design student culture celebrates handmade, artisanal approaches alongside digital design. "
+            "Visiting local craft workshops and markets shows cultural appreciation."
+        ),
+        short_description="Craftsmanship heritage, maker culture, artisanal values, tradition integration, DIY workshops.",
+        tags=["culture", "design", "craft", "lemgo", "detmold", "tradition"],
+        priority=212,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="culture",
+        title="Regional Food and Agricultural Heritage",
+        content=(
+            "The Lippe region is agricultural; local food reflects farm-to-table traditions. "
+            "Regional specialties: Lippische Piekert (potato cake), local cheeses, produce from regional farms. "
+            "Farmers markets are important social and shopping venues. Supporting local producers is a cultural value. "
+            "Food culture is hearty but simpler than Bavarian; focus is on fresh, local ingredients. "
+            "Small-town restaurants often feature traditional regional cooking. "
+            "Tipping: add 5-10% in restaurants; round up in cafés."
+        ),
+        short_description="Agricultural heritage, farm-to-table culture, regional specialties, farmers markets, local support.",
+        tags=["culture", "food", "regional", "lemgo", "detmold", "tradition"],
+        priority=213,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't dismiss small towns as boring; design culture and nature make them rich. "
+            "❌ Avoid disrespecting craft traditions or historic architecture; they're cultural anchors. "
+            "❌ Don't expect nightlife like major cities; student life is quieter and more nature-focused. "
+            "❌ Avoid arriving late to studio sessions; punctuality affects group work. "
+            "❌ Don't skip local engagement opportunities (craft workshops, farm visits); they're integrated into learning. "
+            "❌ Avoid loud behavior in quiet communities; respect for neighbors is important."
+        ),
+        short_description="Town respect, craft tradition, quiet demeanor, punctuality, community engagement.",
+        tags=["culture", "mistakes", "avoid", "lemgo", "detmold", "integration"],
+        priority=214,
+        source_name="Cultural Guide"
+    ),
+]
+
+# OSNABRÜCK CULTURAL TIPS (Hochschule Osnabrück - CALS business/exchange)
+osnabruck_cultural_tips = [
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="culture",
+        title="Peace and Reconciliation Heritage",
+        content=(
+            "Osnabrück has a unique historical identity: the city was center of 17th-century peace negotiations (Treaty of Osnabrück). "
+            "This heritage shaped local culture toward dialogue, negotiation, and peaceful conflict resolution. "
+            "The city celebrates this history; understanding it provides cultural context. "
+            "Modern Osnabrück attracts international students; the culture is notably open and inclusive. "
+            "International understanding and cross-cultural dialogue are valued cultural norms. "
+            "This makes Osnabrück a welcoming city for exchange students and internationals."
+        ),
+        short_description="Peace heritage, dialogue culture, international openness, historical significance, inclusive community.",
+        tags=["culture", "osnabruck", "history", "peace", "international", "identity"],
+        priority=220,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="culture",
+        title="Business and Entrepreneurial Culture",
+        content=(
+            "Osnabrück has a strong business sector with many family-owned companies and small enterprises. "
+            "Business school culture values practical application and real-world projects. "
+            "Internships and company partnerships are integral to studies. Networking is expected. "
+            "Small-to-medium enterprises (SMEs) are respected; learning from local businesses is encouraged. "
+            "The culture values hard work, reliability, and long-term thinking over quick profits. "
+            "Student entrepreneurship clubs and business networks are active."
+        ),
+        short_description="Business-oriented, SME culture, practical learning, networking expected, entrepreneur support.",
+        tags=["academics", "culture", "business", "osnabruck", "entrepreneurship", "practical"],
+        priority=221,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="culture",
+        title="Agricultural Roots and Sustainability",
+        content=(
+            "Osnabrück region is agricultural; farms and food production are important economically and culturally. "
+            "Sustainability and environmental responsibility are strong values. "
+            "Organic farming and local agricultural products are celebrated. "
+            "CALS (College of Agricultural and Life Sciences) students find natural alignment with local values. "
+            "Farmers markets and farm-to-table dining are normal. Supporting local agriculture is cultural practice. "
+            "Environmental consciousness is embedded in daily life (recycling, sustainability, nature respect)."
+        ),
+        short_description="Agricultural heritage, sustainability focus, organic culture, environmental values, farm economy.",
+        tags=["culture", "agriculture", "environment", "osnabruck", "sustainability", "values"],
+        priority=222,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="culture",
+        title="Regional Food and Local Commerce",
+        content=(
+            "Osnabrück has strong local food culture: Everstein cheese, local sausages, Münsterland produce, wheat beer. "
+            "Supporting local businesses (shops, restaurants, markets) is a cultural norm and value. "
+            "Chain stores exist but locals prefer independent shops and businesses. "
+            "Food quality and tradition matter more than cheapness. "
+            "Weekly farmers markets are vibrant community spaces, not just shopping venues. "
+            "Relationships with local shop owners are important; regulars are valued."
+        ),
+        short_description="Local food traditions, independent shops preferred, farmers markets important, relationship-based.",
+        tags=["culture", "food", "local", "osnabruck", "community", "commerce"],
+        priority=223,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't dismiss Osnabrück as boring or backward; it's historically significant and economically important. "
+            "❌ Avoid disrespecting the peace heritage; it's central to local identity. "
+            "❌ Don't skip internship/business networking opportunities; they're expected. "
+            "❌ Avoid preferring chain stores over local businesses; it's culturally tone-deaf. "
+            "❌ Don't assume everyone speaks English; make effort with German. "
+            "❌ Avoid loud or disruptive behavior; quiet professionalism is valued."
+        ),
+        short_description="Historical respect, business engagement, local support, German effort, quiet demeanor.",
+        tags=["culture", "mistakes", "avoid", "osnabruck", "integration", "history"],
+        priority=224,
+        source_name="Cultural Guide"
+    ),
+]
+
+# MANNHEIM CULTURAL TIPS (University or business programs)
+mannheim_cultural_tips = [
+    CityTipCreate(
+        city_slug="mannheim",
+        category="culture",
+        title="Grid City Layout and Urban Planning Excellence",
+        content=(
+            "Mannheim is unique in Europe: its city center is laid out on a grid system of 'quadrats' (squares labeled with letters and numbers). "
+            "This unusual layout was intentional (17th-century design); it reflects planning precision and rational thinking. "
+            "The grid makes the city extremely logical and navigable once you understand the system. "
+            "This layout philosophy extends to German values: order, efficiency, and logical organization. "
+            "Respecting this urban planning shows appreciation for local history and culture. "
+            "The grid becomes endearing to residents; it's a unique identifier for the city."
+        ),
+        short_description="Unique grid layout, rational planning, efficiency value, logical navigation, historical design.",
+        tags=["culture", "mannheim", "urban", "planning", "history", "identity"],
+        priority=230,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="culture",
+        title="Heidelberg Proximity and Regional Culture",
+        content=(
+            "Mannheim is about 15-20 minutes by train from Heidelberg, a major cultural and tourist attraction. "
+            "The region blends industrial Mannheim with romantic Heidelberg; cultures are different but complementary. "
+            "Day trips to Heidelberg for culture and sightseeing are common. "
+            "The Neckar River and surrounding wine regions make the area culturally rich. "
+            "Understanding both cities provides fuller picture of regional identity. "
+            "Regional pride exists but is less intense than Bavaria or Rhineland."
+        ),
+        short_description="Heidelberg proximity, regional blend, day trips accessible, wine regions, cultural richness.",
+        tags=["culture", "mannheim", "heidelberg", "region", "proximity", "travel"],
+        priority=231,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="culture",
+        title="Industrial Heritage and Modern Business Culture",
+        content=(
+            "Mannheim is historically industrial (chemical, automotive) but has modernized into a service and tech hub. "
+            "The city values innovation, efficiency, and quality. "
+            "Business and entrepreneurship are important; local companies are major employers. "
+            "Student culture blends academic with professional focus. Internships are normalized. "
+            "The culture is less 'fun party' and more 'work seriously, play moderately.' "
+            "Respect for business traditions and modern innovation balance the culture."
+        ),
+        short_description="Industrial heritage, business-focused, innovation valued, professional culture, balanced lifestyle.",
+        tags=["academics", "culture", "business", "mannheim", "industry", "practical"],
+        priority=232,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="culture",
+        title="Rhine Region and Water Culture",
+        content=(
+            "Mannheim sits on the Rhine River; water sports and river culture are part of life. "
+            "River walks, boat tours, and water sports (kayaking, rowing) are accessible and popular. "
+            "The Rhine promenade is a major social and recreational space. "
+            "Water quality and river conservation are important values. "
+            "Cycling along the river is a common leisure activity and commuting method. "
+            "The river provides psychological and recreational well-being for residents."
+        ),
+        short_description="Rhine River culture, water sports accessible, river recreation, cycling infrastructure.",
+        tags=["culture", "lifestyle", "mannheim", "rhine", "outdoor", "wellbeing"],
+        priority=233,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't mock the grid layout; it's a source of local pride. "
+            "❌ Avoid viewing Mannheim as just 'industrial' or boring; it's modern and vibrant. "
+            "❌ Don't dismiss business culture as dry; students have active social lives. "
+            "❌ Avoid arriving late; punctuality is important in business-oriented culture. "
+            "❌ Don't ignore proximity to Heidelberg; day trips are cultural integration. "
+            "❌ Avoid loud behavior in shared spaces; quiet respect is valued."
+        ),
+        short_description="Grid pride, city respect, business balance, punctuality, cultural exploration, quiet demeanor.",
+        tags=["culture", "mistakes", "avoid", "mannheim", "integration", "identity"],
+        priority=234,
+        source_name="Cultural Guide"
+    ),
+]
+
+# LEIPZIG CULTURAL TIPS (Alternative culture, publishing, arts)
+leipzig_cultural_tips = [
+    CityTipCreate(
+        city_slug="leipzig",
+        category="culture",
+        title="Alternative Culture and Creative Community",
+        content=(
+            "Leipzig is known for alternative, artistic, and activist culture. The city attracts creatives, artists, and free thinkers. "
+            "DIY culture is strong; self-organized projects, squats, and community initiatives are normalized. "
+            "The culture questions authority and values individual expression and authenticity. "
+            "Art, music, theater, and performance are central to city identity, not peripheral. "
+            "Gentrification is a sensitive issue; new arrivals should respect existing community and activism. "
+            "Students engage with social issues and activism as part of normal discourse."
+        ),
+        short_description="Alternative culture, DIY spirit, artist community, activism, authentic expression, art-focused.",
+        tags=["culture", "leipzig", "alternative", "art", "activism", "community"],
+        priority=240,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="culture",
+        title="Publishing, Literature, and Intellectual Tradition",
+        content=(
+            "Leipzig has a historic role in German book publishing and printing (since 15th century). "
+            "The city has intellectual and literary heritage; philosophical thought and discourse are valued. "
+            "The Leipzig Book Fair is one of Europe's largest; publishing and reading are cultural anchors. "
+            "University culture emphasizes ideas, debate, and critical thinking. "
+            "Student bookshops, reading groups, and literary events are active. "
+            "Engaging with ideas and discourse is normalized; coffee culture often includes philosophical discussion."
+        ),
+        short_description="Publishing legacy, intellectual culture, Book Fair tradition, literary tradition, critical discourse.",
+        tags=["culture", "leipzig", "literature", "ideas", "tradition", "intellectual"],
+        priority=241,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="culture",
+        title="Music and Nightlife Culture",
+        content=(
+            "Leipzig has vibrant independent music scene: experimental, indie, electronic, classical. "
+            "Live music venues are abundant and affordable. Student bands and DIY concerts are common. "
+            "Nightlife is active but distinctly alternative (independent clubs, underground venues, smaller bars). "
+            "The culture prioritizes authenticity over corporate entertainment. "
+            "Festival culture is strong (Wave-Gotik-Treffen for alternative culture, etc.). "
+            "Supporting independent venues over chains is cultural practice."
+        ),
+        short_description="Independent music scene, live venues abundant, DIY concerts, alternative nightlife, festivals.",
+        tags=["culture", "leipzig", "music", "nightlife", "art", "lifestyle"],
+        priority=242,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="culture",
+        title="Affordability and Student-Friendly Culture",
+        content=(
+            "Leipzig is one of Germany's most affordable cities; rent, food, and entertainment are very cheap. "
+            "This affordability attracts students and creatives on tight budgets; financial constraints are normalized. "
+            "Shared apartments (WGs) are standard and very affordable (€150-300/month). "
+            "Student discounts are generous. Free or very cheap cultural events are abundant. "
+            "Part-time work is normalized; many students work and study simultaneously. "
+            "The affordability creates space for experimentation and risk-taking in artistic pursuits."
+        ),
+        short_description="Affordable living, cheap WGs, generous student discounts, free events, part-time work normalized.",
+        tags=["culture", "leipzig", "budget", "affordable", "student life", "practical"],
+        priority=243,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't treat alternative culture as a costume or tourist experience; it's a real living community. "
+            "❌ Avoid conspicuous consumption or 'fancy' behavior; it's culturally tone-deaf in this context. "
+            "❌ Don't disrespect or mock activist/political engagement; discourse is taken seriously. "
+            "❌ Avoid chain stores when local alternatives exist; support independent businesses. "
+            "❌ Don't assume everyone is poor; respect for financial diversity exists. "
+            "❌ Avoid dismissing the city as just 'East German poor'; it's vibrant and creative."
+        ),
+        short_description="Culture respect, authenticity, activism respect, local support, financial sensitivity, city appreciation.",
+        tags=["culture", "mistakes", "avoid", "leipzig", "integration", "values"],
+        priority=244,
+        source_name="Cultural Guide"
+    ),
+]
+
+# EBS CULTURAL TIPS (Business school in Rhineland / Wine region)
+ebs_cultural_tips = [
+    CityTipCreate(
+        city_slug="ebs",
+        category="culture",
+        title="Rhineland Tradition and Wine Region Culture (Rheingau/Wiesbaden)",
+        content=(
+            "EBS campuses are in Wiesbaden (spa city) and Oestrich-Winkel (wine region). The Rhineland-Hesse region has centuries of tradition. "
+            "Wine culture (Rheingau Riesling) is integral to local identity and daily social life. "
+            "The region values tradition, craftsmanship, and heritage. Historic architecture and traditions are respected. "
+            "Wiesbaden is a historic spa city with Prussian architectural heritage; understanding this context enriches experience. "
+            "Local pride in region is strong; respecting regional identity shows cultural engagement. "
+            "Wine tastings, vineyard walks, and regional festivals are normal activities."
+        ),
+        short_description="Rheingau wine heritage, spa culture, tradition-focused, regional pride, historic architecture.",
+        tags=["culture", "ebs", "wiesbaden", "rheingau", "wine", "tradition"],
+        priority=250,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="culture",
+        title="Elite Business School Culture and Professional Expectations",
+        content=(
+            "EBS is an elite, internationally-focused business school. The culture is formal, professional, and ambitious. "
+            "Business formal dress is normalized; appearance and professionalism matter. "
+            "Networking is emphasized as core skill; building relationships with peers and alumni is expected. "
+            "Competitive but collaborative; group projects have high expectations. "
+            "International students (majority are international) create multicultural, English-heavy environment. "
+            "Career and professional development are central; internships and job placement are prioritized. "
+            "Excellence and ambition are cultural norms."
+        ),
+        short_description="Elite culture, professional formality, networking emphasis, ambitious, international environment.",
+        tags=["academics", "culture", "business", "ebs", "professional", "elite"],
+        priority=251,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="culture",
+        title="Two-Location Management and Commuting Reality",
+        content=(
+            "EBS operates two campuses: Wiesbaden (administrative, some classes) and Oestrich-Winkel (main campus). "
+            "Students regularly commute between locations; planning is essential. Regional trains are reliable. "
+            "Different campuses have different vibes: Wiesbaden is more formal/urban, Oestrich-Winkel is village/wine-focused. "
+            "Housing choice affects commute burden; consider location carefully before signing lease. "
+            "Commute time becomes part of daily reality; build it into schedule planning. "
+            "The split campus creates unique two-location community experience."
+        ),
+        short_description="Two-campus system, regular commuting, location choice impacts, regional transit reliable.",
+        tags=["culture", "practical", "ebs", "commute", "housing", "planning"],
+        priority=252,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="culture",
+        title="International Student Integration and Diversity",
+        content=(
+            "EBS is majority international (60%+ international students). English is primary language despite being in Germany. "
+            "German language not required for studies; many courses taught in English. "
+            "However, learning German shows respect and helps with local integration. "
+            "Multicultural student body means diverse perspectives are normalized. "
+            "International career focus; many peers are targeting multinational companies and global careers. "
+            "Social mix is global but tends toward business-oriented, ambitious individuals."
+        ),
+        short_description="International majority, English-primary, global career focus, multicultural environment, German optional.",
+        tags=["culture", "international", "ebs", "language", "diversity", "community"],
+        priority=253,
+        source_name="Cultural Guide"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="culture",
+        title="Common Cultural Mistakes to Avoid",
+        content=(
+            "❌ Don't underestimate formality expectations; professional appearance and behavior matter. "
+            "❌ Avoid treating networking as optional; it's central to success. "
+            "❌ Don't assume German language isn't important; locals appreciate effort. "
+            "❌ Avoid arriving late to business school events; punctuality is critical. "
+            "❌ Don't dismiss wine culture as 'touristy'; it's genuine community tradition. "
+            "❌ Avoid viewing commuting as an inconvenience; it's part of EBS experience."
+        ),
+        short_description="Professional formality, networking importance, language effort, punctuality, tradition respect.",
+        tags=["culture", "mistakes", "avoid", "ebs", "integration", "business"],
+        priority=254,
+        source_name="Cultural Guide"
+    ),
+]
+
+# Now append all city-specific cultural tips
+bonn_tips.extend(german_exchange_cultural_tips)
+wurzburg_tips.extend(german_exchange_cultural_tips)
+stuttgart_tips.extend(german_exchange_cultural_tips + stuttgart_cultural_tips)
+aachen_tips.extend(german_exchange_cultural_tips + aachen_cultural_tips)
+lemgo_tips.extend(german_exchange_cultural_tips + design_exchange_cultural_tips)
+detmold_tips.extend(german_exchange_cultural_tips + design_exchange_cultural_tips)
+osnabruck_tips.extend(german_exchange_cultural_tips + osnabruck_cultural_tips)
+vallendar_tips.extend(german_exchange_cultural_tips + vallendar_cultural_tips)
+mannheim_tips.extend(german_exchange_cultural_tips + mannheim_cultural_tips)
+leipzig_tips.extend(german_exchange_cultural_tips + leipzig_cultural_tips)
+zurich_tips.extend(zurich_cultural_tips)
+jena_tips.extend(german_exchange_cultural_tips + jena_cultural_tips)
+ebs_tips.extend(german_exchange_cultural_tips + ebs_cultural_tips)
