@@ -42,7 +42,8 @@ stuttgart_city = CityCreate(
         "note": "Stuttgart has a temperate climate with warm summers and cool winters."
     },
     image_url=None,
-    tags=["engineering", "culture", "green spaces", "state capital"],
+    description="Stuttgart is the capital of Baden-Württemberg and Germany's automotive heart, home to Daimler and Porsche. The city seamlessly blends industrial excellence with vibrant cultural offerings, beautiful parks, and a strong international business community. Known for high quality of life, excellent public transport, and access to both wine country and the Swabian Alps.",
+    tags=["engineering", "culture", "green spaces", "state capital", "automotive", "business"],
     priority=10,
     source_name="UF Stuttgart program page"
 )
@@ -75,12 +76,17 @@ bonn_city = CityCreate(
         "Proximity to Cologne and Düsseldorf"
     ],
     industries=["Education", "Culture", "Tourism"],
+    cost_of_living_tier="moderate",
+    expat_friendliness="high",
+    international_airport="Cologne Bonn Airport (CGN)",
+    airport_distance_km=26,
     description=(
         "The birthplace of Beethoven, Bonn is a lively academic town and cultural center on the picturesque Rhine River. "
         "Bonn is a leading research university and one of Europe's most important institutions of higher education, with alumni including five Nobel Prize winners. "
         "The city is known for its festivals, museums, and proximity to Cologne and Düsseldorf."
     ),
     tags=["university", "culture", "Beethoven", "Rhine", "research", "festivals", "museums"],
+    priority=8,
     climate={
         "type": "temperate oceanic",
         "summers": "warm",
@@ -133,7 +139,11 @@ mannheim_city = CityCreate(
         "winters": "cool",
         "note": "Mannheim has a temperate climate with warm summers and cool winters."
     },
-    image_url=None
+    image_url=None,
+    description="Mannheim is an energetic and dynamic city at the confluence of the Rhine and Neckar Rivers in Baden-Württemberg. Home to the prestigious University of Mannheim, the city is known for its distinctive grid-pattern city center, stunning Baroque palace (Schloss), and vibrant cultural and commercial scene. A major trade hub with strong international business connections, Mannheim balances academic excellence with urban vitality and cultural richness.",
+    tags=["university", "business", "Baroque palace", "Rhine", "exchange", "commerce", "culture"],
+    priority=9,
+    source_name="UF Mannheim program page"
 )
 from app.schemas.city import CityCreate
 
@@ -184,13 +194,17 @@ hamburg_city = CityCreate(
         "winters": "mild but wet and grey",
         "note": "Northern German port climate with frequent rain, overcast skies, and relatively mild seasonal extremes"
     },
-    image_url=None
+    image_url=None,
+    description="Hamburg is Germany's gateway to the world, a major port city with vibrant culture, canals, and maritime heritage.",
+    tags=["port", "maritime", "culture", "canals", "gateway", "exchange"],
+    priority=8,
+    source_name="UF Hamburg program page"
 )
 
 ebs_city = CityCreate(
     slug="ebs",
-    name="Wiesbaden / Oestrich-Winkel",
-    local_name="Wiesbaden / Oestrich-Winkel",
+    name="Wiesbaden",
+    local_name="Wiesbaden",
     country="Germany",
     country_code="DE",
     region="Hesse",
@@ -229,8 +243,9 @@ ebs_city = CityCreate(
         "note": "Wiesbaden and Oestrich-Winkel have a temperate climate with warm summers and cool winters."
     },
     image_url=None,
-    tags=["business", "law", "graduate", "exchange", "Wiesbaden", "Oestrich-Winkel", "Rheingau"],
-    priority=10,
+    description="EBS Universität für Wirtschaft und Recht is a leading private university split between Wiesbaden and Oestrich-Winkel in the Rheingau wine region. EBS is known for its rigorous business and law programs, strong international network, and high-quality executive education. Located in Germany's cultural heartland, it offers a unique blend of academic excellence and access to the picturesque Rhine Valley.",
+    tags=["business", "law", "graduate", "exchange", "Wiesbaden", "Oestrich-Winkel", "Rheingau", "private university"],
+    priority=9,
     source_name="UF EBS program page"
 )
 
@@ -276,8 +291,9 @@ eltville_city = CityCreate(
         "note": "Eltville has a temperate climate with warm summers and cool winters."
     },
     image_url=None,
-    tags=["Pharmacy", "graduate", "independent study", "Eltville", "Rheingau"],
-    priority=10,
+    description="Eltville am Rhein is a picturesque town nestled in the UNESCO-protected Rheingau wine region along the Rhine River. Known for its medieval castle, award-winning vineyards, and peaceful riverside setting, Eltville offers an ideal environment for pharmacy students seeking a combination of rigorous academics and serene natural beauty. The town balances authentic German charm with accessibility to major cities like Wiesbaden and Frankfurt.",
+    tags=["Pharmacy", "graduate", "independent study", "Eltville", "Rheingau", "wine region", "Rhine"],
+    priority=8,
     source_name="UF Eltville Pharmacy program page"
 )
 
@@ -326,7 +342,12 @@ berlin_city = CityCreate(
         "summers": "warm to hot",
         "winters": "cold, grey, occasional snow",
         "note": "Berlin has four distinct seasons and a mix of long grey winters and lively summers."
-    }
+    },
+    image_url=None,
+    description="Berlin is a dynamic capital city of history, culture, art, innovation, and vibrant nightlife. A major study abroad destination with world-class museums and international student community.",
+    tags=["history", "art", "innovation", "culture", "exchange", "CLAS", "science"],
+    priority=9,
+    source_name="UF Berlin programs page"
 )
 
 detmold_city = CityCreate(
@@ -365,12 +386,18 @@ detmold_city = CityCreate(
     cost_of_living_tier="moderate",
     expat_friendliness="moderate",
     international_airport="Paderborn Lippstadt Airport (PAD)",
+    airport_distance_km=40,
     climate={
         "type": "temperate",
         "summers": "mild to warm",
         "winters": "cool and overcast",
         "note": "Green inland climate with easy access to forests and outdoor excursions."
-    }
+    },
+    image_url=None,
+    description="Detmold is a smaller German university town surrounded by nature, architecture, and regional history. Home to design and architecture education programs.",
+    tags=["design", "architecture", "nature", "exchange", "construction"],
+    priority=7,
+    source_name="UF Detmold program page"
 )
 
 osnabruck_city = CityCreate(
@@ -415,7 +442,12 @@ osnabruck_city = CityCreate(
         "summers": "mild to warm",
         "winters": "cool and overcast",
         "note": "Green inland climate, easy access to forests and outdoor excursions."
-    }
+    },
+    image_url=None,
+    description="Osnabrück is a historic university town with vibrant student life, cultural festivals, and strong international connections. Gateway to nature and innovation.",
+    tags=["historic", "student life", "international", "exchange", "engineering"],
+    priority=7,
+    source_name="UF Osnabrück program page"
 )
 
 vallendar_city = CityCreate(
@@ -457,7 +489,12 @@ vallendar_city = CityCreate(
         "summers": "warm",
         "winters": "cool",
         "note": "Picturesque river valley climate with mild winters and warm summers."
-    }
+    },
+    image_url=None,
+    description="Vallendar is a small town in the UNESCO Central Rhine Valley, surrounded by vineyards and historic monuments. Ideal for business and international studies.",
+    tags=["wine region", "Rhine valley", "UNESCO", "exchange", "business"],
+    priority=7,
+    source_name="UF Vallendar program page"
 )
 
 
@@ -504,7 +541,12 @@ aachen_city = CityCreate(
         "summers": "mild to warm",
         "winters": "cool",
         "note": "Border city climate, lively student community, historic and modern mix."
-    }
+    },
+    image_url=None,
+    description="Aachen is the westernmost German city, famous for student life, rich history, and international culture. Home to renowned engineering programs.",
+    tags=["border city", "engineering", "international", "exchange", "RWTH"],
+    priority=8,
+    source_name="UF Aachen program page"
 )
 
 lemgo_city = CityCreate(
@@ -549,7 +591,11 @@ lemgo_city = CityCreate(
         "summers": "mild to warm",
         "winters": "cool and overcast",
         "note": "Green inland climate, easy access to forests and outdoor excursions."
-    }
+    },
+    description="Lemgo is a historic town in the Lippe district of North Rhine-Westphalia, home to Technische Hochschule Ostwestfalen-Lippe (TH OWL). Surrounded by natural beauty including the Teutoburg Forest, scenic lakes like Schieder See, and the dramatic rock formations of Externsteine, Lemgo is an ideal setting for interior design and creative studies. The town offers a peaceful, nature-focused environment while maintaining excellent connections to larger cities.",
+    tags=["design", "interior design", "TH OWL", "exchange", "Teutoburg Forest", "nature"],
+    priority=7,
+    source_name="UF Lemgo program page"
 )
 
 munich_city = CityCreate(
@@ -595,7 +641,12 @@ munich_city = CityCreate(
         "summers": "warm",
         "winters": "cold",
         "note": "Mix of traditional and modern, vibrant student life, and international culture."
-    }
+    },
+    image_url=None,
+    description="Munich is one of Germany's safest and most beautiful cities, blending tradition with modernity, nature with culture. A premier study abroad destination with excellent universities.",
+    tags=["Oktoberfest", "engineering", "culture", "exchange", "Global E3", "pharmacy"],
+    priority=9,
+    source_name="UF Munich programs page"
 )
 
 jena_city = CityCreate(
@@ -639,46 +690,12 @@ jena_city = CityCreate(
         "summers": "warm",
         "winters": "cold",
         "note": "University city with rich scientific tradition and lively student life."
-    }
-)
-
-leipzig_city = CityCreate(
-    slug="leipzig",
-    name="Leipzig",
-    local_name="Leipzig",
-    country="Germany",
-    country_code="DE",
-    region="Saxony",
-    region_type="city",
-    is_city_state=False,
-    capital_of_region=False,
-    population=620000,
-    population_approx=True,
-    coordinates={"lat": 51.3397, "lng": 12.3731},
-    timezone="Europe/Berlin",
-    currency="EUR",
-    languages_official=["German"],
-    dialect="Saxon",
-    english_friendliness="moderate",
-    tagline="Creative university city known for affordable living, music history, and startup energy",
-    known_for=[
-        "Leipzig University",
-        "Music heritage (Bach, Gewandhaus)",
-        "Plagwitz and alternative culture",
-        "Strong startup and creative scene",
-        "Fast rail links to Berlin and Dresden"
-    ],
-    industries=["Education", "Technology", "Creative Industries", "Logistics", "Research"],
-    cost_of_living_tier="moderate",
-    expat_friendliness="high",
-    international_airport="Leipzig/Halle Airport (LEJ)",
-    airport_distance_km=18,
-    climate={
-        "type": "temperate",
-        "summers": "warm",
-        "winters": "cool",
-        "note": "Leipzig has four seasons and generally affordable urban living for students."
-    }
+    },
+    image_url=None,
+    description="Jena is a historic university city in Thuringia, known for science research and vibrant student community. Gateway to nature and intellectual engagement.",
+    tags=["science", "research", "historic", "exchange", "TASSEP"],
+    priority=7,
+    source_name="UF Jena program page"
 )
 
 vienna_city = CityCreate(
@@ -724,7 +741,64 @@ vienna_city = CityCreate(
         "summers": "warm",
         "winters": "cold",
         "note": "Imperial city with vibrant culture, excellent infrastructure, and abundant green space."
-    }
+    },
+    image_url=None,
+    description="Vienna is an imperial capital blending Baroque architecture, world-class art, classical music heritage, and modern design. A major hub for international study abroad programs.",
+    tags=["imperial", "culture", "music", "exchange", "science", "TASSEP"],
+    priority=9,
+    source_name="UF Vienna programs page"
+)
+
+leipzig_city = CityCreate(
+    slug="leipzig",
+    name="Leipzig",
+    local_name="Leipzig",
+    country="Germany",
+    country_code="DE",
+    region="Saxony",
+    region_type="city",
+    is_city_state=False,
+    capital_of_region=False,
+    population=620000,
+    population_approx=True,
+    coordinates={"lat": 51.3397, "lng": 12.3731},
+    timezone="Europe/Berlin",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="Upper Saxon",
+    english_friendliness="moderate",
+    tagline="Dynamic city of music, culture, and creativity in Saxony",
+    known_for=[
+        "Universität Leipzig",
+        "Bach and classical music heritage",
+        "Peaceful Revolution of 1989",
+        "Thriving arts and creative scene",
+        "Affordable cost of living",
+        "Spinnerei arts district"
+    ],
+    industries=[
+        "Education",
+        "Culture",
+        "Media",
+        "IT and Technology",
+        "Automotive",
+        "Tourism"
+    ],
+    cost_of_living_tier="low",
+    expat_friendliness="moderate",
+    international_airport="Leipzig/Halle Airport (LEJ)",
+    airport_distance_km=18,
+    climate={
+        "type": "continental",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Leipzig has a continental climate with warm summers and cold, snowy winters."
+    },
+    image_url=None,
+    description="Leipzig is a dynamic city of music, culture, and creativity in Saxony. Known for Bach heritage, affordable living, and vibrant student scene.",
+    tags=["music", "culture", "affordable", "history", "arts"],
+    priority=8,
+    source_name="General Leipzig info"
 )
 
 zurich_city = CityCreate(
@@ -733,7 +807,7 @@ zurich_city = CityCreate(
     local_name="Zürich",
     country="Switzerland",
     country_code="CH",
-    region="Canton of Zurich",
+    region="Zürich",
     region_type="canton_capital",
     is_city_state=False,
     capital_of_region=True,
@@ -743,72 +817,39 @@ zurich_city = CityCreate(
     timezone="Europe/Zurich",
     currency="CHF",
     languages_official=["German"],
-    dialect="Swiss German (Züritüütsch)",
+    dialect="Züritüütsch (Swiss German)",
     english_friendliness="high",
-    tagline="Switzerland's largest city with top public transit, universities, and a high quality of life",
+    tagline="Switzerland's largest city, blending medieval charm with modern sophistication at the foot of the Alps",
     known_for=[
-        "Lake Zurich",
-        "Financial center",
-        "ETH Zurich and universities",
-        "Museums and arts",
-        "Gateway to the Alps"
+        "Financial capital of Switzerland",
+        "ETH Zürich and University of Zurich",
+        "Lake Zurich and Alpine scenery",
+        "Old Town (Altstadt)",
+        "World-class museums and galleries",
+        "High quality of life"
     ],
     industries=[
-        "Finance",
+        "Finance and Banking",
         "Technology",
         "Education",
-        "Media",
-        "Tourism"
+        "Tourism",
+        "Life Sciences"
     ],
-    cost_of_living_tier="very_high",
+    cost_of_living_tier="very high",
     expat_friendliness="high",
     international_airport="Zurich Airport (ZRH)",
-    airport_distance_km=12,
+    airport_distance_km=11,
     climate={
-        "type": "temperate",
-        "summers": "mild to warm",
-        "winters": "cool and often wet",
-        "note": "Zurich has four seasons and excellent year-round mobility for students."
-    }
-)
-
-wurzburg_city = CityCreate(
-    slug="wurzburg",
-    name="Würzburg",
-    local_name="Würzburg",
-    country="Germany",
-    country_code="DE",
-    region="Bavaria",
-    region_type="city",
-    is_city_state=False,
-    capital_of_region=False,
-    population=128000,
-    population_approx=True,
-    coordinates={"lat": 49.7913, "lng": 9.9534},
-    timezone="Europe/Berlin",
-    currency="EUR",
-    languages_official=["German"],
-    dialect="Franconian",
-    english_friendliness="moderate",
-    tagline="Historic Bavarian university city known for wine culture and baroque architecture",
-    known_for=[
-        "University of Würzburg",
-        "Franconian wine region",
-        "Baroque architecture",
-        "Main River",
-        "Romantic Road gateway"
-    ],
-    industries=["Education", "Tourism", "Wine", "Research"],
-    cost_of_living_tier="moderate",
-    expat_friendliness="moderate",
-    international_airport="Frankfurt Airport (FRA)",
-    airport_distance_km=120,
-    climate={
-        "type": "temperate",
+        "type": "temperate oceanic",
         "summers": "warm",
-        "winters": "cool",
-        "note": "Würzburg has warm summers and cool winters in a river valley climate."
-    }
+        "winters": "cold",
+        "note": "Zurich has a temperate climate with warm summers and cold winters. Snow is common in winter months."
+    },
+    image_url=None,
+    description="Zurich is Switzerland's largest city, a financial and cultural hub blending medieval charm with modern sophistication at the foot of the Alps.",
+    tags=["finance", "Alps", "culture", "exchange", "technology"],
+    priority=9,
+    source_name="UF Zurich program page"
 )
 
 salzburg_city = CityCreate(
@@ -829,25 +870,87 @@ salzburg_city = CityCreate(
     languages_official=["German"],
     dialect="Austro-Bavarian",
     english_friendliness="high",
-    tagline="Alpine cultural city famous for music, history, and UNESCO heritage",
+    tagline="Birthplace of Mozart, Baroque masterpiece at the Austrian-German border",
     known_for=[
-        "Mozart",
-        "UNESCO old town",
-        "Festivals and concerts",
-        "Alpine setting",
-        "Austrian-German cultural crossroads"
+        "Mozart's birthplace",
+        "Baroque architecture",
+        "The Sound of Music",
+        "Salzburg Festival",
+        "Hohensalzburg Fortress",
+        "Alpine scenery and proximity to German border"
     ],
-    industries=["Tourism", "Culture", "Education", "Hospitality"],
+    industries=[
+        "Tourism",
+        "Culture",
+        "Education",
+        "Music"
+    ],
     cost_of_living_tier="high",
     expat_friendliness="high",
     international_airport="Salzburg Airport (SZG)",
     airport_distance_km=4,
     climate={
-        "type": "continental",
-        "summers": "mild to warm",
+        "type": "oceanic",
+        "summers": "warm",
         "winters": "cold",
-        "note": "Salzburg has four distinct seasons and nearby Alpine weather influence."
-    }
+        "note": "Salzburg has a temperate oceanic climate with warm summers and cold, snowy winters. The Alps influence weather patterns."
+    },
+    image_url=None,
+    description="Salzburg is the birthplace of Mozart and a Baroque masterpiece at the Austrian-German border. A premier destination for music, culture, and business studies.",
+    tags=["Mozart", "Baroque", "music", "exchange", "Alps"],
+    priority=9,
+    source_name="UF Salzburg programs page"
+)
+
+wurzburg_city = CityCreate(
+    slug="wurzburg",
+    name="Würzburg",
+    local_name="Würzburg",
+    country="Germany",
+    country_code="DE",
+    region="Bavaria",
+    region_type="city",
+    is_city_state=False,
+    capital_of_region=False,
+    population=130000,
+    population_approx=True,
+    coordinates={"lat": 49.7913, "lng": 9.9534},
+    timezone="Europe/Berlin",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="East Franconian",
+    english_friendliness="moderate",
+    tagline="Baroque university city on the Main River, gateway to Bavaria's Romantic Road",
+    known_for=[
+        "Universität Würzburg",
+        "Würzburg Residence (UNESCO World Heritage)",
+        "Franconian wine",
+        "Romantic Road starting point",
+        "Baroque architecture",
+        "Main River promenade"
+    ],
+    industries=[
+        "Education",
+        "Wine production",
+        "Tourism",
+        "Healthcare",
+        "Research"
+    ],
+    cost_of_living_tier="moderate",
+    expat_friendliness="moderate",
+    international_airport="Frankfurt Airport (FRA)",
+    airport_distance_km=120,
+    climate={
+        "type": "continental",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Würzburg has a continental climate with warm summers and cold winters. The Main River valley provides a mild microclimate for viticulture."
+    },
+    image_url=None,
+    description="Würzburg is a Baroque university city on the Main River and gateway to Bavaria's Romantic Road. Known for wine, history, and research excellence.",
+    tags=["Baroque", "wine", "Romantic Road", "exchange", "TASSEP"],
+    priority=8,
+    source_name="UF Würzburg program page"
 )
 
 bern_city = CityCreate(

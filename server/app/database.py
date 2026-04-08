@@ -67,10 +67,6 @@ class PhrasesVocabularyDB(DatabaseManager):
     def phrase_categories(self) -> Any:
         return self.get_collection("phrase_categories")
 
-    @property
-    def phrase_bookmarks(self) -> AsyncIOMotorCollection:
-        return self.get_collection("phrase_bookmarks")
-
 
 class Database:
     """Main database connection manager for all databases"""

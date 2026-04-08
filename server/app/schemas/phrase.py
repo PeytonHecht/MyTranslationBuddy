@@ -16,6 +16,7 @@ class PhraseCategory(str, Enum):
     SHOPPING = "shopping"
     EMERGENCY = "emergency"
     EXCLAMATIONS = "exclamations"
+    DAILY_LIFE = "daily_life"
 
 
 class PhraseRegister(str, Enum):
@@ -23,6 +24,27 @@ class PhraseRegister(str, Enum):
     INFORMAL = "informal"
     NEUTRAL = "neutral"
     FORMAL = "formal"
+
+
+class PhraseType(str, Enum):
+    """Differentiates standard German from regional/local variations"""
+    STANDARD = "standard"
+    REGIONAL = "regional"
+    SLANG = "slang"
+
+
+class PhraseBase(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    """Base schema for German phrases"""
+    # Main content
+    german_phrase: str = Field(..., description="The German phrase")
+    english_translation: str = Field(..., description="English translation")
+    pronunciation: Optional[str] = Field(None, description="Phonetic pronunciation guide")
+    
+    # Categorization
+    category: PhraseCategory = Field(..., description="Phrase category")
+    register: PhraseRegister = Field(default=PhraseRegister.NEUTRAL, description="Formality level")
     phrase_type: PhraseType = Field(default=PhraseType.STANDARD, description="Standard German, regional dialect, or local slang")
     
     # Geographic scope: can be general (all German-speaking), regional, or city-specific
@@ -126,6 +148,40 @@ class PhraseRegister(str, Enum):
             seen.add(key)
             normalized.append(item)
         return normalized
+
+    @model_validator(mode="after")
+    def auto_assign_phrase_type(self):
+        """Auto-assign phrase_type based on dialect_name and tags when not explicitly set.
+        
+        Logic:
+        - If tags contain 'slang' or 'local_feel' → SLANG
+        - If dialect_name is set → REGIONAL
+        - Otherwise → STANDARD (default)
+        """
+        # Only auto-assign if phrase_type is still the default
+        if self.phrase_type == PhraseType.STANDARD:
+            tag_lower = {t.lower() for t in self.tags}
+            if tag_lower & {"slang", "local_feel"}:
+                self.phrase_type = PhraseType.SLANG
+            elif self.dialect_name:
+                self.phrase_type = PhraseType.REGIONAL
+        return self
+
+
+class PhraseCreate(PhraseBase):
+    """Schema for creating phrases"""
+    pass
+
+
+class PhraseUpdate(BaseModel):
+    """Schema for partially updating phrases"""
+    model_config = ConfigDict(extra="forbid")
+
+    german_phrase: Optional[str] = None
+    english_translation: Optional[str] = None
+    pronunciation: Optional[str] = None
+    category: Optional[PhraseCategory] = None
+    register: Optional[PhraseRegister] = None
     phrase_type: Optional[PhraseType] = None
     city_slugs: Optional[List[str]] = None
     dialect_name: Optional[str] = None

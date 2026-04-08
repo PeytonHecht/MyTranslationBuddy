@@ -90,6 +90,17 @@ async def get_all_phrases(
     city_slug: Optional[str] = None,
     difficulty: Optional[int] = Query(None, ge=1, le=5),
     register: Optional[str] = None,
+    phrase_type: Optional[str] = None,
+):
+    """
+    Get all phrases with optional filtering.
+
+    Query Parameters:
+    - skip/limit: Pagination
+    - category: Filter by category
+    - city_slug: Filter by city
+    - difficulty: Filter by difficulty (1-5)
+    - register: Filter by register (formal, informal, etc.)
     - phrase_type: Filter by type (standard, regional, slang)
 
     Returns:
@@ -102,10 +113,21 @@ async def get_all_phrases(
     """
     try:
         logger.info(f"Getting phrases: skip={skip}, limit={limit}, category={category}")
+        phrases_db = db.phrases_vocabulary
 
         category = _normalize_optional(category)
         city_slug = _normalize_optional(city_slug)
         register = _normalize_optional(register)
+
+        query_filter = {}
+        if category:
+            query_filter["category"] = category.lower()
+        if city_slug:
+            query_filter["city_slugs"] = city_slug.lower()
+        if difficulty:
+            query_filter["difficulty_level"] = difficulty
+        if register:
+            query_filter["register"] = register.lower()
         if phrase_type:
             query_filter["phrase_type"] = phrase_type.lower()
 
