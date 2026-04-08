@@ -231,6 +231,7 @@ const DialectTips = () => {
   const [heroVisible, setHeroVisible] = useState(false);
   const [countryFilter, setCountryFilter] = useState(new Set());
   const [cityDetailLoading, setCityDetailLoading] = useState(false);
+  const [myCitySlugs, setMyCitySlugs] = useState(() => { try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; } });
 
   const userEmail = localStorage.getItem("email") || "";
   const userName = localStorage.getItem("full_name") || "";
@@ -249,6 +250,22 @@ const DialectTips = () => {
 
   useEffect(() => { fetchCities(); fetchPhraseCategories(); if (userEmail) fetchBookmarks(); const p = searchParams.get("city"); if (p) setSelectedCity(p); }, []);
   useEffect(() => { window.scrollTo(0, 0); setTimeout(() => setHeroVisible(true), 100); }, []);
+
+  // Sync user profile from server on mount (ensures myCities are fresh)
+  useEffect(() => {
+    if (!userEmail) return;
+    axios.get(`${BACKEND_URL}/user/profile?email=${encodeURIComponent(userEmail)}`)
+      .then(res => {
+        const d = res.data;
+        if (d.study_abroad_city) localStorage.setItem("study_abroad_city", d.study_abroad_city);
+        if (d.full_name) localStorage.setItem("full_name", d.full_name);
+        if (Array.isArray(d.saved_cities) && d.saved_cities.length > 0) {
+          localStorage.setItem("myCities", JSON.stringify(d.saved_cities));
+          setMyCitySlugs(d.saved_cities);
+        }
+      })
+      .catch(() => {});
+  }, [userEmail]);
   useEffect(() => {
     if (selectedCity) {
       setCityDetailLoading(true);
@@ -269,7 +286,7 @@ const DialectTips = () => {
 
   const fetchCities = async () => {
     setIsLoading(true);
-    try { const res = await axios.get(`${BACKEND_URL}/cities`); const data = res.data.data || res.data; setCities(Array.isArray(data) ? data : []); }
+    try { const res = await axios.get(`${BACKEND_URL}/cities/?limit=100`); const data = res.data.data || res.data; setCities(Array.isArray(data) ? data : []); }
     catch (err) { console.error("Failed to load cities:", err); setErrorMsg("Could not load cities."); }
     finally { setIsLoading(false); }
   };
@@ -444,7 +461,7 @@ const DialectTips = () => {
           transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"
         }}>
           {/* Single-row: search + country filters */}
-          <div style={{display:"flex",gap:"0.65rem",alignItems:"center",flexWrap:"wrap"}}>
+          <div style={{display:"flex",gap:"0.65rem",alignItems:"center",flexWrap:"wrap",minHeight:44}}>
             <div style={{display:"flex",alignItems:"center",gap:"0.5rem",flex:"1 1 280px",padding:"0.6rem 1rem",borderRadius:"0.75rem",border:"1px solid #E5E7EB",backgroundColor:"rgba(255,255,255,0.85)",backdropFilter:"blur(6px)",transition:"border-color 0.2s",boxShadow:"0 1px 3px rgba(0,0,0,0.04)"}}>
               <Search size={16} color="#9CA3AF" />
               <input
@@ -473,13 +490,21 @@ const DialectTips = () => {
                 border: isOn ? "1.5px solid #0021A5" : "1.5px solid #E5E7EB",
                 color: isOn ? "#fff" : "#374151",cursor:"pointer",fontSize:"0.8rem",fontWeight:600,transition:"all 0.2s",
                 boxShadow: isOn ? "0 2px 8px rgba(0,33,165,0.2)" : "0 1px 2px rgba(0,0,0,0.04)",
-                transform: isOn ? "scale(1.03)" : "none",
                 backdropFilter:"blur(6px)"
               }}>{c.flag} {c.label}</button>
             );})}
             {countryFilter.size > 0 && (
-              <button onClick={()=>setCountryFilter(new Set())} style={{display:"flex",alignItems:"center",gap:"0.25rem",padding:"0.5rem 0.85rem",border:"1px solid #FCA5A5",borderRadius:"0.65rem",background:"#FEF2F2",color:"#DC2626",cursor:"pointer",fontSize:"0.75rem",fontWeight:600,transition:"all 0.15s"}}>
-                <X size={12}/> Clear
+              <button onClick={()=>setCountryFilter(new Set())} style={{
+                display:"flex",alignItems:"center",gap:"0.35rem",padding:"0.5rem 0.95rem",borderRadius:"0.65rem",
+                background:"rgba(220,38,38,0.08)",
+                border:"1.5px solid rgba(220,38,38,0.35)",
+                color:"#DC2626",cursor:"pointer",fontSize:"0.8rem",fontWeight:600,
+                transition:"opacity 0.2s, transform 0.2s",
+                boxShadow:"0 1px 2px rgba(220,38,38,0.06)",
+                backdropFilter:"blur(6px)",
+                animation:"fadeIn 0.15s ease-out"
+              }}>
+                <X size={13}/> Clear
               </button>
             )}
           </div>
@@ -492,8 +517,6 @@ const DialectTips = () => {
           <div>
             {/* My Cities quick-access */}
             {(() => {
-              const stored = localStorage.getItem("myCities");
-              const myCitySlugs = stored ? JSON.parse(stored) : [];
               const myCityObjects = cities.filter(c => myCitySlugs.includes(c.slug));
               if (myCityObjects.length === 0) return null;
               return (
@@ -536,7 +559,9 @@ const DialectTips = () => {
               <div style={{textAlign:"center",padding:"4rem"}}>
                 <MapPin size={48} color="#D1D5DB" />
                 <p style={{color:"#6B7280",fontSize:"0.95rem",marginTop:"1rem"}}>No cities match your search.</p>
-                <button onClick={() => { setCitySearch(""); setCountryFilter(new Set()); }} style={{...S.filterPill,...S.filterPillActive,marginTop:"0.75rem"}}>Clear filters</button>
+                <button onClick={() => { setCitySearch(""); setCountryFilter(new Set()); }} style={{display:"inline-flex",alignItems:"center",gap:"0.35rem",padding:"0.5rem 0.95rem",borderRadius:"0.65rem",background:"rgba(220,38,38,0.08)",border:"1.5px solid rgba(220,38,38,0.35)",color:"#DC2626",cursor:"pointer",fontSize:"0.8rem",fontWeight:600,transition:"all 0.2s",marginTop:"0.75rem"}}>
+                  <X size={13}/> Clear filters
+                </button>
               </div>
             ) : (
               <div style={S.cityGrid}>
@@ -1082,7 +1107,7 @@ const S = {
 if (typeof document !== "undefined") {
   const el = document.getElementById("mtb-explore-anim") || document.createElement("style");
   el.id = "mtb-explore-anim";
-  el.textContent = "@keyframes heroFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(15px,-20px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}@keyframes spin{to{transform:rotate(360deg)}}";
+  el.textContent = "@keyframes heroFloat{0%{transform:translate(0,0) scale(1)}50%{transform:translate(15px,-20px) scale(1.08)}100%{transform:translate(0,0) scale(1)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0;transform:scale(0.92)}to{opacity:1;transform:scale(1)}}";
   if (!el.parentNode) document.head.appendChild(el);
 }
 

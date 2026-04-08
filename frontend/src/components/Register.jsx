@@ -48,6 +48,7 @@ const Register = () => {
         localStorage.setItem("email", res.data.email);
         localStorage.setItem("full_name", res.data.full_name || "");
         localStorage.setItem("study_abroad_city", res.data.study_abroad_city || "");
+        if (res.data.saved_cities) localStorage.setItem("myCities", JSON.stringify(res.data.saved_cities));
         navigate("/");
       }
     } catch (err) {

@@ -1,6 +1,350 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import {
+  MapPin, Globe, Bookmark, ArrowRight, Volume2, VolumeX,
+  Calendar, Sparkles, Compass, ClipboardList, ChevronRight,
+  GraduationCap, Languages, Map as MapIcon, Star, User, Info, X,
+  Search, ChevronDown, Train, ExternalLink, Plane, Clock,
+  DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen
+} from "lucide-react";
 import logo from "../assets/MTBLogo.png";
+
+const BACKEND = "/api";
+
+const CITY_COORDS = [
+  { slug:"berlin", name:"Berlin", lat:52.52, lng:13.405, country:"DE", desc:"Capital city — world-class museums, vibrant nightlife, street art & startup culture. Great public transit, tons of student life.", uni:"FU Berlin, HU Berlin, TU Berlin", cost:"€800–1100/mo", beer:"€3.50", transit:"Semester ticket included", vibe:"Creative & edgy", mustDo:"Free museum Sundays, Mauerpark flea market" },
+  { slug:"munich", name:"Munich", lat:48.1351, lng:11.582, country:"DE", desc:"Bavarian capital — Oktoberfest, beer gardens, Alpine day-trips & FC Bayern. Beautiful parks, excellent transit.", uni:"LMU, TU München", cost:"€1000–1400/mo", beer:"€4.50", transit:"Semester ticket €195/semester", vibe:"Traditional & polished", mustDo:"English Garden surfing, Viktualienmarkt lunch" },
+  { slug:"hamburg", name:"Hamburg", lat:53.5511, lng:9.9937, country:"DE", desc:"Port city — Reeperbahn nightlife, Speicherstadt, harbor views & media industry hub. Rainy but worth it.", uni:"Universität Hamburg", cost:"€850–1150/mo", beer:"€3.80", transit:"HVV semester ticket", vibe:"Maritime & cool", mustDo:"Sunday Fischmarkt at 5am, harbor boat tour" },
+  { slug:"stuttgart", name:"Stuttgart", lat:48.7758, lng:9.1829, country:"DE", desc:"Media & auto hub — Mercedes, Porsche, plus Hochschule der Medien for CJC students. Vineyards & Swabian food.", uni:"HdM Stuttgart, Uni Stuttgart", cost:"€850–1150/mo", beer:"€4.00", transit:"Semester ticket included", vibe:"Industrial chic", mustDo:"Mercedes-Benz Museum, Weindorf wine festival" },
+  { slug:"aachen", name:"Aachen", lat:50.7753, lng:6.0839, country:"DE", desc:"Engineering hub — RWTH Aachen (top tech uni), near Belgium & Netherlands for cheap weekend trips.", uni:"RWTH Aachen", cost:"€700–900/mo", beer:"€3.00", transit:"Deutschland Semesterticket (regional trains free)", vibe:"Nerdy & international", mustDo:"Day trip to Maastricht (30 min), Aachener Printen cookies" },
+  { slug:"bonn", name:"Bonn", lat:50.7374, lng:7.0982, country:"DE", desc:"Beethoven's birthplace — former West German capital, Rhine river walks, relaxed student city with great museums.", uni:"Universität Bonn", cost:"€750–950/mo", beer:"€3.20", transit:"Deutschland Semesterticket (regional trains free)", vibe:"Relaxed & green", mustDo:"Beethoven House, Rhine promenade sunset walk" },
+  { slug:"detmold", name:"Detmold", lat:51.9386, lng:8.8789, country:"DE", desc:"Design & architecture — TH OWL's Detmolder Schule, Teutoburg Forest hiking, small-town charm, very affordable.", uni:"TH OWL Detmold", cost:"€550–750/mo", beer:"€2.80", transit:"Deutschland Semesterticket (regional trains free)", vibe:"Cozy small town", mustDo:"Hermannsdenkmal monument, forest hikes" },
+  { slug:"ebs", name:"Wiesbaden (EBS)", lat:50.0782, lng:8.2398, country:"DE", desc:"Spa city — top private business school, Rhine wine country, close to Frankfurt nightlife & airport.", uni:"EBS Universität", cost:"€900–1200/mo", beer:"€4.00", transit:"RMV semester ticket", vibe:"Upscale & connected", mustDo:"Neroberg hilltop, Frankfurt Apfelwein district" },
+  { slug:"eltville", name:"Eltville", lat:50.0286, lng:8.1175, country:"DE", desc:"Wine village — Riesling capital of the Rheingau, medieval castles, gorgeous river views. Very peaceful.", uni:"EBS campus", cost:"€700–900/mo", beer:"€3.50", transit:"RMV semester ticket", vibe:"Wine country quiet", mustDo:"Rheingau wine trail, castle ruins at sunset" },
+  { slug:"jena", name:"Jena", lat:50.9271, lng:11.5892, country:"DE", desc:"Optics & science city — Zeiss Planetarium, TASSEP exchange for science majors, affordable Thuringian life.", uni:"Friedrich Schiller Universität", cost:"€550–750/mo", beer:"€2.80", transit:"Very affordable", vibe:"Academic & affordable", mustDo:"Zeiss Planetarium, Paradies Park" },
+  { slug:"lemgo", name:"Lemgo", lat:52.0288, lng:8.8993, country:"DE", desc:"Medieval old town — TH OWL design & engineering campus, quiet study vibes, bike-friendly.", uni:"TH OWL Lemgo", cost:"€500–700/mo", beer:"€2.80", transit:"Deutschland Semesterticket (regional trains free)", vibe:"Quiet & bike-friendly", mustDo:"Hexenbürgermeisterhaus, bike to Detmold" },
+  { slug:"mannheim", name:"Mannheim", lat:49.4875, lng:8.466, country:"DE", desc:"Grid city — top business school in Baroque palace, great nightlife, close to Heidelberg for day trips.", uni:"Universität Mannheim", cost:"€750–1000/mo", beer:"€3.50", transit:"VRN semester ticket", vibe:"Diverse & lively", mustDo:"Mannheim Palace campus, Heidelberg day trip" },
+  { slug:"osnabruck", name:"Osnabrück", lat:52.2799, lng:8.0472, country:"DE", desc:"City of Peace — where the Peace of Westphalia was signed, charming old town, very student-friendly.", uni:"Universität Osnabrück", cost:"€600–800/mo", beer:"€3.00", transit:"Deutschland Semesterticket (regional trains free)", vibe:"Friendly & historic", mustDo:"Peace Hall, Botanical Garden" },
+  { slug:"vallendar", name:"Vallendar", lat:50.3981, lng:7.6175, country:"DE", desc:"Rhine village — WHU (#1 German business school), tight-knit community, Koblenz nearby for nightlife.", uni:"WHU Vallendar", cost:"€700–950/mo", beer:"€3.20", transit:"Regional trains", vibe:"Tight-knit elite", mustDo:"Deutsches Eck in Koblenz, Rhine river cruise" },
+  { slug:"wurzburg", name:"Würzburg", lat:49.7913, lng:9.9534, country:"DE", desc:"Franconian wine city — UNESCO Residenz palace, student pubs on the Old Main Bridge, Romantic Road start.", uni:"Julius-Maximilians-Universität", cost:"€650–850/mo", beer:"€3.20", transit:"Affordable regional", vibe:"Wine & history", mustDo:"Sunset wine on Alte Mainbrücke, Residenz palace tour" },
+  { slug:"leipzig", name:"Leipzig", lat:51.3397, lng:12.3731, country:"DE", desc:"Creative capital — booming art & music scene, super affordable, ex-East Germany cool factor, Spinnerei galleries.", uni:"Universität Leipzig", cost:"€550–750/mo", beer:"€3.00", transit:"MDV semester ticket", vibe:"Artsy & cheap", mustDo:"Spinnerei art galleries, Karl-Liebknecht-Straße bars" },
+  { slug:"vienna", name:"Vienna", lat:48.2082, lng:16.3738, country:"AT", desc:"Imperial capital — Schönbrunn, world-class opera & coffee houses, incredible public transit, always voted #1 livability.", uni:"Universität Wien, BOKU, WU", cost:"€900–1200/mo", beer:"€4.20", transit:"Semester ticket €75!", vibe:"Imperial & vibrant", mustDo:"€10 standing-room opera tickets, Naschmarkt brunch" },
+  { slug:"salzburg", name:"Salzburg", lat:47.8095, lng:13.055, country:"AT", desc:"Mozart's birthplace — Alpine scenery, Sound of Music tours, charming old town, close to lakes & ski resorts.", uni:"Universität Salzburg", cost:"€800–1050/mo", beer:"€4.00", transit:"Salzburg Plus card", vibe:"Alpine & historic", mustDo:"Hohensalzburg fortress, Stiegl brewery tour" },
+  { slug:"zurich", name:"Zurich", lat:47.3769, lng:8.5417, country:"CH", desc:"Finance & culture hub — stunning lake, trendy Züri West district, chocolate shops, expensive but worth visiting.", uni:"UZH, ETH Zürich", cost:"CHF 1500–2200/mo", beer:"CHF 7.00", transit:"ZVV zone pass", vibe:"Cosmopolitan & creative", mustDo:"Lindenhof viewpoint, Sprüngli hot chocolate" },
+  { slug:"bern", name:"Bern", lat:46.948, lng:7.4474, country:"CH", desc:"Swiss capital — UNESCO medieval old town, Einstein's house, Aare river swimming in summer, cozy & walkable.", uni:"Universität Bern", cost:"CHF 1300–1800/mo", beer:"CHF 6.50", transit:"Libero zone pass", vibe:"Cozy capital", mustDo:"Aare river float in summer, Zytglogge clock show" },
+  { slug:"rapperswil", name:"Rapperswil-Jona", lat:47.2266, lng:8.8184, country:"CH", desc:"Rose town on Lake Zurich — medieval castle, lakeside walks, OST engineering campus, 30 min to Zurich.", uni:"OST Rapperswil", cost:"CHF 1200–1600/mo", beer:"CHF 6.00", transit:"ZVV zone pass", vibe:"Lakeside & calm", mustDo:"Wooden bridge walk, castle rose garden" },
+  { slug:"winterthur", name:"Winterthur", lat:47.5001, lng:8.724, country:"CH", desc:"Museum city — ZHAW engineering, great food scene, Technorama science center, quick Zurich access.", uni:"ZHAW Winterthur", cost:"CHF 1200–1600/mo", beer:"CHF 6.00", transit:"ZVV zone pass", vibe:"Cultural & accessible", mustDo:"Technorama hands-on science, Altstadt cafes" },
+  { slug:"graz", name:"Graz", lat:47.0707, lng:15.4395, country:"AT", desc:"Austria's 2nd city — UNESCO old town, Schlossberg clock tower, affordable living, vibrant arts & student scene.", uni:"Universität Graz", cost:"€700–950/mo", beer:"€3.80", transit:"Semester ticket €150", vibe:"Artsy & affordable", mustDo:"Schlossberg elevator, Lend district street food" },
+];
+const TOTAL_CITIES = CITY_COORDS.length;
+
+const PIN_COLORS = { DE: "#0021A5", AT: "#DC2626", CH: "#059669" };
+const PIN_EMOJI = { DE: "🇩🇪", AT: "🇦🇹", CH: "🇨🇭" };
+const COUNTRY_LABELS = { DE: "Germany", AT: "Austria", CH: "Switzerland" };
+const COUNTRY_FLAGS = { DE: "\uD83C\uDDE9\uD83C\uDDEA", AT: "\uD83C\uDDE6\uD83C\uDDF9", CH: "\uD83C\uDDE8\uD83C\uDDED" };
+
+const TRAVEL_ROUTES = [
+  // Major corridors
+  { from:"munich", to:"salzburg", time:"1.5h", price:"€29", type:"🚄 IC/EC" },
+  { from:"munich", to:"zurich", time:"3.5h", price:"€39", type:"🚄 EC" },
+  { from:"munich", to:"vienna", time:"4h", price:"€29", type:"🚄 Railjet" },
+  { from:"munich", to:"stuttgart", time:"2h", price:"€23", type:"🚄 ICE" },
+  { from:"berlin", to:"leipzig", time:"1h", price:"€19", type:"🚄 ICE" },
+  { from:"berlin", to:"hamburg", time:"1.75h", price:"€25", type:"🚄 ICE" },
+  { from:"berlin", to:"munich", time:"4h", price:"€35", type:"🚄 ICE" },
+  { from:"vienna", to:"salzburg", time:"2.5h", price:"€25", type:"🚄 Railjet" },
+  { from:"vienna", to:"graz", time:"2.5h", price:"€20", type:"🚄 Railjet" },
+  { from:"zurich", to:"bern", time:"1h", price:"CHF 25", type:"🚄 IC" },
+  { from:"zurich", to:"winterthur", time:"20min", price:"CHF 8", type:"🚂 S-Bahn" },
+  { from:"zurich", to:"rapperswil", time:"35min", price:"CHF 12", type:"🚂 S-Bahn" },
+  { from:"mannheim", to:"stuttgart", time:"35min", price:"€15", type:"🚄 ICE" },
+  { from:"bonn", to:"aachen", time:"1h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"wurzburg", to:"munich", time:"2h", price:"€25", type:"🚄 ICE" },
+  // Regional network (Deutschland Semesterticket = free regional travel)
+  { from:"detmold", to:"lemgo", time:"15min", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"detmold", to:"bonn", time:"2.5h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"lemgo", to:"osnabruck", time:"2h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"bonn", to:"osnabruck", time:"3.5h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"aachen", to:"osnabruck", time:"3h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  // Hesse & Rhine
+  { from:"ebs", to:"eltville", time:"20min", price:"Free w/ Semesterticket", type:"🚂 S-Bahn" },
+  { from:"ebs", to:"mannheim", time:"1h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"vallendar", to:"bonn", time:"45min", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"vallendar", to:"ebs", time:"1.5h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"mannheim", to:"wurzburg", time:"1.5h", price:"€20", type:"🚄 ICE" },
+  { from:"mannheim", to:"bonn", time:"2h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"stuttgart", to:"mannheim", time:"1.5h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  // East Germany
+  { from:"jena", to:"leipzig", time:"1.25h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"leipzig", to:"berlin", time:"1.25h", price:"Free w/ Semesterticket", type:"🚂 RE" },
+  { from:"jena", to:"berlin", time:"3h", price:"€25", type:"🚄 ICE" },
+  // Swiss connections
+  { from:"bern", to:"rapperswil", time:"1.5h", price:"CHF 30", type:"🚄 IC" },
+  { from:"winterthur", to:"rapperswil", time:"50min", price:"CHF 14", type:"🚂 S-Bahn" },
+  { from:"bern", to:"winterthur", time:"1.5h", price:"CHF 30", type:"🚄 IC" },
+  // Cross-border fun
+  { from:"salzburg", to:"graz", time:"4h", price:"€30", type:"🚄 IC" },
+  { from:"hamburg", to:"leipzig", time:"3h", price:"€25", type:"🚄 ICE" },
+  { from:"stuttgart", to:"zurich", time:"3h", price:"€29", type:"🚄 EC" },
+  // More weekend trips
+  { from:"vienna", to:"zurich", time:"8h", price:"€49", type:"🚄 Nightjet 🌙" },
+  { from:"graz", to:"vienna", time:"2.5h", price:"€20", type:"🚄 Railjet" },
+  { from:"graz", to:"zurich", time:"7h", price:"€49", type:"🚄 Nightjet 🌙" },
+  { from:"jena", to:"munich", time:"3.5h", price:"€35", type:"🚄 ICE" },
+  { from:"leipzig", to:"hamburg", time:"3h", price:"€25", type:"🚄 ICE" },
+  { from:"bonn", to:"mannheim", time:"1.5h", price:"€22", type:"🚄 ICE" },
+  { from:"wurzburg", to:"berlin", time:"3.5h", price:"€35", type:"🚄 ICE" },
+];
+
+/* Helper: returns true if a route is free with Deutschland Semesterticket.
+   The €49 Deutschland-Semesterticket covers ALL regional trains (RE, RB,
+   S-Bahn, local buses, trams) anywhere in Germany — no city restriction.
+   NOT valid: ICE, IC, EC, Railjet, Nightjet, and NOT valid outside Germany. */
+const isStudentFree = (r) => {
+  const t = r.type || "";
+  // Invalid (not covered): ICE, ICEC, IC, EC, Railjet, Nightjet — check FIRST
+  const isHighSpeed = /\bICE\b|\bICEC\b|\bIC\b|\bEC\b|Railjet|Nightjet/.test(t);
+  if (isHighSpeed) return false;
+  // Valid types: RE, RB, S-Bahn, Bus, Tram
+  const isRegional = /\bRE\b|\bRB\b|S-Bahn|\bBus\b|\bTram\b/.test(t);
+  if (!isRegional) return false;
+  // Both endpoints must be in Germany (DE) — ticket doesn't cover Swiss/Austrian networks
+  const fromCity = CITY_COORDS.find(c => c.slug === r.from);
+  const toCity = CITY_COORDS.find(c => c.slug === r.to);
+  return (fromCity?.country === "DE") && (toCity?.country === "DE");
+};
+
+const LANDMARKS = [
+  { lat:52.5163, lng:13.3777, name:"Brandenburg Gate", type:"landmark", city:"Berlin", icon:"🏛️", tip:"Free to visit 24/7. Best photos at sunrise before crowds.", cat:"culture", url:"https://maps.google.com/?q=Brandenburg+Gate+Berlin" },
+  { lat:52.5209, lng:13.4094, name:"Museum Island", type:"museum", city:"Berlin", icon:"🎨", tip:"Get the €22 day pass for all 5 museums. Free Sundays once a month!", cat:"culture", url:"https://maps.google.com/?q=Museum+Island+Berlin" },
+  { lat:52.5076, lng:13.3904, name:"Checkpoint Charlie", type:"landmark", city:"Berlin", icon:"📍", tip:"Skip the tourist trap — visit the free Wall Memorial on Bernauer Str. instead.", cat:"culture", url:"https://maps.google.com/?q=Checkpoint+Charlie+Berlin" },
+  { lat:52.5316, lng:13.3850, name:"Mauerpark Flea Market", type:"market", city:"Berlin", icon:"🛍️", tip:"Every Sunday. Free karaoke at 3pm is legendary. Come hungry — best street food in Berlin.", cat:"food", url:"https://maps.google.com/?q=Mauerpark+Berlin" },
+  { lat:52.4934, lng:13.4210, name:"Markthalle Neun", type:"food", city:"Berlin", icon:"🍽️", tip:"Thursday is Street Food Thursday (5–10pm). €3–8 plates from 30+ vendors. Student paradise.", cat:"food", url:"https://maps.google.com/?q=Markthalle+Neun+Berlin" },
+  { lat:52.5074, lng:13.4234, name:"East Side Gallery", type:"landmark", city:"Berlin", icon:"🎨", tip:"1.3km of Berlin Wall murals. Free & open 24/7. Best photos at golden hour.", cat:"culture", url:"https://maps.google.com/?q=East+Side+Gallery+Berlin" },
+  { lat:52.5244, lng:13.4105, name:"Hackescher Markt", type:"nightlife", city:"Berlin", icon:"🍸", tip:"Best starting point for a night out in Mitte. Cheap cocktails at nearby bars.", cat:"nightlife", url:"https://maps.google.com/?q=Hackescher+Markt+Berlin" },
+  { lat:48.1374, lng:11.5755, name:"Marienplatz", type:"landmark", city:"Munich", icon:"⛪", tip:"Watch the Glockenspiel at 11am or 12pm. Get there 10 min early for a good spot.", cat:"culture", url:"https://maps.google.com/?q=Marienplatz+Munich" },
+  { lat:48.1458, lng:11.5820, name:"English Garden", type:"park", city:"Munich", icon:"🌳", tip:"Watch surfers at the Eisbach wave! Bring a blanket & beer from Augustiner.", cat:"nature", url:"https://maps.google.com/?q=English+Garden+Munich" },
+  { lat:48.1485, lng:11.5529, name:"Nymphenburg Palace", type:"landmark", city:"Munich", icon:"🏰", tip:"€8 student ticket. The park behind the palace is free & gorgeous for studying.", cat:"culture", url:"https://maps.google.com/?q=Nymphenburg+Palace+Munich" },
+  { lat:48.1351, lng:11.5798, name:"Viktualienmarkt", type:"food", city:"Munich", icon:"🍽️", tip:"Munich's outdoor food market since 1807. Grab a Weißwurst before 12pm — tradition!", cat:"food", url:"https://maps.google.com/?q=Viktualienmarkt+Munich" },
+  { lat:48.1482, lng:11.5830, name:"Augustiner Keller", type:"beer_garden", city:"Munich", icon:"🍺", tip:"Best beer garden in Munich. €4 Maß in the self-service area. Bring your own food!", cat:"food", url:"https://maps.google.com/?q=Augustiner+Keller+Munich" },
+  { lat:53.5433, lng:9.9930, name:"Elbphilharmonie", type:"concert", city:"Hamburg", icon:"🎵", tip:"Free plaza visit with panoramic harbor views. Student concert tickets from €10.", cat:"culture", url:"https://maps.google.com/?q=Elbphilharmonie+Hamburg" },
+  { lat:53.5441, lng:9.9887, name:"Speicherstadt", type:"landmark", city:"Hamburg", icon:"🏛️", tip:"Miniatur Wunderland here is a must — book online, walk-ins have 2hr waits.", cat:"culture", url:"https://maps.google.com/?q=Speicherstadt+Hamburg" },
+  { lat:53.5501, lng:9.9667, name:"Fischmarkt", type:"market", city:"Hamburg", icon:"🐟", tip:"Every Sunday 5–9:30am. Yes, it's early — but the vibes (and Fischbrötchen) are unmatched.", cat:"food", url:"https://maps.google.com/?q=Fischmarkt+Hamburg" },
+  { lat:53.5495, lng:9.9632, name:"Reeperbahn", type:"nightlife", city:"Hamburg", icon:"🎤", tip:"Hamburg's famous nightlife strip. Beatles played here! Student-friendly bars on Sternschanze nearby.", cat:"nightlife", url:"https://maps.google.com/?q=Reeperbahn+Hamburg" },
+  { lat:48.7784, lng:9.1800, name:"Mercedes-Benz Museum", type:"museum", city:"Stuttgart", icon:"🚗", tip:"€5 after 4pm! Great even if you're not into cars. Free parking.", cat:"culture", url:"https://maps.google.com/?q=Mercedes+Benz+Museum+Stuttgart" },
+  { lat:48.7762, lng:9.1722, name:"Porsche Museum", type:"museum", city:"Stuttgart", icon:"🏎️", tip:"€4 student price. Smaller than Mercedes but more hands-on. Combined ticket saves €3.", cat:"culture", url:"https://maps.google.com/?q=Porsche+Museum+Stuttgart" },
+  { lat:48.2084, lng:16.3731, name:"St. Stephen's Cathedral", type:"landmark", city:"Vienna", icon:"⛪", tip:"Climb the 343 steps of the South Tower for the best city panorama.", cat:"culture", url:"https://maps.google.com/?q=Stephansdom+Vienna" },
+  { lat:48.1863, lng:16.3123, name:"Schönbrunn Palace", type:"landmark", city:"Vienna", icon:"🏰", tip:"€10 student ticket. The gardens are free — skip the palace on a budget day.", cat:"culture", url:"https://maps.google.com/?q=Schoenbrunn+Palace+Vienna" },
+  { lat:48.2034, lng:16.3695, name:"Vienna State Opera", type:"concert", city:"Vienna", icon:"🎵", tip:"€13 standing-room tickets sold 80 min before curtain. Life-changing experience.", cat:"culture", url:"https://maps.google.com/?q=Vienna+State+Opera" },
+  { lat:48.1996, lng:16.3656, name:"Naschmarkt", type:"food", city:"Vienna", icon:"💐", tip:"Biggest outdoor market in Vienna. Saturday flea market is gold. €5 falafel at Neni.", cat:"food", url:"https://maps.google.com/?q=Naschmarkt+Vienna" },
+  { lat:48.2048, lng:16.3573, name:"MuseumsQuartier", type:"museum", city:"Vienna", icon:"🎨", tip:"Hang out on the courtyard benches (free) — it's Vienna's living room. €5 student museum entry.", cat:"culture", url:"https://maps.google.com/?q=MuseumsQuartier+Vienna" },
+  { lat:48.2138, lng:16.3612, name:"Donaukanal", type:"nightlife", city:"Vienna", icon:"🍹", tip:"Summer beach bars along the canal. Free art murals. Flex bar has €3 spritzers on Tuesdays.", cat:"nightlife", url:"https://maps.google.com/?q=Donaukanal+Vienna" },
+  { lat:47.7949, lng:13.0470, name:"Hohensalzburg Fortress", type:"landmark", city:"Salzburg", icon:"🏰", tip:"Take the funicular up, walk down through the old town for views the whole way.", cat:"culture", url:"https://maps.google.com/?q=Hohensalzburg+Fortress" },
+  { lat:47.8023, lng:13.0440, name:"Mozart's Birthplace", type:"museum", city:"Salzburg", icon:"🎵", tip:"€7 student price. The view from the 3rd floor over Getreidegasse is the real highlight.", cat:"culture", url:"https://maps.google.com/?q=Mozarts+Birthplace+Salzburg" },
+  { lat:47.7963, lng:13.0410, name:"Stiegl Brauwelt", type:"beer_garden", city:"Salzburg", icon:"🍺", tip:"Austria's oldest brewery tour. €14.50 includes 2 beer tastings + a snack. Student discount sometimes.", cat:"food", url:"https://maps.google.com/?q=Stiegl+Brauwelt+Salzburg" },
+  { lat:47.3763, lng:8.5413, name:"Grossmünster", type:"landmark", city:"Zurich", icon:"⛪", tip:"Free entry. Climb the tower (CHF 5) for views over the lake and Alps on clear days.", cat:"culture", url:"https://maps.google.com/?q=Grossmunster+Zurich" },
+  { lat:47.3774, lng:8.5407, name:"Lake Zurich Promenade", type:"park", city:"Zurich", icon:"🌊", tip:"Rent a paddleboard from Mythenquai in summer. Best free sunset spot in the city.", cat:"nature", url:"https://maps.google.com/?q=Lake+Zurich+Promenade" },
+  { lat:47.3812, lng:8.5340, name:"Niederdorf (Old Town)", type:"nightlife", city:"Zurich", icon:"🍸", tip:"Zurich's nightlife hub. Langstrasse for budget bars, Niederdorf for cozy spots. Happy hour 5–7pm.", cat:"nightlife", url:"https://maps.google.com/?q=Niederdorf+Zurich" },
+  { lat:46.9480, lng:7.4514, name:"Zytglogge Clock Tower", type:"landmark", city:"Bern", icon:"🕰️", tip:"Shows animate at :57 every hour. The guided tour inside reveals 600 years of mechanism.", cat:"culture", url:"https://maps.google.com/?q=Zytglogge+Bern" },
+  { lat:46.9479, lng:7.4410, name:"Aare River Float", type:"park", city:"Bern", icon:"🏊", tip:"Locals swim the Aare in summer! Enter at Eichholz, exit at Marzili. Free & unforgettable.", cat:"nature", url:"https://maps.google.com/?q=Marzilibad+Bern" },
+  { lat:47.0708, lng:15.4372, name:"Schlossberg", type:"landmark", city:"Graz", icon:"🏰", tip:"Take the free lift up, grab a Puntigamer at the top. Best sunset in Austria.", cat:"culture", url:"https://maps.google.com/?q=Schlossberg+Graz" },
+  { lat:47.0707, lng:15.4346, name:"Kunsthaus Graz", type:"museum", city:"Graz", icon:"🎨", tip:"The alien-looking blob lights up at night. €7 student entry, free outdoor photo ops.", cat:"culture", url:"https://maps.google.com/?q=Kunsthaus+Graz" },
+  { lat:47.0690, lng:15.4356, name:"Lend District Street Food", type:"food", city:"Graz", icon:"🍽️", tip:"Graz's hip neighborhood. Farmer's market on Saturdays. Best kebab in Austria for €4.", cat:"food", url:"https://maps.google.com/?q=Lendplatz+Graz" },
+  { lat:50.7753, lng:6.0839, name:"Aachen Cathedral", type:"landmark", city:"Aachen", icon:"⛪", tip:"UNESCO #1 in Germany. Free entry. The treasury (€5) has Charlemagne's actual relics.", cat:"culture", url:"https://maps.google.com/?q=Aachen+Cathedral" },
+  { lat:50.7748, lng:6.0836, name:"Café Extrablatt Aachen", type:"study_cafe", city:"Aachen", icon:"☕", tip:"Student favorite café right by the cathedral. €3 coffee, free wifi, outdoor terrace.", cat:"food", url:"https://maps.google.com/?q=Cafe+Extrablatt+Aachen" },
+  { lat:49.7944, lng:9.9210, name:"Würzburg Residence", type:"landmark", city:"Würzburg", icon:"🏰", tip:"€4.50 student ticket for the largest ceiling fresco in the world. Free gardens.", cat:"culture", url:"https://maps.google.com/?q=Wurzburg+Residence" },
+  { lat:49.7930, lng:9.9267, name:"Alte Mainbrücke", type:"viewpoint", city:"Würzburg", icon:"🌅", tip:"THE student hangout. Buy wine from the bridge kiosk (€3/glass) and watch the sunset. Iconic.", cat:"nature", url:"https://maps.google.com/?q=Alte+Mainbrucke+Wurzburg" },
+  { lat:51.3406, lng:12.3747, name:"St. Thomas Church", type:"landmark", city:"Leipzig", icon:"🎵", tip:"Bach worked here. Free organ concerts on Fridays at noon — sit in his actual choir loft.", cat:"culture", url:"https://maps.google.com/?q=Thomaskirche+Leipzig" },
+  { lat:51.3321, lng:12.3548, name:"Spinnerei Art Galleries", type:"museum", city:"Leipzig", icon:"��", tip:"Former cotton mill turned art complex. 100+ studios & galleries. Free to wander. 2nd Saturdays are open nights.", cat:"culture", url:"https://maps.google.com/?q=Spinnerei+Leipzig" },
+  { lat:51.3388, lng:12.3743, name:"Karl-Liebknecht-Straße (KarLi)", type:"nightlife", city:"Leipzig", icon:"🍻", tip:"Leipzig's student bar street. €2.50 beers, döner at 2am, and everyone is out on Thursday.", cat:"nightlife", url:"https://maps.google.com/?q=Karl+Liebknecht+Strasse+Leipzig" },
+  { lat:49.4872, lng:8.4619, name:"Mannheim Palace", type:"landmark", city:"Mannheim", icon:"🏰", tip:"You literally go to class here — the uni IS the palace. Flex on your Instagram.", cat:"culture", url:"https://maps.google.com/?q=Mannheim+Palace" },
+  { lat:49.4062, lng:8.6760, name:"Heidelberg Castle (Day Trip)", type:"landmark", city:"Mannheim", icon:"🏰", tip:"20 min by S-Bahn. Most romantic ruin in Germany. €4 student ticket. Free views from Philosophenweg.", cat:"culture", url:"https://maps.google.com/?q=Heidelberg+Castle" },
+  { lat:50.7351, lng:7.0997, name:"Beethoven House", type:"museum", city:"Bonn", icon:"🎵", tip:"Where Beethoven was born. €6 student entry. The original instruments are incredible.", cat:"culture", url:"https://maps.google.com/?q=Beethoven+Haus+Bonn" },
+  { lat:52.2761, lng:8.0440, name:"Peace Hall (Rathaus)", type:"landmark", city:"Osnabrück", icon:"🕊️", tip:"Where the Peace of Westphalia was signed in 1648. Free entry. History nerds will love it.", cat:"culture", url:"https://maps.google.com/?q=Rathaus+Osnabruck" },
+];
+
+const diffLabel = l => { if(l===1) return "Beginner"; if(l===2) return "Elementary"; if(l===3) return "Intermediate"; if(l===4) return "Advanced"; if(l===5) return "Expert"; return "Level "+l; };
+const enColor = lv => { if(!lv) return {bg:"#F3F4F6",text:"#6B7280"}; const l=lv.toLowerCase().replace(/[_\s]/g,""); if(l==="veryhigh") return {bg:"#D1FAE5",text:"#065F46"}; if(l==="high") return {bg:"#DBEAFE",text:"#1E40AF"}; if(l==="moderate") return {bg:"#FEF3C7",text:"#92400E"}; return {bg:"#FEE2E2",text:"#991B1B"}; };
+const costColor = t => { if(!t) return {bg:"#F3F4F6",text:"#6B7280"}; const l=t.toLowerCase().replace(/[_\s]/g,""); if(l==="low") return {bg:"#D1FAE5",text:"#065F46"}; if(l==="moderate") return {bg:"#DBEAFE",text:"#1E40AF"}; if(l==="high") return {bg:"#FEF3C7",text:"#92400E"}; return {bg:"#FEE2E2",text:"#991B1B"}; };
+const friendlyLabel = v => v ? v.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase()) : "";
+
+/* Editorial quick-pick cards */
+/* Editorial quick-pick pool — curated local tips */
+const QUICK_PICKS_POOL = [
+  { emoji:"🍺", label:"Cheapest beer", city:"Leipzig", detail:"€2.50 on KarLi", slug:"leipzig" },
+  { emoji:"🏰", label:"Fairy-tale castle", city:"Heidelberg", detail:"20 min from Mannheim", slug:"mannheim" },
+  { emoji:"🎵", label:"€13 opera", city:"Vienna", detail:"Standing room, Staatsoper", slug:"vienna" },
+  { emoji:"🏄", label:"River surfing", city:"Munich", detail:"Eisbach wave, English Garden", slug:"munich" },
+  { emoji:"🎨", label:"Free street art", city:"Berlin", detail:"East Side Gallery, 24/7", slug:"berlin" },
+  { emoji:"🏊", label:"River float", city:"Bern", detail:"Swim the Aare all summer", slug:"bern" },
+  { emoji:"🎤", label:"Beatles stage", city:"Hamburg", detail:"Reeperbahn history walk", slug:"hamburg" },
+  { emoji:"🚗", label:"€5 after 4pm", city:"Stuttgart", detail:"Mercedes-Benz Museum", slug:"stuttgart" },
+  { emoji:"🕊️", label:"Peace treaty", city:"Osnabrück", detail:"1648 Westphalian Peace Hall", slug:"osnabruck" },
+  { emoji:"🍷", label:"Bridge wine", city:"Würzburg", detail:"Sunset on Alte Mainbrücke", slug:"wurzburg" },
+  { emoji:"🏔️", label:"Alpine views", city:"Salzburg", detail:"Hohensalzburg fortress", slug:"salzburg" },
+  { emoji:"☕", label:"Coffeehouse culture", city:"Vienna", detail:"Café Central since 1876", slug:"vienna" },
+  { emoji:"🎭", label:"Free galleries", city:"Leipzig", detail:"Spinnerei open nights", slug:"leipzig" },
+  { emoji:"🧀", label:"Naschmarkt brunch", city:"Vienna", detail:"€5 falafel at Neni", slug:"vienna" },
+  { emoji:"🌹", label:"Rose town", city:"Rapperswil", detail:"Castle garden on Lake Zurich", slug:"rapperswil" },
+  { emoji:"🔬", label:"Hands-on science", city:"Winterthur", detail:"Technorama museum", slug:"winterthur" },
+  { emoji:"🎓", label:"Palace campus", city:"Mannheim", detail:"Class in a Baroque palace", slug:"mannheim" },
+  { emoji:"🌅", label:"Free sunset", city:"Graz", detail:"Schlossberg hilltop + Puntigamer", slug:"graz" },
+];
+
+/* Build dynamic quick picks: prioritize user's pinned cities, fill rest from pool, no city repeats */
+function buildQuickPicks(myCitySlugs) {
+  const pool = [...QUICK_PICKS_POOL];
+  // shuffle deterministically by day so it rotates daily
+  const day = Math.floor(Date.now() / 86400000);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = (day * (i + 1) * 7) % (i + 1);
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const result = [];
+  const usedCities = new Set();
+  const addUnique = (item) => {
+    if (!usedCities.has(item.slug)) { result.push(item); usedCities.add(item.slug); }
+  };
+  if (myCitySlugs && myCitySlugs.length > 0) {
+    const mySet = new Set(myCitySlugs);
+    pool.filter(p => mySet.has(p.slug)).forEach(p => { if (result.length < 3) addUnique(p); });
+    pool.filter(p => !mySet.has(p.slug)).forEach(p => { if (result.length < 6) addUnique(p); });
+  } else {
+    pool.forEach(p => { if (result.length < 6) addUnique(p); });
+  }
+  return result;
+}
+
+const LandingPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isActive = (path) => location.pathname === path;
+  const mapRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const [cities, setCities] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [loading, setLoading] = useState(true);
+  const [phraseOfDay, setPhraseOfDay] = useState(null);
+  const [showPhrase, setShowPhrase] = useState(() => {
+    const dismissed = sessionStorage.getItem("phraseDismissed");
+    return !dismissed;
+  });
+  const [showPronunciation, setShowPronunciation] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [citySearch, setCitySearch] = useState("");
+  const [selectedPin, setSelectedPin] = useState(null);
+  const [showRoutes, setShowRoutes] = useState(false);
+  const [mapSearch, setMapSearch] = useState("");
+  const [heroVisible, setHeroVisible] = useState(false);
+  const [flashcardSaved, setFlashcardSaved] = useState(false);
+  const [showCityPicker, setShowCityPicker] = useState(false);
+  const [pickerSelected, setPickerSelected] = useState([]);
+  const [myCityDropdown, setMyCityDropdown] = useState(false);
+  const routeLayerRef = useRef(null);
+
+  const readUserData = () => ({
+    email: localStorage.getItem("email") || "",
+    name: localStorage.getItem("full_name") || "",
+    city: localStorage.getItem("study_abroad_city") || "",
+    cities: (() => { try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; } })(),
+  });
+  const [userData, setUserData] = useState(readUserData);
+  const userEmail = userData.email;
+  const userName = userData.name;
+  const userCity = userData.city;
+  const userCities = userData.cities;
+  const userCityData = CITY_COORDS.find(c => c.slug === userCity || c.name.toLowerCase() === userCity.toLowerCase());
+
+  // Re-read localStorage whenever it changes (e.g. after profile update or city picker save)
+  useEffect(() => {
+    const onStorage = () => setUserData(readUserData());
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
+  // Sync user profile from server on mount (ensures myCities & study_abroad_city are fresh)
+  useEffect(() => {
+    if (!userEmail) return;
+    axios.get(`${BACKEND}/user/profile?email=${encodeURIComponent(userEmail)}`)
+      .then(res => {
+        const d = res.data;
+        if (d.study_abroad_city) localStorage.setItem("study_abroad_city", d.study_abroad_city);
+        if (d.full_name) localStorage.setItem("full_name", d.full_name);
+        if (Array.isArray(d.saved_cities) && d.saved_cities.length > 0) {
+          localStorage.setItem("myCities", JSON.stringify(d.saved_cities));
+        }
+        setUserData(readUserData());
+      })
+      .catch(() => {});
+  }, [userEmail]);
+
+  useEffect(() => { setTimeout(() => setHeroVisible(true), 100); }, []);
+
+  // Show city picker for new users who haven't selected cities yet
+  useEffect(() => {
+    if (userEmail && userCities.length === 0 && !localStorage.getItem("cityPickerDismissed")) {
+      setTimeout(() => setShowCityPicker(true), 1200);
+    }
+  }, []);
+
+  useEffect(() => {
+    axios.get(BACKEND + "/cities/?limit=100").then(r => { const d = r.data.data || r.data; setCities(Array.isArray(d) ? d : []); }).catch(() => {}).finally(() => setLoading(false));
+    // Fetch phrases — personalize by user's cities if available
+    const fetchPhrase = async () => {
+      try {
+        let allPhrases = [];
+        if (userCities.length > 0) {
+          // Try to get phrases for the user's selected cities
+          for (const slug of userCities.slice(0, 5)) {
+            try {
+              const res = await axios.get(`${BACKEND}/phrases/?city_slug=${slug}&limit=50`);
+              const p = res.data.phrases || res.data.data || res.data || [];
+              allPhrases = [...allPhrases, ...p];
+            } catch {}
+          }
+        }
+        // Fallback: if no user city phrases, get general
+        if (allPhrases.length === 0) {
+          const res = await axios.get(BACKEND + "/phrases/?limit=50");
+          allPhrases = res.data.phrases || res.data.data || res.data || [];
+        }
+        // Deduplicate by _id
+        const seen = new Set();
+        allPhrases = allPhrases.filter(p => { if (seen.has(p._id)) return false; seen.add(p._id); return true; });
+        if (allPhrases.length) {
+          // Prefer actual dialect/slang phrases — not standard German questions tagged to a city
+          const funPhrases = allPhrases.filter(p => {
+            const tags = (p.tags || []).join(" ").toLowerCase();
+            const cat = (p.category || "").toLowerCase();
+            const reg = (p.register || "").toLowerCase();
+            const hasDialect = !!p.dialect_name;
+            const hasSlangTag = tags.includes("slang") || tags.includes("regional") || tags.includes("colloquial") || tags.includes("local_feel") || tags.includes("fun");
+            const isInformalCat = cat === "exclamations" || cat === "social" || cat === "greetings" || cat === "food_drink";
+            const isInformalReg = reg === "informal" || reg === "casual" || reg === "colloquial";
+            // Must have at least dialect name OR slang tags — not just "informal" standard German
+            return hasDialect || hasSlangTag || (isInformalCat && isInformalReg);
+          });
+          const pool = funPhrases.length >= 3 ? funPhrases : allPhrases;
+          const day = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+          setPhraseOfDay(pool[day % pool.length]);
+        }
+      } catch {}
+    };
+    fetchPhrase();
+  }, []);
+
+  /* MAP SETUP */
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+    const L = window.L; if (!L) return;
+    const map = L.map(mapRef.current, { center:[48.5,10.5], zoom:6, minZoom:4, maxZoom:19, zoomControl:false, scrollWheelZoom:true, dragging:true });
+    L.control.zoom({ position:"topright" }).addTo(map);
+
+    const osmLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", { attribution:"\u00A9 CARTO \u00A9 OSM", maxZoom:19 });
+    const satLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { attribution:"\u00A9 Esri", maxZoom:19 });
+    osmLayer.addTo(map);
 
     let currentBase = "street";
     map.on("zoomend", () => {
@@ -77,11 +421,78 @@ import logo from "../assets/MTBLogo.png";
     return () => { if(mapInstanceRef.current){mapInstanceRef.current.remove();mapInstanceRef.current=null;} };
   }, [navigate]);
 
+  const speakPhrase = (text) => {
+    if(!text) return;
+    if(isSpeaking){window.speechSynthesis.cancel();setIsSpeaking(false);return;}
+    const u=new SpeechSynthesisUtterance(text); u.lang="de-DE"; u.rate=0.82;
+    u.onend=()=>setIsSpeaking(false); u.onerror=()=>setIsSpeaking(false);
+    setIsSpeaking(true); window.speechSynthesis.speak(u);
+  };
+
+  const saveAsFlashcard = async () => {
+    if (!userEmail) { navigate("/login"); return; }
+    if (!phraseOfDay?._id || flashcardSaved) return;
+    try {
+      await axios.post(`${BACKEND}/phrases/bookmarks`, { phrase_id: phraseOfDay._id, user_email: userEmail });
+      setFlashcardSaved(true);
+    } catch (err) {
+      if (err?.response?.status === 400) setFlashcardSaved(true); // already bookmarked
+      else console.error("Flashcard save error:", err);
+    }
+  };
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const layer = routeLayerRef.current;
+    if (!map || !layer) return;
+    if (showRoutes && !map.hasLayer(layer)) layer.addTo(map);
+    else if (!showRoutes && map.hasLayer(layer)) map.removeLayer(layer);
+  }, [showRoutes]);
+
+  const flyToCity = useCallback((slug) => {
+    const map = mapInstanceRef.current;
+    const city = CITY_COORDS.find(c => c.slug === slug);
+    if (!map || !city) return;
+    map.flyTo([city.lat, city.lng], 13, { duration: 1.5 });
+    setMapSearch("");
+    const el = document.getElementById("mtb-map");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, []);
+
+  const flyToCountry = useCallback((code) => {
+    const map = mapInstanceRef.current; if (!map) return;
+    const bounds = { DE: [[47.2,5.8],[55.1,15.1]], AT: [[46.3,9.5],[49.0,17.2]], CH: [[45.8,5.9],[47.9,10.5]] };
+    if (bounds[code]) map.flyToBounds(bounds[code], { duration: 1.2, padding: [30,30] });
+  }, []);
+
+  const getPhraseRegionInfo = () => {
+    if(!phraseOfDay?.city_slugs?.length) return null;
+    return phraseOfDay.city_slugs.map(s => { const c=CITY_COORDS.find(cc=>cc.slug===s); return c ? {name:c.name,country:COUNTRY_LABELS[c.country],flag:COUNTRY_FLAGS[c.country],slug:s} : {name:s,country:"",flag:"\uD83C\uDF0D",slug:s}; });
+  };
+
+  const grouped = cities.reduce((a,c) => { const k=c.country||"Other"; (a[k]=a[k]||[]).push(c); return a; }, {});
+  const order = ["Germany","Austria","Switzerland"];
+  const sorted = Object.entries(grouped).sort((a,b) => { const ia=order.indexOf(a[0]),ib=order.indexOf(b[0]); return (ia<0?99:ia)-(ib<0?99:ib); });
+  const flags = { Germany:"\uD83C\uDDE9\uD83C\uDDEA", Austria:"\uD83C\uDDE6\uD83C\uDDF9", Switzerland:"\uD83C\uDDE8\uD83C\uDDED" };
+  const regionInfo = getPhraseRegionInfo();
+
+  const deCities = CITY_COORDS.filter(c=>c.country==="DE").length;
+  const atCities = CITY_COORDS.filter(c=>c.country==="AT").length;
+  const chCities = CITY_COORDS.filter(c=>c.country==="CH").length;
+
   return (
-    <div style={styles.container}>
-      <img src={logo} alt="MTB Logo" style={styles.logo} />
-      <h1 style={styles.title}>Study Abroad Map</h1>
-      <p style={styles.subtitle}>Click a city to log in and see your guides</p>
+    <div style={S.page}>
+      {/* HEADER */}
+      <header style={S.hdr}><div style={S.hdrIn}>
+        <div style={S.hdrL} onClick={()=>navigate("/")}><img src={logo} alt="MTB" style={{height:72}}/><span style={S.brand}>MyTranslationBuddy</span></div>
+        <nav style={S.nav}>
+          {[{path:"/tips",icon:<Compass size={15}/>,label:"Explore"},{path:"/reservations",icon:<ClipboardList size={15}/>,label:"Study"},{path:"/events",icon:<Calendar size={15}/>,label:"Events"},{path:"/",icon:<MapPin size={15}/>,label:"Home"}].map(({path,icon,label})=>{
+            const active = isActive(path);
+            return <button key={path} onClick={()=>navigate(path)} style={{...S.nb,...(active?S.nbActive:{})}}>{icon} {label}</button>;
+          })}
+          {userEmail ? <button onClick={()=>navigate("/profile")} style={S.nbA}><User size={14}/> Profile</button> : <button onClick={()=>navigate("/login")} style={S.nbA}>Sign In</button>}
+        </nav>
+      </div></header>
 
       {/* HERO */}
       <section style={S.hero}>
@@ -629,7 +1040,7 @@ import logo from "../assets/MTBLogo.png";
 const S = {
   page:{minHeight:"100vh",backgroundColor:"#F9FAFB",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif"},
   hdr:{backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:"1px solid rgba(229,231,235,0.5)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"},
-  hdrIn:{maxWidth:1200,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
+  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
   hdrL:{display:"flex",alignItems:"center",gap:"0.6rem",cursor:"pointer"},
   brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.01em"},
   nav:{display:"flex",gap:"0.15rem",alignItems:"center",flexWrap:"wrap",background:"#F3F4F6",borderRadius:"0.65rem",padding:"0.2rem"},
@@ -709,5 +1120,7 @@ const S = {
   mBadge:{fontSize:"0.66rem",fontWeight:600,padding:"0.18rem 0.5rem",borderRadius:"0.35rem"},
   foot:{textAlign:"center",padding:"2.5rem 2rem",color:"#9CA3AF",fontSize:"0.78rem",borderTop:"1px solid #E5E7EB",background:"#FAFBFC",letterSpacing:"0.01em"},
 };
+
+if(typeof document!=="undefined"){const el=document.getElementById("mtb-anim")||document.createElement("style");el.id="mtb-anim";el.textContent="@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes mtbPulse{0%{transform:translateX(-50%) scale(1);opacity:0.25}50%{transform:translateX(-50%) scale(2.2);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:0.25}}@keyframes dashFlow{to{stroke-dashoffset:-16}}.mtb-pulse{animation:mtbPulse 2.5s ease-out infinite}.mtb-route{animation:dashFlow 1s linear infinite}.city-tooltip .leaflet-tooltip-content{font-family:Inter,system-ui,sans-serif}.leaflet-tooltip{border:1px solid #E5E7EB!important;border-radius:0.85rem!important;padding:0!important;box-shadow:0 12px 36px rgba(0,0,0,0.18)!important;max-width:340px!important;width:max-content!important;min-width:200px!important;overflow:visible!important;white-space:normal!important;word-wrap:break-word!important;overflow-wrap:break-word!important;line-height:1.4!important}.leaflet-tooltip *{max-width:100%!important;overflow-wrap:break-word!important;word-break:break-word!important}";if(!el.parentNode)document.head.appendChild(el);}
 
 export default LandingPage;

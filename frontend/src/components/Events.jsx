@@ -6,7 +6,7 @@ import {
   ExternalLink, Clock, ChevronDown, Sparkles,
   Ticket, PartyPopper, X, Info, Globe, MessageCircle,
   Home, Compass, ClipboardList, User, Volume2, BookmarkCheck,
-  Filter, ChevronRight, Lightbulb, Coffee, Music,
+  Filter, ChevronRight, ChevronLeft, Lightbulb, Coffee, Music,
   Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
@@ -151,7 +151,26 @@ const Events = () => {
   const [sidePanel,setSidePanel]=useState("saved");
   const [bookmarkedPhrases,setBookmarkedPhrases]=useState(()=>{try{return JSON.parse(localStorage.getItem("eventPhraseBookmarks")||"[]");}catch{return[];}});
   const [speakingIdx,setSpeakingIdx]=useState(-1);
+  const [cityDrop,setCityDrop]=useState(false);
   const searchRef = useRef(null);
+  const myCitiesRef = useRef(null);
+  const cityDropRef = useRef(null);
+
+  // Close My Cities dropdown on click outside
+  useEffect(()=>{
+    if(!myCitiesDrop) return;
+    const handler=(e)=>{if(myCitiesRef.current&&!myCitiesRef.current.contains(e.target))setMyCitiesDrop(false);};
+    document.addEventListener("mousedown",handler);
+    return ()=>document.removeEventListener("mousedown",handler);
+  },[myCitiesDrop]);
+
+  // Close City dropdown on click outside
+  useEffect(()=>{
+    if(!cityDrop) return;
+    const handler=(e)=>{if(cityDropRef.current&&!cityDropRef.current.contains(e.target))setCityDrop(false);};
+    document.addEventListener("mousedown",handler);
+    return ()=>document.removeEventListener("mousedown",handler);
+  },[cityDrop]);
 
   const toggleCountry=(code)=>{
     setCountries([code]);
@@ -241,47 +260,86 @@ const Events = () => {
         </nav>
       </div></header>
 
-      {/* COMMAND BAR */}
+      {/* ── HERO COMMAND BAR ── */}
       <div style={S.commandBar} data-events-bar>
+        {/* Decorative orbs — contained so they don't bleed */}
+        <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",zIndex:0}}>
+          <div style={{position:"absolute",top:"-40%",left:"-8%",width:220,height:220,borderRadius:"50%",background:"radial-gradient(circle,rgba(250,70,22,0.12) 0%,transparent 70%)"}}/>
+          <div style={{position:"absolute",bottom:"-50%",right:"-5%",width:260,height:260,borderRadius:"50%",background:"radial-gradient(circle,rgba(59,130,246,0.1) 0%,transparent 70%)"}}/>
+        </div>
+
         <div style={S.commandInner}>
-          {/* Country selector */}
+          {/* LEFT: Country toggle */}
           <div style={S.countryToggle}>
             {COUNTRIES.map(c=>(
               <button key={c.code} onClick={()=>toggleCountry(c.code)}
                 style={{...S.countryBtn,...(countries.includes(c.code)?S.countryBtnOn:{})}}>
-                <span style={{fontSize:"0.85rem"}}>{c.flag}</span>
-                <span style={{fontSize:"0.68rem",fontWeight:countries.includes(c.code)?700:500}}>{c.label}</span>
+                <span style={{fontSize:"0.9rem"}}>{c.flag}</span>
+                <span style={{fontSize:"0.68rem",fontWeight:countries.includes(c.code)?700:500,letterSpacing:"0.01em"}}>{c.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} style={S.searchForm}>
-            <Search size={14} color="rgba(255,255,255,0.45)" style={{flexShrink:0}}/>
-            <input type="text" placeholder={`Search events in ${countryObj.label}...`} value={keyword} onChange={e=>setKeyword(e.target.value)} style={S.searchInput}/>
-            {keyword && <button type="button" onClick={()=>{setKeyword("");setTimeout(()=>fetchEvents(0),50);}} style={{background:"none",border:"none",cursor:"pointer",padding:0,display:"flex",flexShrink:0}}><X size={13} color="rgba(255,255,255,0.5)"/></button>}
-            <button type="submit" style={S.searchGo}><Search size={12}/></button>
-          </form>
+          {/* CENTER: Search + suggestions stacked */}
+          <div style={{flex:1,minWidth:200,display:"flex",flexDirection:"column",gap:"0.3rem"}}>
+            <form onSubmit={handleSearch} style={S.searchForm}>
+              <Search size={14} color="rgba(255,255,255,0.5)" style={{flexShrink:0}}/>
+              <input type="text" placeholder={`Search events in ${countryObj.label}...`} value={keyword} onChange={e=>setKeyword(e.target.value)} style={S.searchInput}/>
+              {keyword && <button type="button" onClick={()=>{setKeyword("");setTimeout(()=>fetchEvents(0),50);}} style={{background:"none",border:"none",cursor:"pointer",padding:0,display:"flex",flexShrink:0}}><X size={13} color="rgba(255,255,255,0.5)"/></button>}
+              <button type="submit" style={S.searchGo}><Search size={12}/></button>
+            </form>
+            {/* Seasonal suggestions */}
+            <div style={{display:"flex",alignItems:"center",gap:"0.3rem",flexWrap:"wrap",paddingLeft:"0.15rem"}}>
+              <span style={{fontSize:"0.52rem",fontWeight:600,color:"rgba(255,255,255,0.3)",textTransform:"uppercase",letterSpacing:"0.08em",marginRight:"0.1rem"}}>Trending</span>
+              {seasonPicks.map((p,i)=>(
+                <button key={i} type="button" onClick={()=>{setKeyword(p.kw);setCity(p.city);setTimeout(()=>fetchEvents(0),100);}}
+                  style={S.suggestChip}
+                  onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.14)";e.currentTarget.style.color="#fff";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.05)";e.currentTarget.style.color="rgba(255,255,255,0.55)";e.currentTarget.style.borderColor="rgba(255,255,255,0.08)";}}>
+                  {p.emoji} <span>{p.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
 
-          {/* City selectors — stacked: All Cities on top, My Cities below */}
-          <div style={{display:"flex",flexDirection:"column",gap:"0.3rem",flexShrink:0}}>
-            <div style={S.cityWrap}>
-              <MapPin size={12} color="rgba(255,255,255,0.45)" style={{position:"absolute",left:10,pointerEvents:"none",zIndex:1}}/>
-              <select value={city} onChange={e=>{setCity(e.target.value);setTimeout(()=>fetchEvents(0),50);}} style={S.citySelect}>
-                <option value="">All cities</option>
-                {allCities.map(c=>(<option key={c} value={c}>{c}</option>))}
-              </select>
+          {/* RIGHT: City + My Cities side by side */}
+          <div style={{display:"flex",alignItems:"center",gap:"0.4rem",flexShrink:0}}>
+            <div ref={cityDropRef} style={{position:"relative"}}>
+              <button onClick={()=>setCityDrop(!cityDrop)} style={S.cityBtn}>
+                <MapPin size={11} color="rgba(255,255,255,0.5)"/>
+                <span>{city||"All cities"}</span>
+                <ChevronDown size={9} style={{opacity:0.5,transition:"transform 0.25s ease",transform:cityDrop?"rotate(180deg)":"rotate(0)"}}/>
+              </button>
+              {cityDrop&&(
+                <div style={S.dropdown}>
+                  <div style={{padding:"0.45rem 0.7rem",borderBottom:"1px solid #F3F4F6"}}><span style={{fontSize:"0.54rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"0.06em"}}>{countryObj.flag} Cities in {countryObj.label}</span></div>
+                  <div onClick={()=>{setCity("");setCityDrop(false);setTimeout(()=>fetchEvents(0),50);}} style={{...S.dropItem,...(!city?{background:"rgba(0,33,165,0.04)",fontWeight:700}:{})}}
+                    onMouseEnter={e=>{if(city)e.currentTarget.style.background="rgba(0,33,165,0.04)";}}
+                    onMouseLeave={e=>{if(city)e.currentTarget.style.background="transparent";}}>
+                    <Globe size={12} color="#9CA3AF"/> <span style={{fontWeight:!city?700:500,color:!city?"#0021A5":"#374151"}}>All cities</span>
+                  </div>
+                  <div style={{maxHeight:240,overflowY:"auto"}}>
+                    {allCities.map(c=>(
+                      <div key={c} onClick={()=>{setCity(c);setCityDrop(false);setTimeout(()=>fetchEvents(0),50);}} style={{...S.dropItem,...(city===c?{background:"rgba(0,33,165,0.04)"}:{})}}
+                        onMouseEnter={e=>{if(city!==c)e.currentTarget.style.background="rgba(0,33,165,0.04)";}}
+                        onMouseLeave={e=>{if(city!==c)e.currentTarget.style.background="transparent";}}>
+                        <MapPin size={10} color="#BFDBFE"/> <span style={{fontWeight:city===c?700:500,color:city===c?"#0021A5":"#374151"}}>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
             {myCities.length>0&&(
-              <div style={{position:"relative"}}>
+              <div ref={myCitiesRef} style={{position:"relative"}}>
                 <button onClick={()=>setMyCitiesDrop(!myCitiesDrop)} style={S.myCitiesBtn} title="Saved cities">
                   <Heart size={10} color="#fff" fill="rgba(255,255,255,0.55)"/>
                   <span>My Cities</span>
-                  <ChevronDown size={9} style={{transition:"transform 0.2s",transform:myCitiesDrop?"rotate(180deg)":"rotate(0)"}}/>
+                  <ChevronDown size={9} style={{opacity:0.6,transition:"transform 0.25s ease",transform:myCitiesDrop?"rotate(180deg)":"rotate(0)"}}/>
                 </button>
                 {myCitiesDrop&&(
                   <div style={S.dropdown}>
-                    <div style={{padding:"0.4rem 0.7rem",borderBottom:"1px solid #F3F4F6"}}><span style={{fontSize:"0.58rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"0.06em"}}>My Cities</span></div>
+                    <div style={{padding:"0.45rem 0.7rem",borderBottom:"1px solid #F3F4F6"}}><span style={{fontSize:"0.54rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"0.06em"}}>My Saved Cities</span></div>
                     {myCities.map(slug=>{const name=slugToCity(slug);const cc=findCountryForCity(slug);const flag=COUNTRIES.find(c=>c.code===cc)?.flag||"\uD83C\uDF0D";return(
                       <div key={slug} onClick={()=>{setCountries([cc]);setCity(name);setMyCitiesDrop(false);setTimeout(()=>fetchEvents(0),100);}} style={S.dropItem}
                         onMouseEnter={e=>e.currentTarget.style.background="rgba(0,33,165,0.04)"}
@@ -295,49 +353,65 @@ const Events = () => {
             )}
           </div>
         </div>
-
-        {/* Seasonal suggestions — centered */}
-        <div style={S.suggestRow}>
-          {seasonPicks.map((p,i)=>(
-            <button key={i} type="button" onClick={()=>{setKeyword(p.kw);setCity(p.city);setTimeout(()=>fetchEvents(0),100);}}
-              style={S.suggestChip}
-              onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.color="#fff";}}
-              onMouseLeave={e=>{e.currentTarget.style.background="transparent";e.currentTarget.style.color="rgba(255,255,255,0.5)";}}>
-              {p.emoji} <span style={{fontStyle:"italic"}}>{p.label}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
-      {/* FILTER CHIPS — float over page background, no container box */}
+      {/* ── FILTER PILLS — floating over background, not boxed ── */}
       <div style={S.filterStrip}>
-        {CATS.map(cat=>(
-          <button key={cat.id} type="button" title={cat.label} onClick={()=>{if(!cat.id){setSegmentIds([]);}else{setSegmentIds(prev=>prev.includes(cat.id)?prev.filter(x=>x!==cat.id):[...prev,cat.id]);}setTimeout(()=>fetchEvents(0),50);}}
-            style={{...S.filterChip,...((!cat.id&&segmentIds.length===0)||(cat.id&&segmentIds.includes(cat.id))?S.filterChipOn:{})}}>
-            <span style={{fontSize:"0.78rem",lineHeight:1}}>{cat.icon}</span>
-            <span>{cat.label}</span>
-          </button>
-        ))}
+        <div style={S.filterInner}>
+          {/* Categories as pills */}
+          {CATS.map(cat=>{
+            const active=(!cat.id&&segmentIds.length===0)||(cat.id&&segmentIds.includes(cat.id));
+            return(
+              <button key={cat.id} type="button" title={cat.label} onClick={()=>{if(!cat.id){setSegmentIds([]);}else{setSegmentIds(prev=>prev.includes(cat.id)?prev.filter(x=>x!==cat.id):[...prev,cat.id]);}setTimeout(()=>fetchEvents(0),50);}}
+                style={{...S.filterPill,...(active?S.filterPillOn:{})}}
+                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";}}}
+                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.2)";e.currentTarget.style.background="rgba(219,234,254,0.3)";e.currentTarget.style.color="#3B5998";}}}>
+                <span style={{fontSize:"0.72rem",lineHeight:1}}>{cat.icon}</span>
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
 
-        <span style={S.filterDivider}/>
+          <span style={S.filterDot}/>
 
-        {DATE_PRESETS.map((dp,i)=>(
-          <button key={i} type="button" onClick={()=>{setDatePreset(i);setTimeout(()=>fetchEvents(0),50);}}
-            style={{...S.filterChip,...(datePreset===i?S.filterChipOn:{})}}>
-            <span>{dp.label}</span>
-          </button>
-        ))}
+          {/* Date pills */}
+          {DATE_PRESETS.map((dp,i)=>{
+            const active=datePreset===i;
+            return(
+              <button key={i} type="button" onClick={()=>{setDatePreset(i);setTimeout(()=>fetchEvents(0),50);}}
+                style={{...S.filterPill,...(active?S.filterPillOn:{})}}
+                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";}}}
+                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.2)";e.currentTarget.style.background="rgba(219,234,254,0.3)";e.currentTarget.style.color="#3B5998";}}}>
+                <span>{dp.label}</span>
+              </button>
+            );
+          })}
 
-        {activeFilters.length > 0 && <>
-          <span style={S.filterDivider}/>
-          {activeFilters.map((f,i) => <span key={i} style={S.activeTag}>{f}</span>)}
-          <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={S.clearBtn}>
-            <X size={9}/> Clear
-          </button>
-        </>}
+          {/* Active filters + clear */}
+          {activeFilters.length > 0 && (
+            <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginLeft:"auto",flexShrink:0}}>
+              {activeFilters.map((f,i) => <span key={i} style={S.activeTag}>{f}</span>)}
+              <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={S.clearBtn}
+                onMouseEnter={e=>{e.currentTarget.style.background="rgba(220,38,38,0.9)";e.currentTarget.style.transform="scale(1.03)";}}
+                onMouseLeave={e=>{e.currentTarget.style.background="rgba(220,38,38,0.75)";e.currentTarget.style.transform="scale(1)";}}>
+                <X size={8}/> Clear
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Results count */}
+        {!loading&&events.length>0&&(
+          <div style={{maxWidth:1280,margin:"0 auto",padding:"0.15rem 2rem 0",display:"flex",alignItems:"center",gap:"0.4rem"}}>
+            <span style={{fontSize:"0.62rem",fontWeight:500,color:"#9CA3AF",letterSpacing:"0.01em"}}>
+              {totalResults>0?`${totalResults.toLocaleString()} events`:`${events.length} events`} in {countryObj.flag} {countryObj.label}{city?` · ${city}`:""}
+            </span>
+            {keyword&&<span style={{fontSize:"0.58rem",color:"#93C5FD",fontWeight:500}}>for "{keyword}"</span>}
+          </div>
+        )}
       </div>
 
-      {/* MAIN CONTENT — 2-column layout */}
+      {/* ── MAIN CONTENT — 2-column layout ── */}
       <div style={S.layout}>
         <main style={S.mainCol}>
           {error&&<div style={S.errorBox}><Info size={14}/> {error}</div>}
@@ -345,7 +419,7 @@ const Events = () => {
           {loading&&(
             <div style={S.loadWrap}>
               <div style={S.spinner}/>
-              <p style={{color:"#6B7280",fontSize:"0.82rem",margin:"0.5rem 0 0"}}>Searching {countryObj.label}...</p>
+              <p style={{color:"#6B7280",fontSize:"0.82rem",margin:"0.6rem 0 0",fontWeight:500}}>Searching {countryObj.label}...</p>
             </div>
           )}
 
@@ -365,32 +439,48 @@ const Events = () => {
                 const dayNum=dateObj?dateObj.getDate():"";
                 const weekday=dateObj?dateObj.toLocaleDateString("en-US",{weekday:"short"}):"";
                 return(
-                  <div key={event.id} style={{...S.eventCard,animation:`fadeSlideUp 0.35s ${idx*0.04}s both`}}
-                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow="0 12px 40px rgba(0,33,165,0.12)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.04)";}}>
-                    {/* Image */}
+                  <div key={event.id} style={{...S.eventCard,animation:`fadeSlideUp 0.4s ${idx*0.045}s both`}}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-6px) scale(1.01)";e.currentTarget.style.boxShadow="0 20px 50px rgba(0,33,165,0.14), 0 8px 20px rgba(0,0,0,0.06)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)";}}>
+                    {/* Image — cinematic ratio */}
                     <div style={S.cardImg}>
-                      {img ? <div style={{width:"100%",height:"100%",backgroundImage:'url('+img+')',backgroundSize:"cover",backgroundPosition:"center",transition:"transform 0.4s"}}/> 
-                        : <div style={{width:"100%",height:"100%",background:"linear-gradient(135deg,#0021A5 0%,#1E40AF 50%,#3B82F6 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}><PartyPopper size={28} color="rgba(255,255,255,0.4)"/></div>}
+                      {img ? (
+                        <div style={{width:"100%",height:"100%",backgroundImage:'url('+img+')',backgroundSize:"cover",backgroundPosition:"center",transition:"transform 0.5s cubic-bezier(.4,0,.2,1)"}}
+                          onMouseEnter={e=>e.currentTarget.style.transform="scale(1.06)"}
+                          onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}/>
+                      ) : (
+                        <div style={{width:"100%",height:"100%",background:"linear-gradient(135deg,#0021A5 0%,#1E40AF 40%,#3B82F6 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <PartyPopper size={28} color="rgba(255,255,255,0.35)"/>
+                        </div>
+                      )}
+                      {/* Gradient overlay for text legibility */}
+                      <div style={{position:"absolute",inset:0,background:"linear-gradient(0deg,rgba(0,0,0,0.35) 0%,transparent 50%)",pointerEvents:"none"}}/>
                       {/* Date badge */}
-                      <div style={{...S.dateBadge,...(isToday?{background:"#FA4616",color:"#fff",borderColor:"#FA4616"}:{})}}>
-                        {isToday ? <><Zap size={10}/> TODAY</> : <><Calendar size={9}/> {monthShort} {dayNum}</>}
+                      <div style={{...S.dateBadge,...(isToday?{background:"#FA4616",color:"#fff",borderColor:"rgba(250,70,22,0.3)"}:{})}}>
+                        {isToday ? <><Zap size={10}/> TODAY</> : <><span style={{fontSize:"0.55rem",opacity:0.7}}>{weekday}</span> <span style={{fontWeight:800}}>{monthShort} {dayNum}</span></>}
                       </div>
                       {/* Save button */}
-                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"#FEF2F2",borderColor:"#FCA5A5"}:{})}}>
+                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"rgba(254,242,242,0.95)",borderColor:"#FCA5A5",boxShadow:"0 2px 12px rgba(239,68,68,0.2)"}:{})}}
+                        onMouseEnter={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.3)";e.currentTarget.style.transform="scale(1.1)";}}}
+                        onMouseLeave={e=>{if(!saved){e.currentTarget.style.background="rgba(0,0,0,0.2)";e.currentTarget.style.transform="scale(1)";}}}>
                         <Heart size={14} fill={saved?"#EF4444":"none"} color={saved?"#EF4444":"#fff"}/>
                       </button>
                     </div>
+
                     {/* Content */}
                     <div style={S.cardBody}>
                       <h3 style={S.eventTitle}>{event.name}</h3>
                       <div style={S.eventMeta}>
-                        {(cityName||venueName)&&<span style={S.metaItem}><MapPin size={10}/>{cityName||venueName}</span>}
+                        {(cityName||venueName)&&<span style={S.metaItem}><MapPin size={10} strokeWidth={2.5}/>{cityName||venueName}</span>}
                         {time&&<span style={S.metaItem}><Clock size={10}/>{fmtTime(time)}</span>}
                       </div>
-                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"auto",paddingTop:"0.4rem"}}>
-                        {event.url&&<a href={event.url} target="_blank" rel="noopener noreferrer" style={S.ticketBtn}><Ticket size={11}/> Tickets</a>}
-                        {venueName&&cityName&&<span style={{fontSize:"0.6rem",color:"#BFDBFE",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:120}}>{venueName}</span>}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"auto",paddingTop:"0.5rem",borderTop:"1px solid #F3F4F6"}}>
+                        {event.url&&<a href={event.url} target="_blank" rel="noopener noreferrer" style={S.ticketBtn}
+                          onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 4px 14px rgba(250,70,22,0.3)";}}
+                          onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 6px rgba(250,70,22,0.15)";}}>
+                          <Ticket size={11}/> Get Tickets
+                        </a>}
+                        {venueName&&cityName&&<span style={{fontSize:"0.58rem",color:"#9CA3AF",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:110}}>{venueName}</span>}
                       </div>
                     </div>
                   </div>
@@ -401,73 +491,106 @@ const Events = () => {
 
           {!loading&&events.length===0&&!error&&(
             <div style={S.emptyState}>
-              <PartyPopper size={44} color="#BFDBFE"/>
-              <h3 style={{fontSize:"1rem",fontWeight:700,color:"#374151",margin:"0.75rem 0 0.25rem"}}>No events found</h3>
-              <p style={{fontSize:"0.82rem",color:"#9CA3AF",maxWidth:320,lineHeight:1.5,margin:"0 auto"}}>Try different filters, another city, or broader date range.</p>
+              <div style={{width:64,height:64,borderRadius:"50%",background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 0.75rem"}}>
+                <PartyPopper size={28} color="#3B82F6"/>
+              </div>
+              <h3 style={{fontSize:"1.05rem",fontWeight:700,color:"#1F2937",margin:"0 0 0.35rem"}}>No events found</h3>
+              <p style={{fontSize:"0.82rem",color:"#9CA3AF",maxWidth:340,lineHeight:1.55,margin:"0 auto"}}>Try different filters, another city, or a broader date range to discover more.</p>
             </div>
           )}
 
           {totalPages>1&&(
             <div style={S.pagination}>
-              <button disabled={page===0} onClick={()=>fetchEvents(page-1)} style={{...S.pageBtn,opacity:page===0?0.3:1}}>{"\u2190"} Prev</button>
-              <span style={{fontSize:"0.75rem",color:"#6B7280",fontWeight:600}}>{page+1} / {totalPages}</span>
-              <button disabled={page>=totalPages-1} onClick={()=>fetchEvents(page+1)} style={{...S.pageBtn,opacity:page>=totalPages-1?0.3:1}}>Next {"\u2192"}</button>
+              <button disabled={page===0} onClick={()=>fetchEvents(page-1)} style={{...S.pageBtn,opacity:page===0?0.35:1}}>
+                <ChevronLeft size={14}/> Previous
+              </button>
+              <div style={{display:"flex",alignItems:"center",gap:"0.35rem"}}>
+                {Array.from({length:Math.min(totalPages,5)},(_, i)=>{
+                  let pg=i;
+                  if(totalPages>5){if(page<3)pg=i;else if(page>totalPages-4)pg=totalPages-5+i;else pg=page-2+i;}
+                  return(
+                    <button key={pg} onClick={()=>fetchEvents(pg)} style={{...S.pageDot,...(pg===page?S.pageDotActive:{})}}>
+                      {pg+1}
+                    </button>
+                  );
+                })}
+              </div>
+              <button disabled={page>=totalPages-1} onClick={()=>fetchEvents(page+1)} style={{...S.pageBtn,opacity:page>=totalPages-1?0.35:1}}>
+                Next <ChevronRight size={14}/>
+              </button>
             </div>
           )}
         </main>
 
-        {/* RIGHT SIDEBAR */}
+        {/* ── RIGHT SIDEBAR ── */}
         <aside style={S.sidebar}>
           {/* Saved Events */}
-          <div style={S.sideCard}>
-            <button onClick={()=>setSidePanel(p=>p==="saved"?"none":"saved")} style={S.sideHeader}>
-              <div style={{display:"flex",alignItems:"center",gap:"0.4rem"}}>
-                <div style={{width:26,height:26,borderRadius:"0.5rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",display:"flex",alignItems:"center",justifyContent:"center"}}><Heart size={12} color="#fff"/></div>
-                <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827"}}>Saved</span>
-                {savedEvents.length>0&&<span style={S.sideCount}>{savedEvents.length}</span>}
+          <div style={{...S.sideCard,...(sidePanel==="saved"?{borderColor:"rgba(250,70,22,0.15)"}:{})}}>
+            <button onClick={()=>setSidePanel(p=>p==="saved"?"none":"saved")} style={S.sideHeader}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(0,0,0,0.01)"}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.45rem"}}>
+                <div style={{width:28,height:28,borderRadius:"0.55rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(250,70,22,0.2)"}}><Heart size={12} color="#fff"/></div>
+                <div>
+                  <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827",display:"block",lineHeight:1.2}}>Saved Events</span>
+                  <span style={{fontSize:"0.52rem",color:"#9CA3AF",fontWeight:500}}>{savedEvents.length} saved</span>
+                </div>
               </div>
-              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.2s",transform:sidePanel==="saved"?"rotate(180deg)":"rotate(0)"}}/>
+              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.25s ease",transform:sidePanel==="saved"?"rotate(180deg)":"rotate(0)"}}/>
             </button>
             {sidePanel==="saved"&&(
               <div style={S.sideBody}>
                 {savedEvents.length>0 ? savedEvents.map(ev=>(
                   <div key={ev.id} style={S.savedItem}
-                    onMouseEnter={e=>e.currentTarget.style.background="#FFF7ED"}
-                    onMouseLeave={e=>e.currentTarget.style.background="#FFFBF9"}>
-                    {ev.image&&<div style={{width:36,height:36,borderRadius:"0.4rem",backgroundImage:'url('+ev.image+')',backgroundSize:"cover",backgroundPosition:"center",flexShrink:0}}/>}
+                    onMouseEnter={e=>{e.currentTarget.style.background="#FFF7ED";e.currentTarget.style.borderColor="#FED7AA";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="#FFFBF9";e.currentTarget.style.borderColor="#FEF2F2";}}>
+                    {ev.image&&<div style={{width:38,height:38,borderRadius:"0.45rem",backgroundImage:'url('+ev.image+')',backgroundSize:"cover",backgroundPosition:"center",flexShrink:0,boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}/>}
                     <div style={{flex:1,minWidth:0}}>
                       <p style={{fontSize:"0.72rem",fontWeight:600,color:"#111827",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{ev.name}</p>
-                      <p style={{fontSize:"0.58rem",color:"#9CA3AF",margin:"0.1rem 0 0"}}>{ev.date&&fmtDate(ev.date)}</p>
+                      <p style={{fontSize:"0.56rem",color:"#9CA3AF",margin:"0.15rem 0 0"}}>{ev.date&&fmtDate(ev.date)}{ev.city?` · ${ev.city}`:""}</p>
                     </div>
-                    <div style={{display:"flex",gap:"0.15rem",flexShrink:0}}>
-                      {ev.url&&<a href={ev.url} target="_blank" rel="noopener noreferrer" style={S.sideIconBtn}><ExternalLink size={10}/></a>}
-                      <button onClick={()=>{const next=savedEvents.filter(e=>e.id!==ev.id);setSavedEvents(next);persistSavedEvents(next,userEmail);}} style={{...S.sideIconBtn,borderColor:"#FECACA",color:"#EF4444"}}><X size={10}/></button>
+                    <div style={{display:"flex",gap:"0.2rem",flexShrink:0}}>
+                      {ev.url&&<a href={ev.url} target="_blank" rel="noopener noreferrer" style={S.sideIconBtn}
+                        onMouseEnter={e=>{e.currentTarget.style.background="#EFF6FF";e.currentTarget.style.borderColor="#93C5FD";}}
+                        onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.borderColor="#E5E7EB";}}><ExternalLink size={10}/></a>}
+                      <button onClick={()=>{const next=savedEvents.filter(e=>e.id!==ev.id);setSavedEvents(next);persistSavedEvents(next,userEmail);}} style={{...S.sideIconBtn,borderColor:"#FECACA",color:"#EF4444"}}
+                        onMouseEnter={e=>{e.currentTarget.style.background="#FEF2F2";}}
+                        onMouseLeave={e=>{e.currentTarget.style.background="#fff";}}><X size={10}/></button>
                     </div>
                   </div>
-                )) : <p style={{fontSize:"0.72rem",color:"#9CA3AF",textAlign:"center",padding:"0.6rem 0"}}><Heart size={12} style={{verticalAlign:"middle",marginRight:4}}/> Save events with the heart button</p>}
+                )) : (
+                  <div style={{textAlign:"center",padding:"1rem 0.5rem"}}>
+                    <Heart size={18} color="#D1D5DB" style={{marginBottom:6}}/>
+                    <p style={{fontSize:"0.72rem",color:"#9CA3AF",margin:0,lineHeight:1.4}}>Tap the heart on any event card to save it here.</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Event Etiquette */}
-          <div style={S.sideCard}>
-            <button onClick={()=>setSidePanel(p=>p==="tips"?"none":"tips")} style={S.sideHeader}>
-              <div style={{display:"flex",alignItems:"center",gap:"0.4rem"}}>
-                <div style={{width:26,height:26,borderRadius:"0.5rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center"}}><Lightbulb size={12} color="#fff"/></div>
-                <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827"}}>Etiquette</span>
-                <span style={{fontSize:"0.55rem",color:"#0021A5",fontWeight:600,background:"#EFF6FF",padding:"0.05rem 0.35rem",borderRadius:9999}}>{countryObj.flag}</span>
+          <div style={{...S.sideCard,...(sidePanel==="tips"?{borderColor:"rgba(0,33,165,0.12)"}:{})}}>
+            <button onClick={()=>setSidePanel(p=>p==="tips"?"none":"tips")} style={S.sideHeader}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(0,0,0,0.01)"}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.45rem"}}>
+                <div style={{width:28,height:28,borderRadius:"0.55rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(0,33,165,0.18)"}}><Lightbulb size={12} color="#fff"/></div>
+                <div>
+                  <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827",display:"block",lineHeight:1.2}}>Event Etiquette</span>
+                  <span style={{fontSize:"0.52rem",color:"#9CA3AF",fontWeight:500}}>{countryObj.flag} {countryObj.label} tips</span>
+                </div>
               </div>
-              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.2s",transform:sidePanel==="tips"?"rotate(180deg)":"rotate(0)"}}/>
+              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.25s ease",transform:sidePanel==="tips"?"rotate(180deg)":"rotate(0)"}}/>
             </button>
             {sidePanel==="tips"&&(
               <div style={S.sideBody}>
                 {tips.map((t,i)=>(
                   <div key={i} style={S.tipItem}>
-                    <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.2rem"}}>
-                      <span style={{fontSize:"0.85rem"}}>{t.icon}</span>
+                    <div style={{display:"flex",alignItems:"center",gap:"0.35rem",marginBottom:"0.25rem"}}>
+                      <span style={{fontSize:"0.9rem",lineHeight:1}}>{t.icon}</span>
                       <span style={{fontSize:"0.72rem",fontWeight:700,color:"#111827"}}>{t.title}</span>
                     </div>
-                    <p style={{fontSize:"0.68rem",color:"#6B7280",margin:0,lineHeight:1.45}}>{t.tip}</p>
+                    <p style={{fontSize:"0.68rem",color:"#6B7280",margin:0,lineHeight:1.5,paddingLeft:"1.25rem"}}>{t.tip}</p>
                   </div>
                 ))}
               </div>
@@ -475,35 +598,43 @@ const Events = () => {
           </div>
 
           {/* Event Phrases */}
-          <div style={S.sideCard}>
-            <button onClick={()=>setSidePanel(p=>p==="phrases"?"none":"phrases")} style={S.sideHeader}>
-              <div style={{display:"flex",alignItems:"center",gap:"0.4rem"}}>
-                <div style={{width:26,height:26,borderRadius:"0.5rem",background:"linear-gradient(135deg,#0021A5,#1E40AF)",display:"flex",alignItems:"center",justifyContent:"center"}}><MessageCircle size={12} color="#fff"/></div>
-                <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827"}}>Phrases</span>
-                <span style={{fontSize:"0.55rem",color:"#0021A5",fontWeight:600,background:"#EFF6FF",padding:"0.05rem 0.35rem",borderRadius:9999}}>{countryObj.flag}</span>
+          <div style={{...S.sideCard,...(sidePanel==="phrases"?{borderColor:"rgba(0,33,165,0.12)"}:{})}}>
+            <button onClick={()=>setSidePanel(p=>p==="phrases"?"none":"phrases")} style={S.sideHeader}
+              onMouseEnter={e=>e.currentTarget.style.background="rgba(0,0,0,0.01)"}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <div style={{display:"flex",alignItems:"center",gap:"0.45rem"}}>
+                <div style={{width:28,height:28,borderRadius:"0.55rem",background:"linear-gradient(135deg,#0021A5,#1E40AF)",display:"flex",alignItems:"center",justifyContent:"center",boxShadow:"0 2px 8px rgba(0,33,165,0.18)"}}><MessageCircle size={12} color="#fff"/></div>
+                <div>
+                  <span style={{fontSize:"0.78rem",fontWeight:700,color:"#111827",display:"block",lineHeight:1.2}}>Event Phrases</span>
+                  <span style={{fontSize:"0.52rem",color:"#9CA3AF",fontWeight:500}}>{countryObj.flag} {phrases.length} essential phrases</span>
+                </div>
               </div>
-              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.2s",transform:sidePanel==="phrases"?"rotate(180deg)":"rotate(0)"}}/>
+              <ChevronDown size={13} color="#9CA3AF" style={{transition:"transform 0.25s ease",transform:sidePanel==="phrases"?"rotate(180deg)":"rotate(0)"}}/>
             </button>
             {sidePanel==="phrases"&&(
               <div style={S.sideBody}>
                 {phrases.map((p,i)=>(
                   <div key={i} style={S.phraseItem}>
-                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.2rem"}}>
-                      <span style={{fontSize:"0.52rem",fontWeight:700,color:"#0021A5",background:"#EFF6FF",padding:"0.08rem 0.35rem",borderRadius:9999}}>{p.ctx}</span>
-                      <div style={{display:"flex",gap:"0.15rem"}}>
+                    <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.25rem"}}>
+                      <span style={{fontSize:"0.52rem",fontWeight:700,color:"#0021A5",background:"#EFF6FF",padding:"0.1rem 0.4rem",borderRadius:9999,letterSpacing:"0.02em"}}>{p.ctx}</span>
+                      <div style={{display:"flex",gap:"0.2rem"}}>
                         <button onClick={()=>speakPhrase(p.de,i)} title="Listen"
-                          style={{...S.phraseIconBtn,...(speakingIdx===i?{background:"#0021A5",color:"#fff",borderColor:"#0021A5"}:{})}}>
+                          style={{...S.phraseIconBtn,...(speakingIdx===i?{background:"#0021A5",color:"#fff",borderColor:"#0021A5",boxShadow:"0 0 0 3px rgba(0,33,165,0.15)"}:{})}}
+                          onMouseEnter={e=>{if(speakingIdx!==i){e.currentTarget.style.background="#EFF6FF";e.currentTarget.style.borderColor="#93C5FD";}}}
+                          onMouseLeave={e=>{if(speakingIdx!==i){e.currentTarget.style.background="#fff";e.currentTarget.style.borderColor="#BFDBFE";}}}>
                           <Volume2 size={10}/>
                         </button>
                         <button onClick={()=>togglePhraseBookmark(p)} title={isPhraseBookmarked(p.de)?"Unbookmark":"Bookmark"}
-                          style={{...S.phraseIconBtn,...(isPhraseBookmarked(p.de)?{background:"#FFF7ED",color:"#FA4616",borderColor:"#FA4616"}:{})}}>
+                          style={{...S.phraseIconBtn,...(isPhraseBookmarked(p.de)?{background:"#FFF7ED",color:"#FA4616",borderColor:"#FA4616",boxShadow:"0 0 0 3px rgba(250,70,22,0.1)"}:{})}}
+                          onMouseEnter={e=>{if(!isPhraseBookmarked(p.de)){e.currentTarget.style.background="#FFF7ED";e.currentTarget.style.borderColor="#FED7AA";}}}
+                          onMouseLeave={e=>{if(!isPhraseBookmarked(p.de)){e.currentTarget.style.background="#fff";e.currentTarget.style.borderColor="#BFDBFE";}}}>
                           <Bookmark size={10} fill={isPhraseBookmarked(p.de)?"#FA4616":"none"}/>
                         </button>
                       </div>
                     </div>
-                    <p style={{fontSize:"0.78rem",fontWeight:700,color:"#111827",margin:"0 0 0.05rem"}}>{p.de}</p>
-                    {p.pron&&<p style={{fontSize:"0.58rem",color:"#0021A5",margin:"0 0 0.1rem",fontStyle:"italic"}}>/{p.pron}/</p>}
-                    <p style={{fontSize:"0.68rem",color:"#6B7280",margin:0}}>{p.en}</p>
+                    <p style={{fontSize:"0.8rem",fontWeight:700,color:"#111827",margin:"0 0 0.08rem",letterSpacing:"-0.01em"}}>{p.de}</p>
+                    {p.pron&&<p style={{fontSize:"0.58rem",color:"#3B82F6",margin:"0 0 0.12rem",fontStyle:"italic",fontWeight:500}}>/{p.pron}/</p>}
+                    <p style={{fontSize:"0.68rem",color:"#6B7280",margin:0,lineHeight:1.4}}>{p.en}</p>
                   </div>
                 ))}
               </div>
@@ -512,97 +643,103 @@ const Events = () => {
         </aside>
       </div>
 
-      <footer style={S.foot}><p>&copy; 2026 MyTranslationBuddy &mdash; Built by Gators, for Gators \uD83D\uDC0A</p></footer>
+      <footer style={S.foot}>
+        <p style={{margin:0}}>&copy; 2026 MyTranslationBuddy &mdash; Built by Gators, for Gators 🐊</p>
+      </footer>
     </div>
   );
 };
 
 const S = {
-  page:{minHeight:"100vh",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",color:"#111827",background:"linear-gradient(180deg,#F8FAFC 0%,#EFF6FF 50%,#F8FAFC 100%)"},
+  page:{minHeight:"100vh",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",color:"#111827",background:"#F8FAFC"},
 
-  /* Navbar */
-  hdr:{backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:"1px solid rgba(229,231,235,0.5)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"},
+  /* ── Navbar ── */
+  hdr:{backgroundColor:"rgba(255,255,255,0.88)",backdropFilter:"blur(24px) saturate(180%)",WebkitBackdropFilter:"blur(24px) saturate(180%)",borderBottom:"1px solid rgba(229,231,235,0.45)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.03)"},
   hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
   hdrL:{display:"flex",alignItems:"center",gap:"0.6rem",cursor:"pointer"},
-  brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.01em"},
+  brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.02em"},
   nav:{display:"flex",gap:"0.15rem",alignItems:"center",flexWrap:"wrap",background:"#F3F4F6",borderRadius:"0.65rem",padding:"0.2rem"},
   nb:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 0.85rem",border:"none",borderRadius:"0.5rem",backgroundColor:"transparent",color:"#6B7280",cursor:"pointer",fontSize:"0.78rem",fontWeight:500,transition:"all 0.2s"},
   nbActive:{backgroundColor:"#fff",fontWeight:700,boxShadow:"0 1px 3px rgba(0,0,0,0.08)",color:"#0021A5"},
-  nbA:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 1.1rem",border:"none",borderRadius:"0.5rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.78rem",fontWeight:700,letterSpacing:"0.02em",boxShadow:"0 2px 8px rgba(250,70,22,0.3)",marginLeft:"0.35rem"},
+  nbA:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 1.1rem",border:"none",borderRadius:"0.5rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.78rem",fontWeight:700,letterSpacing:"0.02em",boxShadow:"0 2px 8px rgba(250,70,22,0.25)",marginLeft:"0.35rem"},
 
-  /* ── Command bar ── */
-  commandBar:{background:"linear-gradient(135deg,#0021A5 0%,#003087 55%,#1E40AF 100%)",position:"sticky",top:57,zIndex:900,boxShadow:"0 4px 20px rgba(0,33,165,0.22)",paddingBottom:"0.4rem"},
+  /* ── Command bar — deeper, more dimensional ── */
+  commandBar:{background:"linear-gradient(135deg,#001A6E 0%,#0021A5 40%,#003087 75%,#1E40AF 100%)",position:"sticky",top:57,zIndex:900,boxShadow:"0 6px 32px rgba(0,33,165,0.22), 0 1px 0 rgba(255,255,255,0.05) inset",borderBottom:"1px solid rgba(30,64,175,0.3)",overflow:"visible",isolation:"isolate"},
 
-  commandInner:{maxWidth:1280,margin:"0 auto",padding:"0.55rem 2rem 0",display:"flex",alignItems:"flex-start",gap:"0.45rem",flexWrap:"wrap"},
+  commandInner:{maxWidth:1280,margin:"0 auto",padding:"0.7rem 2rem 0.6rem",display:"flex",alignItems:"flex-start",gap:"0.6rem",flexWrap:"nowrap",position:"relative",zIndex:1},
 
-  /* Country toggle — same capsule shape as search & city */
-  countryToggle:{display:"flex",height:34,borderRadius:"0.55rem",overflow:"hidden",border:"1px solid rgba(255,255,255,0.12)",background:"rgba(255,255,255,0.06)",flexShrink:0},
-  countryBtn:{display:"flex",alignItems:"center",gap:"0.2rem",height:"100%",padding:"0 0.6rem",border:"none",borderRadius:0,background:"transparent",color:"rgba(255,255,255,0.45)",cursor:"pointer",transition:"all 0.2s",whiteSpace:"nowrap",fontSize:"0.68rem"},
-  countryBtnOn:{background:"rgba(255,255,255,0.18)",color:"#fff"},
+  /* Country toggle */
+  countryToggle:{display:"flex",height:36,borderRadius:"0.6rem",overflow:"hidden",border:"1px solid rgba(255,255,255,0.1)",background:"rgba(255,255,255,0.04)",flexShrink:0,marginTop:0},
+  countryBtn:{display:"flex",alignItems:"center",gap:"0.25rem",height:"100%",padding:"0 0.65rem",border:"none",borderRadius:0,background:"transparent",color:"rgba(255,255,255,0.4)",cursor:"pointer",transition:"all 0.2s cubic-bezier(.4,0,.2,1)",whiteSpace:"nowrap",fontSize:"0.68rem"},
+  countryBtnOn:{background:"rgba(255,255,255,0.16)",color:"#fff",boxShadow:"0 0 0 1px rgba(255,255,255,0.08) inset"},
 
   /* Search form */
-  searchForm:{display:"flex",alignItems:"center",gap:"0.4rem",flex:1,maxWidth:420,height:34,padding:"0 0.65rem",borderRadius:"0.55rem",background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.12)",transition:"all 0.2s"},
-  searchInput:{border:"none",outline:"none",flex:1,backgroundColor:"transparent",fontSize:"0.78rem",color:"#fff",minWidth:80},
-  searchGo:{display:"flex",alignItems:"center",justifyContent:"center",width:26,height:26,border:"none",borderRadius:"0.4rem",background:"rgba(255,255,255,0.15)",color:"#fff",cursor:"pointer",transition:"all 0.15s",flexShrink:0},
+  searchForm:{display:"flex",alignItems:"center",gap:"0.45rem",width:"100%",height:36,padding:"0 0.7rem",borderRadius:"0.6rem",background:"rgba(255,255,255,0.07)",border:"1px solid rgba(255,255,255,0.1)",transition:"all 0.25s cubic-bezier(.4,0,.2,1)"},
+  searchInput:{border:"none",outline:"none",flex:1,backgroundColor:"transparent",fontSize:"0.78rem",color:"#fff",minWidth:80,fontWeight:500,letterSpacing:"0.01em"},
+  searchGo:{display:"flex",alignItems:"center",justifyContent:"center",width:28,height:28,border:"none",borderRadius:"0.45rem",background:"rgba(255,255,255,0.14)",color:"#fff",cursor:"pointer",transition:"all 0.2s",flexShrink:0},
 
-  /* City selector — same capsule */
-  cityWrap:{position:"relative",display:"flex",alignItems:"center",flexShrink:0},
-  citySelect:{height:34,padding:"0 1.5rem 0 1.7rem",borderRadius:"0.55rem",border:"1px solid rgba(255,255,255,0.12)",backgroundColor:"rgba(255,255,255,0.08)",fontSize:"0.72rem",cursor:"pointer",fontWeight:500,color:"#fff",appearance:"none",WebkitAppearance:"none",width:"100%",backgroundImage:"url(\"data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",backgroundRepeat:"no-repeat",backgroundPosition:"right 0.45rem center"},
+  /* City button — matches My Cities style */
+  cityBtn:{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.25rem",height:36,padding:"0 0.65rem",border:"1px solid rgba(255,255,255,0.12)",borderRadius:"0.6rem",background:"rgba(255,255,255,0.07)",color:"rgba(255,255,255,0.85)",cursor:"pointer",transition:"all 0.2s",fontSize:"0.64rem",fontWeight:600,whiteSpace:"nowrap"},
 
-  /* My Cities — matches city select width, sits directly below */
-  myCitiesBtn:{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.2rem",width:"100%",height:28,padding:"0 0.6rem",border:"1px solid rgba(250,70,22,0.3)",borderRadius:"0.55rem",background:"rgba(250,70,22,0.1)",color:"rgba(255,255,255,0.8)",cursor:"pointer",transition:"all 0.2s",fontSize:"0.64rem",fontWeight:600,whiteSpace:"nowrap"},
-  dropdown:{position:"absolute",top:"calc(100% + 6px)",right:0,minWidth:200,backgroundColor:"#fff",border:"1px solid #E5E7EB",borderRadius:"0.75rem",boxShadow:"0 12px 40px rgba(0,0,0,0.18)",zIndex:100,overflow:"hidden"},
-  dropItem:{padding:"0.45rem 0.7rem",fontSize:"0.76rem",cursor:"pointer",borderBottom:"1px solid #F3F4F6",display:"flex",alignItems:"center",gap:"0.35rem",color:"#374151",transition:"all 0.15s",background:"transparent"},
+  /* My Cities */
+  myCitiesBtn:{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.25rem",height:36,padding:"0 0.65rem",border:"1px solid rgba(250,70,22,0.25)",borderRadius:"0.6rem",background:"rgba(250,70,22,0.08)",color:"rgba(255,255,255,0.8)",cursor:"pointer",transition:"all 0.2s",fontSize:"0.64rem",fontWeight:600,whiteSpace:"nowrap"},
+  dropdown:{position:"absolute",top:"calc(100% + 8px)",right:0,minWidth:210,backgroundColor:"#fff",border:"1px solid rgba(229,231,235,0.5)",borderRadius:"0.8rem",boxShadow:"0 16px 48px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.06)",zIndex:9999,overflow:"hidden",animation:"fadeSlideUp 0.2s ease"},
+  dropItem:{padding:"0.5rem 0.75rem",fontSize:"0.76rem",cursor:"pointer",borderBottom:"1px solid #F9FAFB",display:"flex",alignItems:"center",gap:"0.4rem",color:"#374151",transition:"all 0.15s",background:"transparent"},
 
-  /* Seasonal suggestions — centred row */
-  suggestRow:{maxWidth:1280,margin:"0 auto",padding:"0.3rem 2rem 0",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.35rem",flexWrap:"wrap"},
-  suggestChip:{display:"inline-flex",alignItems:"center",gap:"0.18rem",padding:"0.12rem 0.5rem",border:"none",borderRadius:9999,background:"transparent",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:"0.6rem",fontWeight:500,transition:"all 0.15s",letterSpacing:"0.01em"},
+  /* Seasonal suggestions */
+  suggestChip:{display:"inline-flex",alignItems:"center",gap:"0.2rem",padding:"0.12rem 0.5rem",border:"1px solid rgba(255,255,255,0.08)",borderRadius:9999,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:"0.58rem",fontWeight:500,transition:"all 0.2s cubic-bezier(.4,0,.2,1)",letterSpacing:"0.01em"},
 
-  /* ── Filter strip — transparent, floats over page background ── */
-  filterStrip:{maxWidth:1280,margin:"0 auto",padding:"0.6rem 2rem 0.35rem",display:"flex",alignItems:"center",justifyContent:"center",gap:"0.45rem",flexWrap:"wrap"},
-  filterChip:{display:"flex",alignItems:"center",gap:"0.2rem",height:28,padding:"0 0.55rem",border:"1.5px solid #D1D5DB",borderRadius:9999,background:"rgba(255,255,255,0.65)",backdropFilter:"blur(4px)",color:"#6B7280",cursor:"pointer",transition:"all 0.15s",whiteSpace:"nowrap"},
-  filterChipOn:{background:"#0021A5",color:"#fff",borderColor:"#0021A5",boxShadow:"0 2px 8px rgba(0,33,165,0.22)"},
-  activeTag:{fontSize:"0.58rem",fontWeight:600,color:"#0021A5",background:"rgba(239,246,255,0.8)",padding:"0.1rem 0.4rem",borderRadius:9999,border:"1px solid #BFDBFE"},
-  clearBtn:{display:"flex",alignItems:"center",gap:"0.15rem",fontSize:"0.58rem",fontWeight:600,color:"#fff",background:"rgba(220,38,38,0.75)",border:"none",borderRadius:9999,padding:"0.15rem 0.45rem",cursor:"pointer",flexShrink:0,transition:"all 0.15s"},
+  /* ── Filter strip — floating pills, no boxed bar ── */
+  filterStrip:{background:"transparent",position:"sticky",top:120,zIndex:800,paddingTop:"0.55rem",paddingBottom:"0.1rem"},
+  filterInner:{maxWidth:1280,margin:"0 auto",padding:"0 2rem",display:"flex",alignItems:"center",gap:"0.4rem",flexWrap:"wrap"},
+
+  /* Pill filter buttons */
+  filterPill:{display:"inline-flex",alignItems:"center",gap:"0.22rem",padding:"0.32rem 0.7rem",border:"1.5px solid rgba(0,33,165,0.2)",borderRadius:9999,background:"rgba(219,234,254,0.3)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#3B5998",cursor:"pointer",fontSize:"0.68rem",fontWeight:550,transition:"all 0.22s cubic-bezier(.4,0,.2,1)",whiteSpace:"nowrap",letterSpacing:"0.01em",boxShadow:"0 1px 3px rgba(0,33,165,0.04)"},
+  filterPillOn:{color:"#0021A5",fontWeight:700,border:"1.5px solid transparent",background:"linear-gradient(#edf3fe,#edf3fe) padding-box, linear-gradient(135deg,#FA4616,#FF6B35,#0021A5) border-box",boxShadow:"0 2px 10px rgba(250,70,22,0.12), 0 2px 8px rgba(0,33,165,0.08)"},
+  filterDot:{width:3,height:3,borderRadius:"50%",background:"#D1D5DB",flexShrink:0},
+
+  activeTag:{fontSize:"0.58rem",fontWeight:600,color:"#0021A5",background:"rgba(239,246,255,0.9)",padding:"0.14rem 0.5rem",borderRadius:9999,border:"1px solid #BFDBFE",letterSpacing:"0.01em"},
+  clearBtn:{display:"flex",alignItems:"center",gap:"0.18rem",fontSize:"0.58rem",fontWeight:600,color:"#fff",background:"rgba(220,38,38,0.75)",border:"none",borderRadius:9999,padding:"0.2rem 0.55rem",cursor:"pointer",flexShrink:0,transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
 
   /* ── Layout ── */
-  layout:{maxWidth:1280,margin:"0 auto",padding:"0.75rem 2rem 2rem",display:"grid",gridTemplateColumns:"1fr 300px",gap:"1.25rem",alignItems:"start"},
+  layout:{maxWidth:1280,margin:"0 auto",padding:"1rem 2rem 2.5rem",display:"grid",gridTemplateColumns:"1fr 290px",gap:"1.5rem",alignItems:"start"},
   mainCol:{minWidth:0},
-  sidebar:{display:"flex",flexDirection:"column",gap:"0.65rem",position:"sticky",top:140},
+  sidebar:{display:"flex",flexDirection:"column",gap:"0.7rem",position:"sticky",top:152},
 
-  /* Event Grid — 2-col visual cards */
-  eventGrid:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"0.85rem",marginBottom:"1.5rem"},
-  eventCard:{backgroundColor:"#fff",borderRadius:"1rem",overflow:"hidden",border:"1px solid #E5E7EB",transition:"all 0.3s cubic-bezier(.4,0,.2,1)",cursor:"default",boxShadow:"0 1px 4px rgba(0,0,0,0.04)",display:"flex",flexDirection:"column"},
-  cardImg:{position:"relative",width:"100%",height:140,overflow:"hidden",flexShrink:0},
-  heartBtn:{position:"absolute",top:"0.5rem",right:"0.5rem",background:"rgba(0,0,0,0.25)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",border:"1.5px solid rgba(255,255,255,0.2)",borderRadius:"50%",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.2s",zIndex:2},
-  dateBadge:{position:"absolute",bottom:"0.5rem",left:"0.5rem",display:"flex",alignItems:"center",gap:"0.25rem",padding:"0.2rem 0.5rem",borderRadius:9999,backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(8px)",border:"1px solid rgba(229,231,235,0.5)",color:"#111827",fontSize:"0.6rem",fontWeight:700,boxShadow:"0 2px 8px rgba(0,0,0,0.08)"},
-  cardBody:{padding:"0.65rem 0.75rem",display:"flex",flexDirection:"column",flex:1,minHeight:0},
-  eventTitle:{fontSize:"0.82rem",fontWeight:700,color:"#111827",margin:"0 0 0.2rem",lineHeight:1.3,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden"},
-  eventMeta:{display:"flex",alignItems:"center",gap:"0.5rem",flexWrap:"wrap"},
-  metaItem:{display:"flex",alignItems:"center",gap:"0.15rem",fontSize:"0.62rem",color:"#9CA3AF",fontWeight:500},
-  ticketBtn:{display:"inline-flex",alignItems:"center",gap:"0.2rem",padding:"0.3rem 0.65rem",border:"none",borderRadius:"0.4rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.65rem",fontWeight:700,textDecoration:"none",boxShadow:"0 2px 6px rgba(250,70,22,0.2)",transition:"all 0.2s"},
+  /* ── Event Grid — premium cards ── */
+  eventGrid:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"1rem",marginBottom:"1.5rem"},
+  eventCard:{backgroundColor:"#fff",borderRadius:"1rem",overflow:"hidden",border:"1px solid rgba(229,231,235,0.35)",transition:"all 0.35s cubic-bezier(.4,0,.2,1)",cursor:"default",boxShadow:"0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",display:"flex",flexDirection:"column"},
+  cardImg:{position:"relative",width:"100%",height:155,overflow:"hidden",flexShrink:0},
+  heartBtn:{position:"absolute",top:"0.55rem",right:"0.55rem",background:"rgba(0,0,0,0.2)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.15)",borderRadius:"50%",width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.25s cubic-bezier(.4,0,.2,1)",zIndex:2},
+  dateBadge:{position:"absolute",bottom:"0.55rem",left:"0.55rem",display:"flex",alignItems:"center",gap:"0.2rem",padding:"0.22rem 0.55rem",borderRadius:9999,backgroundColor:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)",border:"1px solid rgba(229,231,235,0.3)",color:"#111827",fontSize:"0.58rem",fontWeight:700,boxShadow:"0 2px 10px rgba(0,0,0,0.08)",letterSpacing:"0.02em"},
+  cardBody:{padding:"0.7rem 0.8rem",display:"flex",flexDirection:"column",flex:1,minHeight:0},
+  eventTitle:{fontSize:"0.84rem",fontWeight:700,color:"#111827",margin:"0 0 0.3rem",lineHeight:1.35,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",letterSpacing:"-0.01em"},
+  eventMeta:{display:"flex",alignItems:"center",gap:"0.6rem",flexWrap:"wrap"},
+  metaItem:{display:"flex",alignItems:"center",gap:"0.18rem",fontSize:"0.62rem",color:"#9CA3AF",fontWeight:500},
+  ticketBtn:{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.35rem 0.7rem",border:"none",borderRadius:"0.45rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.65rem",fontWeight:700,textDecoration:"none",boxShadow:"0 2px 6px rgba(250,70,22,0.15)",transition:"all 0.25s cubic-bezier(.4,0,.2,1)",letterSpacing:"0.01em"},
 
-  errorBox:{display:"flex",alignItems:"center",gap:"0.4rem",padding:"0.85rem 1rem",backgroundColor:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"0.65rem",color:"#DC2626",fontSize:"0.82rem",marginBottom:"1rem"},
-  loadWrap:{display:"flex",flexDirection:"column",alignItems:"center",padding:"3rem 1rem"},
+  errorBox:{display:"flex",alignItems:"center",gap:"0.4rem",padding:"0.85rem 1rem",backgroundColor:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"0.75rem",color:"#DC2626",fontSize:"0.82rem",marginBottom:"1rem"},
+  loadWrap:{display:"flex",flexDirection:"column",alignItems:"center",padding:"4rem 1rem"},
   spinner:{width:36,height:36,border:"3px solid #E5E7EB",borderTopColor:"#0021A5",borderRadius:"50%",animation:"spin 0.8s linear infinite"},
-  emptyState:{textAlign:"center",padding:"3rem 1.5rem",backgroundColor:"#fff",borderRadius:"1rem",border:"1px dashed #BFDBFE",background:"linear-gradient(135deg,#fff,#EFF6FF)",gridColumn:"1 / -1"},
-  pagination:{display:"flex",justifyContent:"center",alignItems:"center",gap:"0.75rem",marginBottom:"1rem",padding:"0.75rem 0",gridColumn:"1 / -1"},
-  pageBtn:{padding:"0.4rem 0.85rem",border:"1.5px solid #E5E7EB",borderRadius:"0.5rem",backgroundColor:"#fff",color:"#374151",cursor:"pointer",fontSize:"0.75rem",fontWeight:600,transition:"all 0.15s"},
+  emptyState:{textAlign:"center",padding:"4rem 2rem",backgroundColor:"#fff",borderRadius:"1.25rem",border:"1px solid rgba(229,231,235,0.3)",background:"linear-gradient(180deg,#fff 0%,#FAFBFF 100%)",gridColumn:"1 / -1",boxShadow:"0 1px 3px rgba(0,0,0,0.03)"},
+  pagination:{display:"flex",justifyContent:"center",alignItems:"center",gap:"0.5rem",marginBottom:"1rem",padding:"1rem 0",gridColumn:"1 / -1"},
+  pageBtn:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 0.9rem",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.55rem",backgroundColor:"#fff",color:"#374151",cursor:"pointer",fontSize:"0.72rem",fontWeight:600,transition:"all 0.2s cubic-bezier(.4,0,.2,1)",boxShadow:"0 1px 2px rgba(0,0,0,0.03)"},
+  pageDot:{width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.4rem",backgroundColor:"#fff",color:"#6B7280",cursor:"pointer",fontSize:"0.7rem",fontWeight:600,transition:"all 0.15s"},
+  pageDotActive:{background:"#0021A5",color:"#fff",borderColor:"#0021A5",boxShadow:"0 2px 8px rgba(0,33,165,0.2)"},
 
-  /* Sidebar */
-  sideCard:{backgroundColor:"#fff",borderRadius:"0.85rem",border:"1px solid #E5E7EB",overflow:"hidden",boxShadow:"0 1px 4px rgba(0,0,0,0.03)",transition:"all 0.2s"},
-  sideHeader:{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"0.65rem 0.75rem",border:"none",background:"transparent",cursor:"pointer",transition:"all 0.15s"},
-  sideBody:{padding:"0 0.75rem 0.75rem",display:"flex",flexDirection:"column",gap:"0.4rem",maxHeight:380,overflowY:"auto"},
-  sideCount:{fontSize:"0.55rem",fontWeight:700,color:"#FA4616",background:"#FFF7ED",padding:"0.08rem 0.3rem",borderRadius:9999,border:"1px solid #FED7AA"},
+  /* ── Sidebar ── */
+  sideCard:{backgroundColor:"#fff",borderRadius:"0.9rem",border:"1px solid rgba(229,231,235,0.35)",overflow:"hidden",boxShadow:"0 1px 3px rgba(0,0,0,0.03)",transition:"all 0.25s cubic-bezier(.4,0,.2,1)"},
+  sideHeader:{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"0.7rem 0.8rem",border:"none",background:"transparent",cursor:"pointer",transition:"all 0.15s",borderRadius:"0.9rem"},
+  sideBody:{padding:"0 0.8rem 0.8rem",display:"flex",flexDirection:"column",gap:"0.45rem",maxHeight:380,overflowY:"auto"},
 
-  savedItem:{display:"flex",alignItems:"center",gap:"0.4rem",padding:"0.4rem",borderRadius:"0.45rem",background:"#FFFBF9",border:"1px solid #FEF2F2",transition:"all 0.15s"},
-  sideIconBtn:{display:"flex",alignItems:"center",justifyContent:"center",width:24,height:24,borderRadius:"0.3rem",border:"1px solid #E5E7EB",backgroundColor:"#fff",color:"#6B7280",cursor:"pointer",transition:"all 0.1s",textDecoration:"none"},
+  savedItem:{display:"flex",alignItems:"center",gap:"0.45rem",padding:"0.45rem",borderRadius:"0.5rem",background:"#FFFBF9",border:"1px solid rgba(254,226,226,0.5)",transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
+  sideIconBtn:{display:"flex",alignItems:"center",justifyContent:"center",width:24,height:24,borderRadius:"0.35rem",border:"1px solid rgba(229,231,235,0.4)",backgroundColor:"#fff",color:"#6B7280",cursor:"pointer",transition:"all 0.15s",textDecoration:"none"},
 
-  tipItem:{padding:"0.5rem",borderRadius:"0.45rem",background:"#F8FAFF",border:"1px solid #EEF2FF"},
-  phraseItem:{padding:"0.45rem 0.55rem",borderRadius:"0.45rem",background:"#F8FAFF",border:"1px solid #DBEAFE"},
-  phraseIconBtn:{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:"0.3rem",border:"1px solid #BFDBFE",backgroundColor:"#fff",color:"#0021A5",cursor:"pointer",transition:"all 0.15s"},
+  tipItem:{padding:"0.55rem 0.6rem",borderRadius:"0.5rem",background:"linear-gradient(135deg,#F8FAFF,#EFF6FF)",border:"1px solid rgba(238,242,255,0.6)",transition:"all 0.15s"},
+  phraseItem:{padding:"0.5rem 0.6rem",borderRadius:"0.5rem",background:"linear-gradient(135deg,#FAFBFF,#F0F4FF)",border:"1px solid rgba(219,234,254,0.5)",transition:"all 0.15s"},
+  phraseIconBtn:{display:"flex",alignItems:"center",justifyContent:"center",width:24,height:24,borderRadius:"0.35rem",border:"1px solid rgba(191,219,254,0.5)",backgroundColor:"#fff",color:"#0021A5",cursor:"pointer",transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
 
-  foot:{textAlign:"center",padding:"2rem 1.5rem",color:"#9CA3AF",fontSize:"0.75rem",borderTop:"1px solid #E5E7EB",background:"linear-gradient(180deg,transparent,rgba(0,33,165,0.02))"},
+  foot:{textAlign:"center",padding:"2rem 1.5rem",color:"#9CA3AF",fontSize:"0.72rem",fontWeight:500,borderTop:"1px solid rgba(229,231,235,0.5)",background:"linear-gradient(180deg,transparent,rgba(0,33,165,0.015))"},
 };
 
 if(typeof document!=="undefined"){
@@ -610,9 +747,10 @@ if(typeof document!=="undefined"){
   el.id="mtb-events-anim";
   el.textContent=`
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-    [data-events-bar] input::placeholder{color:rgba(255,255,255,0.5)!important}
-    select option{color:#374151;background:#fff}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    [data-events-bar] input::placeholder{color:rgba(255,255,255,0.4)!important}
+    [data-events-bar] input:focus{outline:none}
+    [data-events-bar] form:focus-within{border-color:rgba(255,255,255,0.22)!important;background:rgba(255,255,255,0.1)!important;box-shadow:0 0 0 3px rgba(255,255,255,0.06)!important}
   `;
   if(!el.parentNode)document.head.appendChild(el);
 }

@@ -531,7 +531,7 @@ const S = {
   page:{minHeight:"100vh",backgroundColor:"#F5F7FA",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif"},
   /* header */
   hdr:{backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:"1px solid rgba(229,231,235,0.5)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"},
-  hdrIn:{maxWidth:1200,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
+  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
   hdrL:{display:"flex",alignItems:"center",gap:"0.6rem",cursor:"pointer"},
   brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.01em"},
   nav:{display:"flex",gap:"0.15rem",alignItems:"center",background:"#F3F4F6",borderRadius:"0.65rem",padding:"0.2rem"},

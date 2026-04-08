@@ -74,6 +74,7 @@ const Reservations = () => {
   /* ── UI state ─────────────────────────────────────── */
   const [phraseOfDay, setPhraseOfDay] = useState(null);
   const [podRevealed, setPodRevealed] = useState(false);
+  const [podPronShown, setPodPronShown] = useState(false);
   const [showGoalEditor, setShowGoalEditor] = useState(false);
   const [celebrationMsg, setCelebrationMsg] = useState("");
 
@@ -594,9 +595,9 @@ const Reservations = () => {
                     <Volume2 size={14}/> {speakingId === "pod" ? "Playing…" : "Listen"}
                   </button>
                   {phraseOfDay.pronunciation && (
-                    <button onClick={() => setPodRevealed(prev => prev === "pron" ? true : "pron")}
-                      style={{...S.podActionBtn, ...(podRevealed === "pron" ? {backgroundColor:"rgba(255,255,255,0.15)",borderColor:"rgba(255,255,255,0.4)"} : {})}}>
-                      {podRevealed === "pron" ? phraseOfDay.pronunciation : "🔊 Pronunciation"}
+                    <button onClick={() => setPodPronShown(prev => !prev)}
+                      style={{...S.podActionBtn, ...(podPronShown ? {backgroundColor:"rgba(255,255,255,0.15)",borderColor:"rgba(255,255,255,0.4)"} : {})}}>
+                      {podPronShown ? phraseOfDay.pronunciation : "🔊 Pronunciation"}
                     </button>
                   )}
                   {!vocabCards.some(c => c.german === phraseOfDay.german_phrase) ? (
@@ -608,7 +609,7 @@ const Reservations = () => {
                   )}
                 </div>
 
-                {!podRevealed || podRevealed === "pron" ? (
+                {!podRevealed ? (
                   <button onClick={() => setPodRevealed(true)} style={S.podRevealBtn}>
                     Tap to reveal translation
                   </button>
@@ -1422,7 +1423,7 @@ const S = {
 
   /* Header / Nav — blue text, no gradients */
   header:{ backgroundColor:"rgba(255,255,255,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", borderBottom:"1px solid rgba(229,231,235,0.5)", position:"sticky", top:0, zIndex:1000, boxShadow:"0 1px 3px rgba(0,0,0,0.04)" },
-  headerInner:{ maxWidth:1200, margin:"0 auto", padding:"0.5rem 2rem", display:"flex", justifyContent:"space-between", alignItems:"center" },
+  headerInner:{ maxWidth:1280, margin:"0 auto", padding:"0.5rem 2rem", display:"flex", justifyContent:"space-between", alignItems:"center" },
   headerLeft:{ display:"flex", alignItems:"center", gap:"0.6rem", cursor:"pointer" },
   brand:{ fontSize:"1.05rem", fontWeight:800, color:"#0021A5", letterSpacing:"-0.01em" },
   headerRight:{ display:"flex", gap:"0.15rem", alignItems:"center", flexWrap:"wrap", background:"#F3F4F6", borderRadius:"0.65rem", padding:"0.2rem" },
