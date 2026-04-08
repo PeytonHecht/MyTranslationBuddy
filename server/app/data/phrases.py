@@ -3,7 +3,7 @@ German phrase library data organized by category and regional dialects.
 Study abroad phrases for students in German-speaking countries.
 """
 
-from app.schemas.phrase import PhraseCreate, PhraseCategory, PhraseRegister
+from app.schemas.phrase import PhraseCreate, PhraseCategory, PhraseRegister, PhraseType
 
 # ============================================================================
 # ACADEMIC PHRASES - University and classroom interactions
@@ -871,412 +871,663 @@ hyperlocal_slang_phrases = [
         difficulty_level=3,
         tags=["slang", "wurzburg", "franconian", "peer_support"]
     ),
+# ============================================================================
+# SWISS GERMAN & AUSTRIAN PHRASES - Regional expressions
+# ============================================================================
+
+swiss_austrian_phrases = [
+    PhraseCreate(
+        german_phrase="Gr\u00FCezi",
+        english_translation="Hello (formal Swiss greeting)",
+        pronunciation="GROO-et-see",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Standard formal greeting in Swiss German-speaking areas",
+        example_sentence="Gr\u00FCezi, wie g\u00E4hts Ihne?",
+        difficulty_level=1,
+        tags=["greeting", "swiss", "formal"]
+    ),
+    PhraseCreate(
+        german_phrase="Hoi z\u00E4me",
+        english_translation="Hi everyone (informal Swiss greeting)",
+        pronunciation="HOY ZAH-meh",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Casual greeting to a group of friends or classmates",
+        example_sentence="Hoi z\u00E4me, sind alli da?",
+        difficulty_level=1,
+        tags=["greeting", "swiss", "informal", "group"]
+    ),
+    PhraseCreate(
+        german_phrase="Merci vilmal",
+        english_translation="Thanks a lot (Swiss German)",
+        pronunciation="MEHR-see FEEL-mahl",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Common way to say thank you in Swiss German, mixing French 'merci' with German",
+        example_sentence="Merci vilmal f\u00FCr d'Hilf!",
+        difficulty_level=1,
+        tags=["thanks", "swiss", "gratitude"]
+    ),
+    PhraseCreate(
+        german_phrase="Ade / Tsch\u00FCss",
+        english_translation="Bye (Swiss/German goodbye)",
+        pronunciation="AH-deh / CHEWS",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Casual goodbye in Swiss German; 'Ade' is distinctly Swiss",
+        difficulty_level=1,
+        tags=["goodbye", "swiss"]
+    ),
+    PhraseCreate(
+        german_phrase="R\u00F6schti",
+        english_translation="Hash browns (iconic Swiss dish)",
+        pronunciation="RUSH-tee",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Ordering the classic Swiss potato dish at a restaurant",
+        example_sentence="Ich h\u00E4tte gern e R\u00F6schti mit Chees.",
+        difficulty_level=1,
+        tags=["food", "swiss", "traditional"]
+    ),
+    PhraseCreate(
+        german_phrase="Es Halbtax bitte",
+        english_translation="A half-fare card please",
+        pronunciation="Es HAHLB-tahx BIT-teh",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Asking for the SBB half-fare discount card at the train station",
+        difficulty_level=2,
+        tags=["transit", "swiss", "train", "discount"]
+    ),
+    PhraseCreate(
+        german_phrase="Wo isch de n\u00E4chst Coop / Migros?",
+        english_translation="Where is the nearest Coop/Migros?",
+        pronunciation="Voh ish deh NEKST Koop / MEE-gros?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Asking for directions to the two main Swiss supermarket chains",
+        difficulty_level=2,
+        tags=["shopping", "swiss", "supermarket"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich zahl mit Twint",
+        english_translation="I'll pay with Twint (Swiss mobile payment)",
+        pronunciation="Eekh TSAHL mit Twint",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["zurich", "bern", "rapperswil", "winterthur"],
+        usage_context="Using the popular Swiss mobile payment app at shops and restaurants",
+        difficulty_level=1,
+        tags=["payment", "swiss", "technology"]
+    ),
+    PhraseCreate(
+        german_phrase="Servus!",
+        english_translation="Hi / Bye (Austrian informal greeting)",
+        pronunciation="ZEHR-voos",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["vienna", "salzburg"],
+        usage_context="Very common casual greeting and farewell in Austria",
+        example_sentence="Servus! Wie geht's dir?",
+        difficulty_level=1,
+        tags=["greeting", "austrian", "informal"]
+    ),
+    PhraseCreate(
+        german_phrase="Habe die Ehre",
+        english_translation="I have the honor (formal Austrian greeting)",
+        pronunciation="HAH-beh dee EH-reh",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["vienna", "salzburg"],
+        usage_context="Traditional formal greeting in Austria, especially older people",
+        difficulty_level=2,
+        tags=["greeting", "austrian", "formal", "traditional"]
+    ),
+    PhraseCreate(
+        german_phrase="A Mel\u00E1nge bitte",
+        english_translation="A Viennese coffee (similar to cappuccino) please",
+        pronunciation="A meh-LAHN-zheh BIT-teh",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["vienna", "salzburg"],
+        usage_context="Ordering the classic Viennese coffee drink at a traditional coffee house",
+        example_sentence="Herr Ober, a Mel\u00E1nge bitte!",
+        difficulty_level=2,
+        tags=["coffee", "austrian", "traditional", "cafe"]
+    ),
+    PhraseCreate(
+        german_phrase="Sackerl",
+        english_translation="Bag (Austrian for T\u00fcte)",
+        pronunciation="ZAHK-erl",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["vienna", "salzburg"],
+        usage_context="Asking for a bag at the supermarket - Austrians say 'Sackerl' not 'T\u00fcte'",
+        example_sentence="Brauchen Sie ein Sackerl?",
+        difficulty_level=1,
+        tags=["shopping", "austrian", "vocabulary"]
+    ),
+]
+
+# ============================================================================
+# ADDITIONAL ESSENTIAL PHRASES - Covering all cities
+# ============================================================================
+
+essential_phrases = [
+    PhraseCreate(
+        german_phrase="Sprechen Sie Englisch?",
+        english_translation="Do you speak English?",
+        pronunciation="SHPREKH-en zee ENG-lish?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="The most important phrase for any newcomer - asking if someone speaks English",
+        example_sentence="Entschuldigung, sprechen Sie Englisch?",
+        difficulty_level=1,
+        tags=["essential", "first_day", "communication"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich bin Student/Studentin an der Uni.",
+        english_translation="I am a student at the university.",
+        pronunciation="Eekh bin shtoo-DENT/shtoo-DEN-tin ahn der OO-nee.",
+        category=PhraseCategory.ACADEMIC,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Introducing yourself as a student for discounts and general context",
+        difficulty_level=1,
+        tags=["introduction", "student", "university"]
+    ),
+    PhraseCreate(
+        german_phrase="Kann ich bitte die Rechnung haben?",
+        english_translation="Can I have the bill please?",
+        pronunciation="Kahn eekh BIT-teh dee REKH-noong HAH-ben?",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Asking for the check at a restaurant - essential dining phrase",
+        difficulty_level=1,
+        tags=["restaurant", "essential", "dining"]
+    ),
+    PhraseCreate(
+        german_phrase="Gibt es einen Studentenrabatt?",
+        english_translation="Is there a student discount?",
+        pronunciation="Gipt es EYE-nen shtoo-DEN-ten-rah-BAHT?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Student discounts are common at museums, theaters, transport - always ask!",
+        difficulty_level=2,
+        tags=["student", "discount", "money", "essential"]
+    ),
+    PhraseCreate(
+        german_phrase="Wie komme ich zum Bahnhof?",
+        english_translation="How do I get to the train station?",
+        pronunciation="Vee KOM-meh eekh tsoom BAHN-hohf?",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Asking for directions to the train station - the hub of German/Austrian/Swiss public transit",
+        difficulty_level=1,
+        tags=["directions", "train", "transport", "essential"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich h\u00E4tte gern ein Bier / ein Wasser bitte.",
+        english_translation="I would like a beer / a water please.",
+        pronunciation="Eekh HET-teh gehrn ein Beer / ein VAHS-ser BIT-teh.",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Basic ordering at a bar, restaurant, or Biergarten",
+        difficulty_level=1,
+        tags=["ordering", "drinks", "essential"]
+    ),
+    PhraseCreate(
+        german_phrase="Wo ist die n\u00E4chste Apotheke?",
+        english_translation="Where is the nearest pharmacy?",
+        pronunciation="Voh ist dee NEKH-steh ah-poh-TAY-keh?",
+        category=PhraseCategory.HEALTH,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Finding a pharmacy when you need medicine or health products",
+        difficulty_level=1,
+        tags=["health", "pharmacy", "essential", "emergency"]
+    ),
+    PhraseCreate(
+        german_phrase="Entschuldigung, ich bin neu hier.",
+        english_translation="Excuse me, I'm new here.",
+        pronunciation="Ent-SHOOL-dee-goong, eekh bin NOY heer.",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="A great ice-breaker that usually makes locals more helpful and patient",
+        difficulty_level=1,
+        tags=["introduction", "essential", "helpful"]
+    ),
+    PhraseCreate(
+        german_phrase="Zahlen bitte, zusammen / getrennt.",
+        english_translation="Check please, together / separate.",
+        pronunciation="TSAH-len BIT-teh, tsoo-ZAH-men / geh-TRENT.",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg"],
+        usage_context="Asking for the bill and specifying if paying together or separately - Germans usually split bills",
+        difficulty_level=2,
+        tags=["restaurant", "dining", "payment", "essential"]
+    ),
+    PhraseCreate(
+        german_phrase="Kann ich mit Karte zahlen?",
+        english_translation="Can I pay by card?",
+        pronunciation="Kahn eekh mit KAR-teh TSAH-len?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Important to ask - Germany is still heavily cash-based compared to the US! Many places don't accept cards.",
+        difficulty_level=1,
+        tags=["payment", "essential", "cash", "card"]
+    ),
 ]
 
 
 # ============================================================================
-# CITY-LOCKED MASTERY PHRASES - Extensive per-city practical + local feel
+# BEGINNER BASICS - Absolute first phrases every student needs (Difficulty 1)
 # ============================================================================
 
-city_locked_mastery_phrases = [
+beginner_basics_phrases = [
     PhraseCreate(
-        german_phrase="Gibt's hier ein günstiges Studi-Café in der Nähe?",
-        english_translation="Is there an affordable student café nearby?",
-        pronunciation="Gibts heer ine GOON-sti-ges SHTOO-dee kah-FEH in der NEH-heh?",
-        category=PhraseCategory.DINING,
-        register=PhraseRegister.INFORMAL,
-        city_slugs=["berlin"],
-        usage_context="Asking locals for student-friendly food spots in Berlin",
-        difficulty_level=2,
-        tags=["berlin", "student_life", "budget", "local"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo finde ich in München ein gemütliches Wirtshaus?",
-        english_translation="Where can I find a cozy traditional tavern in Munich?",
-        pronunciation="Voh FIN-deh eekh in MUN-khen ine geh-MOOT-li-khes VEERTS-hows?",
-        category=PhraseCategory.DINING,
+        german_phrase="Ja",
+        english_translation="Yes",
+        pronunciation="Yah",
+        category=PhraseCategory.GREETINGS,
         register=PhraseRegister.NEUTRAL,
-        city_slugs=["munich"],
-        usage_context="Asking for traditional local dining in Munich",
-        difficulty_level=3,
-        tags=["munich", "bavarian", "food", "local"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo kann man in Hamburg gut an den Landungsbrücken lernen?",
-        english_translation="Where can you study well near the Landungsbrücken in Hamburg?",
-        pronunciation="Voh kan man in HAM-boork goot an den LAN-doongs-brook-en LER-nen?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["hamburg"],
-        usage_context="Finding study spots around iconic Hamburg neighborhoods",
-        difficulty_level=3,
-        tags=["hamburg", "study_spots", "local"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo ist in Stuttgart der beste Flohmarkt am Wochenende?",
-        english_translation="Where is the best flea market in Stuttgart on weekends?",
-        pronunciation="Voh ist in SHTOOT-gart der BES-teh FLOH-markt am VO-khen-en-deh?",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["stuttgart"],
-        usage_context="Asking locals about weekend market culture",
-        difficulty_level=3,
-        tags=["stuttgart", "shopping", "weekend", "local"]
-    ),
-    PhraseCreate(
-        german_phrase="Wie komme ich von Bonn schnell nach Köln?",
-        english_translation="How do I get from Bonn to Cologne quickly?",
-        pronunciation="Vee KOM-eh eekh fon bon shnel nahkh KURLN?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["bonn"],
-        usage_context="Frequent day-trip transport question for Bonn students",
-        difficulty_level=2,
-        tags=["bonn", "transport", "regional_travel"]
-    ),
-    PhraseCreate(
-        german_phrase="Gibt es in Mannheim ein gutes Lerncafé?",
-        english_translation="Is there a good study café in Mannheim?",
-        pronunciation="Gibt es in MAN-hime ine GOO-tes Lern-kah-FEH?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["mannheim"],
-        usage_context="Finding social study spaces near campus",
-        difficulty_level=2,
-        tags=["mannheim", "study", "cafes"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo fährt der nächste Bus nach Koblenz?",
-        english_translation="Where does the next bus to Koblenz leave from?",
-        pronunciation="Voh fehrt der NEKH-steh boos nahkh KOHB-lents?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["vallendar"],
-        usage_context="Frequent practical mobility question for Vallendar students",
-        difficulty_level=2,
-        tags=["vallendar", "transport", "koblenz"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo finde ich in Aachen die besten Lernräume?",
-        english_translation="Where can I find the best study rooms in Aachen?",
-        pronunciation="Voh FIN-deh eekh in AH-khen dee BES-ten LERN-roi-meh?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["aachen"],
-        usage_context="Locating effective study spaces around RWTH/Aachen",
-        difficulty_level=2,
-        tags=["aachen", "study", "campus"]
-    ),
-    PhraseCreate(
-        german_phrase="Gibt's in Osnabrück ein gutes Studentenkino?",
-        english_translation="Is there a good student cinema in Osnabrück?",
-        pronunciation="Gibts in OZ-nah-brook ine GOO-tes shtoo-DEN-ten-kee-noh?",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.INFORMAL,
-        city_slugs=["osnabruck"],
-        usage_context="Asking about local student social venues",
-        difficulty_level=2,
-        tags=["osnabruck", "student_life", "social"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo kann man in Detmold günstig wohnen?",
-        english_translation="Where can you live affordably in Detmold?",
-        pronunciation="Voh kan man in DET-moldt GOON-stig VO-nen?",
-        category=PhraseCategory.HOUSING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["detmold"],
-        usage_context="Looking for affordable housing in a smaller city",
-        difficulty_level=2,
-        tags=["detmold", "housing", "budget"]
-    ),
-    PhraseCreate(
-        german_phrase="Welche WG ist nah an der TH OWL?",
-        english_translation="Which shared flat is close to TH OWL?",
-        pronunciation="VEL-kheh veh-GEH ist nah an der teh hah oh ve el?",
-        category=PhraseCategory.HOUSING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["lemgo"],
-        usage_context="Housing search around TH OWL campus",
-        difficulty_level=3,
-        tags=["lemgo", "housing", "wg", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo trifft man in Jena am besten Studierende?",
-        english_translation="Where is the best place to meet students in Jena?",
-        pronunciation="Voh trift man in YEH-nah am BES-ten shtoo-DEE-ren-deh?",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["jena"],
-        usage_context="Making friends and building local social network",
-        difficulty_level=2,
-        tags=["jena", "social", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo findet man in Leipzig günstige WGs mit guter Anbindung?",
-        english_translation="Where can you find affordable shared flats in Leipzig with good transit access?",
-        pronunciation="Voh FIN-det man in LIPE-tsikh GOON-sti-geh veh-GEHS mit GOO-ter AN-bin-doong?",
-        category=PhraseCategory.HOUSING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["leipzig"],
-        usage_context="Housing search in Leipzig neighborhoods with strong tram/S-Bahn access",
-        difficulty_level=3,
-        tags=["leipzig", "housing", "wg", "transport"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo sind in Leipzig gute Lernorte rund um die Uni?",
-        english_translation="Where are good study spots in Leipzig around the university?",
-        pronunciation="Voh zint in LIPE-tsikh GOO-teh LERN-or-teh roont oom dee OO-nee?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["leipzig"],
-        usage_context="Finding student-preferred study places near Leipzig University",
-        difficulty_level=2,
-        tags=["leipzig", "study_spots", "university", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo bekommt man in Würzburg studentische Rabatte?",
-        english_translation="Where can you get student discounts in Würzburg?",
-        pronunciation="Voh beh-KOMT man in VURTS-boork shtoo-DEN-ti-sheh rah-BAT-eh?",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["wurzburg"],
-        usage_context="Saving money with city-specific student discount spots",
-        difficulty_level=3,
-        tags=["wurzburg", "discount", "student_budget"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo sind in Salzburg gute Orte zum Üben oder Proben?",
-        english_translation="Where are good places in Salzburg to practice or rehearse?",
-        pronunciation="Voh zint in ZALTZ-boork GOO-teh OR-te tsoom OO-ben oh-der PRO-ben?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["salzburg"],
-        usage_context="Useful for music/business program participants in Salzburg",
-        difficulty_level=3,
-        tags=["salzburg", "music", "practice", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo findet man in Zürich günstige Mittagsmenüs?",
-        english_translation="Where can you find affordable lunch menus in Zurich?",
-        pronunciation="Voh FIN-det man in TSOO-rikh GOON-sti-geh MIT-tags-meh-NUHS?",
-        category=PhraseCategory.DINING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["zurich"],
-        usage_context="Essential budget dining question in high-cost Zurich",
-        difficulty_level=3,
-        tags=["zurich", "budget", "dining", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo sind in Wien gute Lernorte nahe der WU?",
-        english_translation="Where are good study spots in Vienna near WU?",
-        pronunciation="Voh zint in veen GOO-teh LERN-or-teh NA-heh der veh-oo?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["vienna"],
-        usage_context="Program-specific practical phrase for WU participants in real city Vienna",
-        difficulty_level=2,
-        tags=["vienna", "wu", "study_spots", "local"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo kann ich in Eltville am Rhein günstig einkaufen?",
-        english_translation="Where can I shop affordably in Eltville am Rhein?",
-        pronunciation="Voh kan eekh in ELT-vi-leh am rine GOON-stig ine-kow-fen?",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["eltville"],
-        usage_context="Everyday budget shopping question in a smaller town",
-        difficulty_level=3,
-        tags=["eltville", "shopping", "budget", "daily_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo trifft man in Wiesbaden/Oestrich-Winkel Studierende von EBS?",
-        english_translation="Where do you meet EBS students in Wiesbaden/Oestrich-Winkel?",
-        pronunciation="Voh trift man in VEES-bah-den OH-strikh VIN-kel shtoo-DEE-ren-deh fon eh-beh-ess?",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["ebs"],
-        usage_context="Networking and social integration around EBS locations",
-        difficulty_level=4,
-        tags=["ebs", "networking", "student_life", "social"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo kann man in Leipzig abends günstig essen gehen?",
-        english_translation="Where can you eat out affordably in Leipzig in the evening?",
-        pronunciation="Voh kan man in LIPE-tsikh AH-bents GOON-stig ES-sen gay-en?",
-        category=PhraseCategory.DINING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["leipzig"],
-        usage_context="Budget dinner planning in Leipzig student neighborhoods",
-        difficulty_level=2,
-        tags=["leipzig", "dining", "budget", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Fährt die S-Bahn direkt zum Hauptbahnhof Leipzig?",
-        english_translation="Does the S-Bahn go directly to Leipzig central station?",
-        pronunciation="Fehrt dee es-bahn dee-REKT tsoom HOWPT-bahn-hof LIPE-tsikh?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["leipzig"],
-        usage_context="Navigating major transit connections in Leipzig",
-        difficulty_level=2,
-        tags=["leipzig", "transport", "sbahn", "travel"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo ist in Leipzig ein gutes Späti in der Nähe?",
-        english_translation="Where is a good late-night corner shop nearby in Leipzig?",
-        pronunciation="Voh ist in LIPE-tsikh ine GOO-tes SHPAY-tee in der NEH-heh?",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.INFORMAL,
-        city_slugs=["leipzig"],
-        usage_context="Useful everyday slang phrase in urban student neighborhoods",
-        difficulty_level=3,
-        tags=["leipzig", "spati", "local", "daily_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo findet man in Salzburg günstige Studentencafés?",
-        english_translation="Where can you find affordable student cafés in Salzburg?",
-        pronunciation="Voh FIN-det man in ZALTZ-boork GOON-sti-geh shtoo-DEN-ten-kah-FEHS?",
-        category=PhraseCategory.DINING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["salzburg"],
-        usage_context="Budget-friendly café search for Salzburg students",
-        difficulty_level=3,
-        tags=["salzburg", "cafes", "budget", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Welche Buslinie fährt in Salzburg zum Hauptbahnhof?",
-        english_translation="Which bus line in Salzburg goes to the main station?",
-        pronunciation="VEL-kheh BOOS-lee-nee-eh fehrt in ZALTZ-boork tsoom HOWPT-bahn-hof?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["salzburg"],
-        usage_context="Practical mobility phrase for daily commuting in Salzburg",
-        difficulty_level=2,
-        tags=["salzburg", "transport", "bus", "commute"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo kann man in Würzburg günstig Mittag essen?",
-        english_translation="Where can you have an affordable lunch in Würzburg?",
-        pronunciation="Voh kan man in VURTS-boork GOON-stig MIT-tag ES-sen?",
-        category=PhraseCategory.DINING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["wurzburg"],
-        usage_context="Everyday lunch budgeting for Würzburg students",
-        difficulty_level=2,
-        tags=["wurzburg", "dining", "budget", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Welche Straßenbahn fährt in Würzburg zur Uni?",
-        english_translation="Which tram in Würzburg goes to the university?",
-        pronunciation="VEL-kheh SHTRAH-sen-bahn fehrt in VURTS-boork tsoor OO-nee?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["wurzburg"],
-        usage_context="Getting to campus in Würzburg by tram",
-        difficulty_level=2,
-        tags=["wurzburg", "transport", "tram", "campus"]
-    ),
-    PhraseCreate(
-        german_phrase="Gibt es in Detmold ruhige Lernorte am Abend?",
-        english_translation="Are there quiet study places in Detmold in the evening?",
-        pronunciation="Gibt es in DET-moldt ROO-ig-eh LERN-or-teh am AH-bent?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["detmold"],
-        usage_context="Finding quiet evening study spots in a smaller city",
-        difficulty_level=2,
-        tags=["detmold", "study", "quiet", "evening"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo gibt es in Eltville günstige Supermärkte?",
-        english_translation="Where are affordable supermarkets in Eltville?",
-        pronunciation="Voh gibt es in ELT-vi-leh GOON-sti-geh ZOO-per-mehrk-teh?",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["eltville"],
-        usage_context="Daily essentials shopping in Eltville",
-        difficulty_level=2,
-        tags=["eltville", "shopping", "groceries", "budget"]
-    ),
-    PhraseCreate(
-        german_phrase="Wo findet man in Vallendar günstige WG-Zimmer?",
-        english_translation="Where can you find affordable shared-flat rooms in Vallendar?",
-        pronunciation="Voh FIN-det man in VAL-len-dar GOON-sti-geh veh-GEH TSIM-er?",
-        category=PhraseCategory.HOUSING,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["vallendar"],
-        usage_context="Student housing search near WHU/Vallendar",
-        difficulty_level=3,
-        tags=["vallendar", "housing", "wg", "student_life"]
-    ),
-    PhraseCreate(
-        german_phrase="Wie komme ich von EBS schnell nach Wiesbaden Zentrum?",
-        english_translation="How do I get quickly from EBS to downtown Wiesbaden?",
-        pronunciation="Vee KOM-eh eekh fon eh-beh-ess shnel nahkh VEES-bah-den TSEN-troom?",
-        category=PhraseCategory.TRANSPORTATION,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["ebs"],
-        usage_context="Frequent local transit question for EBS students",
-        difficulty_level=3,
-        tags=["ebs", "transport", "wiesbaden", "commute"]
-    ),
-    PhraseCreate(
-        german_phrase="Können Sie mich empfehlen?",
-        english_translation="Can you recommend me?",
-        pronunciation="KUN-nen zee meekh emp-FAY-len?",
-        category=PhraseCategory.ACADEMIC,
-        register=PhraseRegister.FORMAL,
-        city_slugs=["berlin", "munich", "vienna", "aachen"],
-        usage_context="Asking professor for professional recommendation",
-        difficulty_level=2,
-        tags=["academic", "recommendation", "professional"]
-    ),
-    PhraseCreate(
-        german_phrase="Das ist sehr hilfreich.",
-        english_translation="That's very helpful.",
-        pronunciation="Dahs ist ZAIR HILF-raikhe.",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.NEUTRAL,
-        city_slugs=["berlin", "munich", "vienna", "hamburg"],
-        usage_context="Expressing gratitude for assistance",
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="The most basic word you'll use every day.",
         difficulty_level=1,
-        tags=["social", "gratitude", "expression"]
+        tags=["beginner", "essential", "basics"]
     ),
     PhraseCreate(
-        german_phrase="Ich freue mich auf deine Antwort.",
-        english_translation="I look forward to your response.",
-        pronunciation="Eekh FROI-eh meekh owf DINE-eh AHN-tvort.",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.FORMAL,
-        city_slugs=["vienna", "berlin"],
-        usage_context="Polite closing for emails or conversations",
-        difficulty_level=2,
-        tags=["formal", "communication", "writing"]
-    ),
-    PhraseCreate(
-        german_phrase="Das kostet eine kleine Vermögen!",
-        english_translation="That costs a fortune!",
-        pronunciation="Dahs KOS-tet AY-neh KLINE-eh Fair-MERN-gen!",
-        category=PhraseCategory.SHOPPING,
-        register=PhraseRegister.INFORMAL,
-        city_slugs=["munich", "vienna", "zurich"],
-        usage_context="Expressing shock at high prices in expensive cities",
-        difficulty_level=2,
-        tags=["shopping", "money", "expression", "expensive"]
-    ),
-    PhraseCreate(
-        german_phrase="Kann ich dich später anrufen?",
-        english_translation="Can I call you later?",
-        pronunciation="Kahn eekh deekh SHPAY-ter AHN-roo-fen?",
-        category=PhraseCategory.SOCIAL,
-        register=PhraseRegister.INFORMAL,
-        city_slugs=["berlin", "munich", "vienna"],
-        usage_context="Making plans to contact someone later",
+        german_phrase="Nein",
+        english_translation="No",
+        pronunciation="Nine",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Simple but essential. Pronounced like the English number 'nine'.",
         difficulty_level=1,
-        tags=["social", "communication", "planning"]
+        tags=["beginner", "essential", "basics"]
+    ),
+    PhraseCreate(
+        german_phrase="Bitte",
+        english_translation="Please / You're welcome",
+        pronunciation="BIT-teh",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Used both as 'please' when asking and as 'you're welcome' when responding to thanks.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "politeness"]
+    ),
+    PhraseCreate(
+        german_phrase="Danke",
+        english_translation="Thank you",
+        pronunciation="DAHN-keh",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="A must-know! Add 'schön' (SHURN) to make it 'Danke schön' (Thank you very much).",
+        difficulty_level=1,
+        tags=["beginner", "essential", "politeness"]
+    ),
+    PhraseCreate(
+        german_phrase="Entschuldigung",
+        english_translation="Excuse me / I'm sorry",
+        pronunciation="Ent-SHOOL-dee-goong",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Use to get someone's attention, apologize, or start a polite question.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "politeness"]
+    ),
+    PhraseCreate(
+        german_phrase="Sprechen Sie Englisch?",
+        english_translation="Do you speak English?",
+        pronunciation="SHPREH-khen zee ENG-lish?",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Your lifeline phrase! Even though many Germans speak English, asking politely first is appreciated.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "communication"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich bin Student/Studentin.",
+        english_translation="I am a student (male/female).",
+        pronunciation="Eekh bin shtoo-DENT / shtoo-DEN-tin",
+        category=PhraseCategory.ACADEMIC,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Important for introductions. Use 'Student' if male, 'Studentin' if female. Often gets you discounts!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "introduction", "student_discount"]
+    ),
+    PhraseCreate(
+        german_phrase="Wo ist die Toilette?",
+        english_translation="Where is the restroom?",
+        pronunciation="Voh ist dee toy-LET-teh?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="A must-know phrase. Note: In Germany, you often have to pay 50 cents to use public restrooms!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "survival"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich komme aus Amerika.",
+        english_translation="I come from America.",
+        pronunciation="Eekh KOM-meh ows ah-MEH-ree-kah",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="A great phrase for introductions. People will be curious about where you're from!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "introduction"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich hätte gerne...",
+        english_translation="I would like...",
+        pronunciation="Eekh HET-teh GEHR-neh...",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.FORMAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="The polite way to order at restaurants, bakeries, or cafes. Follow with the item name.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "ordering", "restaurant"]
+    ),
+    PhraseCreate(
+        german_phrase="Die Rechnung, bitte.",
+        english_translation="The bill/check, please.",
+        pronunciation="Dee REKH-noong, BIT-teh",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="In Germany, waiters won't bring the check until you ask. This phrase is essential!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "restaurant", "payment"]
+    ),
+    PhraseCreate(
+        german_phrase="Ein Wasser, bitte.",
+        english_translation="A water, please.",
+        pronunciation="Ine VAS-ser, BIT-teh",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Tip: If you want tap water (free), say 'Leitungswasser, bitte.' Otherwise you'll get expensive bottled water!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "restaurant", "drink"]
+    ),
+    PhraseCreate(
+        german_phrase="Wie komme ich zum Bahnhof?",
+        english_translation="How do I get to the train station?",
+        pronunciation="Vee KOM-meh eekh tsoom BAHN-hohf?",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Train stations are the center of German transportation. You'll use this one a lot!",
+        difficulty_level=1,
+        tags=["beginner", "essential", "directions", "train"]
+    ),
+    PhraseCreate(
+        german_phrase="Wie spät ist es?",
+        english_translation="What time is it?",
+        pronunciation="Vee SHPAYT ist es?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Germans use 24-hour time (e.g. 14:00 = 2 PM). This phrase helps you practice understanding times.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "time"]
+    ),
+    PhraseCreate(
+        german_phrase="Ich brauche Hilfe.",
+        english_translation="I need help.",
+        pronunciation="Eekh BROW-kheh HIL-feh",
+        category=PhraseCategory.HEALTH,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="An important emergency phrase. Works in any situation where you need assistance.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "emergency", "help"]
+    ),
+    PhraseCreate(
+        german_phrase="Wie viel kostet das?",
+        english_translation="How much does this cost?",
+        pronunciation="Vee feel KOS-tet dahs?",
+        category=PhraseCategory.SHOPPING,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["berlin", "munich", "hamburg", "vienna", "zurich", "salzburg", "stuttgart", "bonn", "aachen", "mannheim", "jena", "leipzig", "osnabruck", "bern", "rapperswil", "winterthur", "wurzburg", "detmold", "lemgo", "vallendar", "ebs", "eltville"],
+        usage_context="Essential for shopping at markets, bakeries, and stores.",
+        difficulty_level=1,
+        tags=["beginner", "essential", "shopping", "price"]
     ),
 ]
 
+
+# ============================================================================
+# GRAZ PHRASES - Austrian dialect and local life for Graz exchange students
+# ============================================================================
+
+graz_phrases = [
+    PhraseCreate(
+        german_phrase="Griaß di!",
+        english_translation="Hello! (Styrian greeting)",
+        pronunciation="GREE-ahss dee",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz"],
+        usage_context="The standard Styrian greeting — much warmer than 'Hallo'. Use with friends, shopkeepers, and anyone you meet casually.",
+        example_sentence="Du betrittst den Bäcker und sagst: Griaß di!",
+        cultural_note="Styrians (Steirer) are proud of their dialect. Using 'Griaß di' instead of 'Hallo' instantly wins you points with locals.",
+        difficulty_level=1,
+        tags=["greeting", "Styrian", "dialect", "Graz"],
+        dialect_name="Steirisch (Styrian)"
+    ),
+    PhraseCreate(
+        german_phrase="Pfiat di!",
+        english_translation="Goodbye! (Styrian farewell)",
+        pronunciation="PFEE-aht dee",
+        category=PhraseCategory.GREETINGS,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz"],
+        usage_context="The Styrian way to say goodbye. Much more personal than 'Tschüss'.",
+        example_sentence="Du verlässt das Café: Pfiat di, bis morgen!",
+        cultural_note="Short for 'Behüte dich Gott' (May God protect you). Very common in Graz and all of Styria.",
+        difficulty_level=1,
+        tags=["farewell", "Styrian", "dialect", "Graz"],
+        dialect_name="Steirisch (Styrian)"
+    ),
+    PhraseCreate(
+        german_phrase="A Sturm, bitte!",
+        english_translation="A young wine (Federweißer), please!",
+        pronunciation="Ah SHTOORM, BIT-teh",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz"],
+        usage_context="Ordering Sturm (fermenting grape juice) at a Buschenschank — a must-do autumn tradition in Graz.",
+        example_sentence="Im Herbst sagt man beim Buschenschank: A Sturm, bitte!",
+        cultural_note="Graz is surrounded by vineyards. Every autumn, Buschenschanken (wine taverns) open and serve Sturm. It's a beloved Styrian tradition.",
+        difficulty_level=2,
+        tags=["dining", "wine", "Styrian", "autumn", "Buschenschank"],
+        dialect_name="Steirisch (Styrian)"
+    ),
+    PhraseCreate(
+        german_phrase="Wo geht's zum Schlossberg?",
+        english_translation="How do I get to the Schlossberg?",
+        pronunciation="Voh gates tsoom SHLOSS-bairk?",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz"],
+        usage_context="Asking for directions to Graz's iconic Schlossberg hill with the famous Uhrturm (clock tower).",
+        example_sentence="Entschuldigung, wo geht's zum Schlossberg? Ich möchte den Uhrturm sehen.",
+        cultural_note="The Schlossberg (Castle Hill) is Graz's #1 landmark. You can take the Schlossbergbahn funicular, a glass lift, or hike the 260 steps. Free views of the whole city!",
+        difficulty_level=1,
+        tags=["directions", "landmark", "Schlossberg", "Uhrturm", "tourism"],
+    ),
+    PhraseCreate(
+        german_phrase="Hast du eine Jausn dabei?",
+        english_translation="Did you bring a snack/packed lunch?",
+        pronunciation="Hahst doo eye-neh YOW-sn dah-BYE?",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna", "salzburg"],
+        usage_context="'Jause' (Jausn in dialect) is an Austrian snack break, usually bread with cold cuts and cheese. Very common among students.",
+        example_sentence="Wir gehen zum Schlossberg wandern — hast du eine Jausn dabei?",
+        cultural_note="Austrians take their Jause seriously. It's not just a snack — it's a cultural institution, especially when hiking or studying.",
+        difficulty_level=2,
+        tags=["snack", "Austrian", "Jause", "food culture"],
+        dialect_name="Österreichisches Deutsch"
+    ),
+    PhraseCreate(
+        german_phrase="Ich studier an der Uni Graz.",
+        english_translation="I study at the University of Graz.",
+        pronunciation="Eekh shtoo-DEER ahn dehr OO-nee GRAHTS.",
+        category=PhraseCategory.ACADEMIC,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz"],
+        usage_context="Introducing yourself as an exchange student at Karl-Franzens-Universität Graz.",
+        example_sentence="Woher kommst du? — Ich bin aus Florida und studier an der Uni Graz.",
+        cultural_note="Locals call it 'die Uni' or 'KFU Graz'. Saying you're at the Uni Graz instantly connects you to the student community.",
+        difficulty_level=1,
+        tags=["academic", "introduction", "university", "exchange"],
+    ),
+    PhraseCreate(
+        german_phrase="Gemma auf a Spritzer!",
+        english_translation="Let's go for a wine spritzer!",
+        pronunciation="GEM-mah owf ah SHPRIT-zer!",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna"],
+        usage_context="Inviting friends for Austria's most popular casual drink — white wine mixed with sparkling water.",
+        example_sentence="Die Vorlesung ist vorbei — gemma auf a Spritzer!",
+        cultural_note="The Spritzer (G'spritzter) is THE drink in Austria. Styrian white wines are especially good. Much cheaper than cocktails!",
+        difficulty_level=2,
+        tags=["social", "drinks", "wine", "Spritzer", "going out"],
+        dialect_name="Steirisch (Styrian)"
+    ),
+    PhraseCreate(
+        german_phrase="Wie komm ich zum Hauptplatz?",
+        english_translation="How do I get to the main square?",
+        pronunciation="Vee komm eekh tsoom HOWPT-plahts?",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz"],
+        usage_context="Asking directions to Graz's central Hauptplatz — the heart of the old town with the Rathaus (town hall).",
+        example_sentence="Entschuldigung, wie komm ich zum Hauptplatz?",
+        cultural_note="Hauptplatz is the center of Graz's UNESCO old town. The Christmas market (Christkindlmarkt) and farmers' markets are held here.",
+        difficulty_level=1,
+        tags=["directions", "Hauptplatz", "old town", "navigation"],
+    ),
+    PhraseCreate(
+        german_phrase="Leiwand!",
+        english_translation="Awesome! Cool! Great!",
+        pronunciation="LYE-vahnd",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna", "salzburg"],
+        usage_context="Austrian slang for 'awesome' or 'cool'. Use it to express enthusiasm about anything.",
+        example_sentence="Die Party gestern war echt leiwand!",
+        cultural_note="Originally means 'linen cloth' but evolved into Austrian slang for 'great'. One of the most-used Austrian slang words.",
+        difficulty_level=1,
+        tags=["slang", "Austrian", "enthusiasm", "cool"],
+        dialect_name="Österreichisches Deutsch"
+    ),
+    PhraseCreate(
+        german_phrase="Kann ich bitte die Mensa-Karte haben?",
+        english_translation="Can I have the cafeteria card, please?",
+        pronunciation="Kahn eekh BIT-teh dee MEN-sah KAR-teh HAH-ben?",
+        category=PhraseCategory.ACADEMIC,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz"],
+        usage_context="Getting your Mensa card for discounted student meals at the university cafeteria.",
+        example_sentence="An der Mensa-Kasse: Kann ich bitte die Mensa-Karte haben? Ich bin Austauschstudent.",
+        cultural_note="The Mensa at Uni Graz offers meals for €3-6 with a student card. There are multiple Mensa locations across campus.",
+        difficulty_level=2,
+        tags=["academic", "food", "Mensa", "student life", "cafeteria"],
+    ),
+    PhraseCreate(
+        german_phrase="Wo ist die Straßenbahnhaltestelle?",
+        english_translation="Where is the tram stop?",
+        pronunciation="Voh ist dee SHTRAH-sen-bahn-HAHL-teh-shtel-leh?",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz", "vienna"],
+        usage_context="Graz has an excellent tram (Straßenbahn) network. This is essential for daily navigation.",
+        example_sentence="Wo ist die Straßenbahnhaltestelle für die Linie 1 zum Hauptplatz?",
+        cultural_note="Graz trams (Bim in local slang) run frequently. Get a semester ticket — it covers all trams and buses in the city zone.",
+        difficulty_level=2,
+        tags=["transport", "tram", "Straßenbahn", "public transit", "navigation"],
+    ),
+    PhraseCreate(
+        german_phrase="Ein Käsekrainer, bitte!",
+        english_translation="A cheese-filled sausage, please!",
+        pronunciation="Ayn KAY-zeh-KRAH-ner, BIT-teh!",
+        category=PhraseCategory.DINING,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna"],
+        usage_context="Ordering the iconic Austrian street food — a grilled sausage filled with melted cheese, served at Würstelstände.",
+        example_sentence="Am Würstelstand am Hauptplatz: Ein Käsekrainer, bitte! Mit Senf.",
+        cultural_note="The Käsekrainer is Austria's answer to the hot dog. Best enjoyed at 2 AM after going out. Ask for 'mit Senf' (with mustard)!",
+        difficulty_level=2,
+        tags=["street food", "sausage", "Austrian", "night life", "Würstelstand"],
+    ),
+    PhraseCreate(
+        german_phrase="Ich brauche ein Semesterticket.",
+        english_translation="I need a semester ticket (transit pass).",
+        pronunciation="Eekh BROW-kheh ayn zeh-MESS-ter-TIK-et.",
+        category=PhraseCategory.TRANSPORTATION,
+        register=PhraseRegister.NEUTRAL,
+        city_slugs=["graz"],
+        usage_context="Getting your discounted student transit pass from Holding Graz for unlimited tram and bus rides.",
+        example_sentence="Am ÖBB-Schalter: Ich brauche ein Semesterticket für die Zone Graz.",
+        cultural_note="The Graz semester ticket costs about €150 for 6 months. You'll use it daily — trams and buses run until midnight.",
+        difficulty_level=2,
+        tags=["transport", "semester ticket", "student discount", "transit pass"],
+    ),
+    PhraseCreate(
+        german_phrase="Gibt's hier einen Stammtisch?",
+        english_translation="Is there a regulars' table here?",
+        pronunciation="Gipps heer eye-nen SHTAHM-tish?",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna", "salzburg"],
+        usage_context="Asking about a Stammtisch — a regular meetup at a pub/café. Many student groups and Erasmus networks organize Stammtische.",
+        example_sentence="Im Pub: Gibt's hier einen Stammtisch für Erasmus-Studenten?",
+        cultural_note="Stammtisch culture is huge in Austria. It's a regular gathering (weekly/monthly) at the same table in a pub. Great way to meet people!",
+        difficulty_level=3,
+        tags=["social", "Stammtisch", "meetup", "pub", "student life"],
+    ),
+    PhraseCreate(
+        german_phrase="Oida!",
+        english_translation="Dude! / Whoa! / Man! (Austrian exclamation)",
+        pronunciation="OY-dah!",
+        category=PhraseCategory.SOCIAL,
+        register=PhraseRegister.INFORMAL,
+        city_slugs=["graz", "vienna", "salzburg"],
+        usage_context="The most versatile Austrian slang word. Can express surprise, frustration, excitement — depends entirely on tone.",
+        example_sentence="Oida, schau dir das Panorama vom Schlossberg an!",
+        cultural_note="'Oida' is to Austria what 'dude' is to California. It can mean anything depending on intonation. Young Austrians use it constantly.",
+        difficulty_level=1,
+        tags=["slang", "Austrian", "exclamation", "versatile", "youth language"],
+        dialect_name="Österreichisches Deutsch"
+    ),
+]
 
 OFFERED_CITY_SLUGS = {
     "stuttgart",
@@ -1298,34 +1549,9 @@ OFFERED_CITY_SLUGS = {
     "zurich",
     "salzburg",
     "wurzburg",
-}
-
-
-def get_phrase_city_coverage():
-    """Return a coverage map of city_slug -> number of phrases linked to that city."""
-    coverage = {slug: 0 for slug in OFFERED_CITY_SLUGS}
-    for phrase in all_phrases:
-        for slug in phrase.city_slugs:
-            if slug in coverage:
-                coverage[slug] += 1
-    return coverage
-
-
-def get_missing_phrase_cities():
-    """Return any offered city slugs that currently have zero phrase coverage."""
-    coverage = get_phrase_city_coverage()
-    return [slug for slug, count in coverage.items() if count == 0]
-
-# Combine all phrases into a single list for easy seeding
-all_phrases = (
-    academic_phrases +
-    housing_phrases +
-    dining_phrases +
-    transportation_phrases +
-    health_phrases +
-    greeting_phrases +
-    daily_life_phrases +
-    regional_city_phrases +
-    hyperlocal_slang_phrases +
-    city_locked_mastery_phrases
+    city_locked_mastery_phrases +
+    swiss_austrian_phrases +
+    essential_phrases +
+    beginner_basics_phrases +
+    graz_phrases
 )

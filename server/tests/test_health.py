@@ -20,3 +20,12 @@ def test_root_endpoint(client):
     assert data["message"] == "Welcome to MyTranslationBuddy API"
     assert "version" in data
     assert "docs" in data
+
+
+def test_api_v1_health(client):
+    """Test the /api/v1/health endpoint"""
+    response = client.get("/api/v1/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert data["service"] == "MyTranslationBuddy"

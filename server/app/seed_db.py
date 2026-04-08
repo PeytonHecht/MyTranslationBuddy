@@ -1,15 +1,29 @@
 import asyncio
 from app.database import connect_to_mongo, close_mongo_connection, db
 from app.data.cities import (
-    hamburg_city, berlin_city, detmold_city, osnabruck_city, vallendar_city, stuttgart_city, aachen_city, lemgo_city, munich_city, jena_city, vienna_city,
-    bonn_city, ebs_city, eltville_city, mannheim_city, zurich_city, wurzburg_city, salzburg_city, leipzig_city,
-    bern_city, rapperswil_city, winterthur_city
+    hamburg_city, berlin_city, detmold_city, osnabruck_city, vallendar_city,
+    stuttgart_city, aachen_city, lemgo_city, munich_city, jena_city, vienna_city,
+    bonn_city, ebs_city, eltville_city, mannheim_city,
+    leipzig_city, zurich_city, salzburg_city, wurzburg_city,
+    bern_city, rapperswil_city, winterthur_city, graz_city
 )
 from app.data.tips import (
-    hamburg_tips, berlin_tips, detmold_tips, osnabruck_tips, vallendar_tips, stuttgart_tips, aachen_tips, lemgo_tips, munich_tips, jena_tips, vienna_tips,
-    bonn_tips, wurzburg_tips, ebs_tips, eltville_tips, munich_pharmacy_tips, salzburg_tips, salzburg_music_tips, zurich_tips, leipzig_tips, mannheim_tips,
-    wu_vienna_tips, wu_vienna_undergrad_tips,
-    bern_tips, rapperswil_tips, winterthur_tips
+    hamburg_tips, berlin_tips, detmold_tips, osnabruck_tips, vallendar_tips,
+    stuttgart_tips, aachen_tips, lemgo_tips, munich_tips, munich_global_e3_tips,
+    jena_tips, vienna_tips, vienna_boku_exchange_tips,
+    bonn_tips, wurzburg_tips, ebs_tips, eltville_tips, munich_pharmacy_tips,
+    salzburg_tips, salzburg_music_tips,
+    mannheim_tips, zurich_tips, leipzig_tips, bern_tips, rapperswil_tips,
+    winterthur_tips, wu_vienna_undergrad_tips, wu_vienna_tips,
+    osnabruck_isu_tips, wurzburg_tassep_tips, berlin_nfl_tips,
+    cjc_switzerland_austria_zurich_tips, cjc_switzerland_austria_vienna_tips,
+    cities_in_civilization_berlin_tips, cities_in_civilization_vienna_tips,
+    owl_construction_expanded_tips,
+    owl_interior_design_tips, osnabruck_business_internship_tips,
+    salzburg_european_studies_tips, bonn_exchange_tips, boku_vienna_tips,
+    graz_tips, munich_tech_innovation_tips, osnabruck_ag_life_tips,
+    whu_vallendar_expanded_tips, ebs_graduate_tips,
+    bern_cultural_tips, rapperswil_cultural_tips, winterthur_cultural_tips,
 )
 from app.data.phrases import all_phrases
 
@@ -32,13 +46,14 @@ async def seed_cities():
         ebs_city.model_dump(),
         eltville_city.model_dump(),
         mannheim_city.model_dump(),
-        zurich_city.model_dump(),
-        wurzburg_city.model_dump(),
-        salzburg_city.model_dump(),
         leipzig_city.model_dump(),
+        zurich_city.model_dump(),
+        salzburg_city.model_dump(),
+        wurzburg_city.model_dump(),
         bern_city.model_dump(),
         rapperswil_city.model_dump(),
-        winterthur_city.model_dump()
+        winterthur_city.model_dump(),
+        graz_city.model_dump(),
     ]
 
     for city in cities:
@@ -55,10 +70,22 @@ async def seed_cities():
 async def seed_tips():
     """Upload city tips to cities_info database"""
     tips = (
-        hamburg_tips + berlin_tips + detmold_tips + osnabruck_tips + vallendar_tips + stuttgart_tips + aachen_tips + lemgo_tips + munich_tips + jena_tips + vienna_tips
-        + bonn_tips + wurzburg_tips + ebs_tips + eltville_tips + munich_pharmacy_tips + salzburg_tips + salzburg_music_tips + zurich_tips + leipzig_tips + mannheim_tips
-        + wu_vienna_tips + wu_vienna_undergrad_tips
-        + bern_tips + rapperswil_tips + winterthur_tips
+        hamburg_tips + berlin_tips + detmold_tips + osnabruck_tips + vallendar_tips
+        + stuttgart_tips + aachen_tips + lemgo_tips + munich_tips + munich_global_e3_tips
+        + jena_tips + vienna_tips + vienna_boku_exchange_tips
+        + bonn_tips + wurzburg_tips + ebs_tips + eltville_tips + munich_pharmacy_tips
+        + salzburg_tips + salzburg_music_tips
+        + mannheim_tips + zurich_tips + leipzig_tips + bern_tips + rapperswil_tips
+        + winterthur_tips + wu_vienna_undergrad_tips + wu_vienna_tips
+        + osnabruck_isu_tips + wurzburg_tassep_tips + berlin_nfl_tips
+        + cjc_switzerland_austria_zurich_tips + cjc_switzerland_austria_vienna_tips
+        + cities_in_civilization_berlin_tips + cities_in_civilization_vienna_tips
+        + owl_construction_expanded_tips
+        + owl_interior_design_tips + osnabruck_business_internship_tips
+        + salzburg_european_studies_tips + bonn_exchange_tips + boku_vienna_tips
+        + graz_tips + munich_tech_innovation_tips + osnabruck_ag_life_tips
+        + whu_vallendar_expanded_tips + ebs_graduate_tips
+        + bern_cultural_tips + rapperswil_cultural_tips + winterthur_cultural_tips
     )
 
     for tip in tips:
@@ -80,7 +107,7 @@ async def seed_tips():
 
 
 async def seed_phrases():
-    """Upload German phrase library to phrases_vocabulary database"""
+    """Upload phrases to phrases_vocabulary database"""
     for phrase in all_phrases:
         phrase_data = phrase.model_dump()
         existing = await db.phrases_vocabulary.phrases.find_one({

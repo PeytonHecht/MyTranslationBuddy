@@ -82,6 +82,18 @@ class TestPhraseRetrieval:
         for phrase in data["phrases"]:
             assert phrase["register"] == "formal"
 
+    def test_filter_phrases_by_phrase_type(self, client):
+        """Test filtering phrases by phrase_type (standard, regional, slang)"""
+        response = client.get("/api/phrases/?phrase_type=standard")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Endpoint works; if migration has been run, results will be present
+        assert "total" in data
+        assert "phrases" in data
+        for phrase in data["phrases"]:
+            assert phrase.get("phrase_type", "standard") == "standard"
+
     def test_combined_filtering(self, client):
         """Test combining multiple filters"""
         response = client.get(

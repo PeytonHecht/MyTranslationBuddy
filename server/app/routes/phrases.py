@@ -90,17 +90,7 @@ async def get_all_phrases(
     city_slug: Optional[str] = None,
     difficulty: Optional[int] = Query(None, ge=1, le=5),
     register: Optional[str] = None,
-):
-    """
-    Get all phrases with optional filtering.
-
-    Query Parameters:
-    - skip: Number of phrases to skip (pagination)
-    - limit: Number of phrases to return (max 100)
-    - category: Filter by category (academic, housing, dining, etc.)
-    - city_slug: Filter by city slug (berlin, munich, vienna, etc.)
-    - difficulty: Filter by difficulty level (1-5)
-    - register: Filter by register (informal, neutral, formal)
+    - phrase_type: Filter by type (standard, regional, slang)
 
     Returns:
         {
@@ -116,24 +106,8 @@ async def get_all_phrases(
         category = _normalize_optional(category)
         city_slug = _normalize_optional(city_slug)
         register = _normalize_optional(register)
-
-        # Get phrases database
-        phrases_db = db.phrases_vocabulary
-        
-        # Build filter query
-        query_filter = {}
-
-        if category:
-            query_filter["category"] = category.lower()
-
-        if city_slug:
-            query_filter["city_slugs"] = city_slug.lower()
-
-        if difficulty:
-            query_filter["difficulty_level"] = difficulty
-
-        if register:
-            query_filter["register"] = register.lower()
+        if phrase_type:
+            query_filter["phrase_type"] = phrase_type.lower()
 
         # Get total count
         total = await phrases_db.phrases.count_documents(query_filter)
@@ -550,23 +524,38 @@ async def get_user_bookmarks(user_email: str):
             )
 
         # Get bookmarks with full phrase details
-        bookmarks = await phrases_db.phrase_bookmarks.aggregate(
-            [
-                {"$match": {"user_email": user_email}},
-                {"$addFields": {"phrase_object_id": {"$toObjectId": "$phrase_id"}}},
-                {
-                    "$lookup": {
-                        "from": "phrases",
-                        "localField": "phrase_object_id",
-                        "foreignField": "_id",
-                        "as": "phrase",
-                    }
-                },
-                {"$unwind": "$phrase"},
-                {"$project": {"phrase_object_id": 0}},
-                {"$sort": {"created_at": -1}},
-            ]
-        ).to_list(None)
+        # Use a try/except approach: first try with $lookup, fall back to manual join
+        try:
+            bookmarks = await phrases_db.phrase_bookmarks.aggregate(
+                [
+                    {"$match": {"user_email": user_email}},
+                    {"$addFields": {"phrase_object_id": {"$toObjectId": "$phrase_id"}}},
+                    {
+                        "$lookup": {
+                            "from": "phrases",
+                            "localField": "phrase_object_id",
+                            "foreignField": "_id",
+                            "as": "phrase",
+                        }
+                    },
+                    {"$unwind": {"path": "$phrase", "preserveNullAndEmptyArrays": True}},
+                    {"$project": {"phrase_object_id": 0}},
+                    {"$sort": {"created_at": -1}},
+                ]
+            ).to_list(None)
+        except Exception:
+            # Fallback: get bookmarks without join
+            raw_bookmarks = await phrases_db.phrase_bookmarks.find(
+                {"user_email": user_email}
+            ).sort("created_at", -1).to_list(None)
+            bookmarks = []
+            for bm in raw_bookmarks:
+                phrase = None
+                if ObjectId.is_valid(bm.get("phrase_id", "")):
+                    phrase = await phrases_db.phrases.find_one({"_id": ObjectId(bm["phrase_id"])})
+                if phrase:
+                    bm["phrase"] = phrase
+                bookmarks.append(bm)
 
         # Convert ObjectIds to strings
         for bookmark in bookmarks:
@@ -594,8 +583,11 @@ async def delete_bookmark(bookmark_id: str, user_email: str):
     """
     Remove a phrase from user's bookmarks.
 
+    The bookmark_id can be either the bookmark document _id OR the phrase_id.
+    The endpoint will try both approaches for maximum compatibility.
+
     Path Parameters:
-    - bookmark_id: ID of the bookmark to delete
+    - bookmark_id: ID of the bookmark (or phrase) to delete
 
     Query Parameters:
     - user_email: Email of the user (for verification)
@@ -605,18 +597,22 @@ async def delete_bookmark(bookmark_id: str, user_email: str):
     """
     try:
         phrases_db = db.phrases_vocabulary
-        
-        if not ObjectId.is_valid(bookmark_id):
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Invalid bookmark ID format",
+
+        result = None
+
+        # First try to delete by bookmark _id
+        if ObjectId.is_valid(bookmark_id):
+            result = await phrases_db.phrase_bookmarks.delete_one(
+                {"_id": ObjectId(bookmark_id), "user_email": user_email}
             )
 
-        result = await phrases_db.phrase_bookmarks.delete_one(
-            {"_id": ObjectId(bookmark_id), "user_email": user_email}
-        )
+        # If not found, try to delete by phrase_id (string match)
+        if not result or result.deleted_count == 0:
+            result = await phrases_db.phrase_bookmarks.delete_one(
+                {"phrase_id": bookmark_id, "user_email": user_email}
+            )
 
-        if result.deleted_count == 0:
+        if not result or result.deleted_count == 0:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Bookmark not found",

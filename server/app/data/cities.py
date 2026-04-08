@@ -849,3 +849,206 @@ salzburg_city = CityCreate(
         "note": "Salzburg has four distinct seasons and nearby Alpine weather influence."
     }
 )
+
+bern_city = CityCreate(
+    slug="bern",
+    name="Bern",
+    local_name="Bern",
+    country="Switzerland",
+    country_code="CH",
+    region="Bern",
+    region_type="capital_city",
+    is_city_state=False,
+    capital_of_region=True,
+    population=140000,
+    population_approx=True,
+    coordinates={"lat": 46.9480, "lng": 7.4474},
+    timezone="Europe/Zurich",
+    currency="CHF",
+    languages_official=["German", "French"],
+    dialect="Bärndütsch (Bernese German)",
+    english_friendliness="high",
+    tagline="Switzerland's capital, a UNESCO World Heritage medieval gem near the French-German language border",
+    known_for=[
+        "University of Bern",
+        "UNESCO World Heritage old town",
+        "Albert Einstein's professorship",
+        "Berner Oberland and Alps",
+        "Federal Palace (Bundeshaus)",
+        "Aare River swimming",
+        "Bear Park (Bärengraben)"
+    ],
+    industries=[
+        "Government",
+        "Education",
+        "Tourism",
+        "Research",
+        "International organizations"
+    ],
+    cost_of_living_tier="very high",
+    expat_friendliness="high",
+    international_airport="Bern Airport (BRN) / Zurich Airport (ZRH)",
+    airport_distance_km=9,
+    climate={
+        "type": "temperate oceanic",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Bern has a temperate climate with warm summers and cold winters. The Berner Oberland and Alps are about an hour away by train."
+    },
+    image_url=None,
+    description="Bern is Switzerland's capital, a UNESCO World Heritage medieval gem near the French-German language border. Premier destination for international exchange students.",
+    tags=["UNESCO", "medieval", "capital", "exchange", "Alps"],
+    priority=9,
+    source_name="UF Bern program page"
+)
+
+rapperswil_city = CityCreate(
+    slug="rapperswil",
+    name="Rapperswil-Jona",
+    local_name="Rapperswil-Jona",
+    country="Switzerland",
+    country_code="CH",
+    region="St. Gallen",
+    region_type="municipality",
+    is_city_state=False,
+    capital_of_region=False,
+    population=27000,
+    population_approx=True,
+    coordinates={"lat": 47.2266, "lng": 8.8184},
+    timezone="Europe/Zurich",
+    currency="CHF",
+    languages_official=["German"],
+    dialect="Swiss German",
+    english_friendliness="high",
+    tagline="Mediterranean-feeling lakeside town on Lake Zurich, 30 minutes from Zurich city",
+    known_for=[
+        "Eastern Switzerland University of Applied Sciences (OST)",
+        "Lake Zurich waterfront",
+        "Rapperswil Castle",
+        "Rose gardens",
+        "Proximity to Zurich and the Alps",
+        "Mediterranean holiday atmosphere"
+    ],
+    industries=[
+        "Education",
+        "Technology",
+        "Tourism"
+    ],
+    cost_of_living_tier="very high",
+    expat_friendliness="high",
+    international_airport="Zurich Airport (ZRH)",
+    airport_distance_km=40,
+    climate={
+        "type": "temperate oceanic",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Rapperswil enjoys a mild lakeside climate with warm summers and cold winters. Close to mountains for hiking and skiing."
+    },
+    image_url=None,
+    description="Rapperswil-Jona is a Mediterranean-feeling lakeside town on Lake Zurich, 30 minutes from Zurich city. Home to OST engineering programs.",
+    tags=["lakeside", "Mediterranean", "exchange", "engineering", "OST"],
+    priority=8,
+    source_name="UF Rapperswil program page"
+)
+
+winterthur_city = CityCreate(
+    slug="winterthur",
+    name="Winterthur",
+    local_name="Winterthur",
+    country="Switzerland",
+    country_code="CH",
+    region="Zürich",
+    region_type="city",
+    is_city_state=False,
+    capital_of_region=False,
+    population=115000,
+    population_approx=True,
+    coordinates={"lat": 47.5001, "lng": 8.7240},
+    timezone="Europe/Zurich",
+    currency="CHF",
+    languages_official=["German"],
+    dialect="Züritüütsch (Swiss German)",
+    english_friendliness="high",
+    tagline="Vibrant Swiss city near Zurich, home to ZHAW School of Engineering and world-class museums",
+    known_for=[
+        "ZHAW Zurich University of Applied Sciences",
+        "Oskar Reinhart art collections",
+        "Technorama science center",
+        "Old town and cultural scene",
+        "Proximity to Zurich (20 min by train)",
+        "Green spaces and surrounding vineyards"
+    ],
+    industries=[
+        "Education",
+        "Engineering",
+        "Technology",
+        "Culture",
+        "Insurance"
+    ],
+    cost_of_living_tier="very high",
+    expat_friendliness="high",
+    international_airport="Zurich Airport (ZRH)",
+    airport_distance_km=12,
+    climate={
+        "type": "temperate oceanic",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Winterthur has a temperate climate similar to Zurich, with warm summers and cold winters. Snow is common in winter months."
+    },
+    image_url=None,
+    description="Winterthur is a vibrant Swiss city near Zurich, home to ZHAW School of Engineering and world-class museums. Perfect for engineering and design studies.",
+    tags=["engineering", "design", "culture", "exchange", "ZHAW"],
+    priority=8,
+    source_name="UF Winterthur program page"
+)
+
+graz_city = CityCreate(
+    slug="graz",
+    name="Graz",
+    local_name="Graz",
+    country="Austria",
+    country_code="AT",
+    region="Styria",
+    region_type="state_capital",
+    is_city_state=False,
+    capital_of_region=True,
+    population=290000,
+    population_approx=True,
+    coordinates={"lat": 47.0707, "lng": 15.4395},
+    timezone="Europe/Vienna",
+    currency="EUR",
+    languages_official=["German"],
+    dialect="Steirisch (Styrian)",
+    english_friendliness="high",
+    tagline="Austria's second city — a UNESCO World Heritage student hub with Alpine charm",
+    known_for=[
+        "UNESCO World Heritage old town",
+        "University of Graz",
+        "Schlossberg clock tower",
+        "Kunsthaus Graz (Friendly Alien)",
+        "Affordable student living",
+        "Gateway to the Alps"
+    ],
+    industries=[
+        "Education",
+        "Technology",
+        "Automotive",
+        "Culture",
+        "Tourism"
+    ],
+    cost_of_living_tier="medium",
+    expat_friendliness="high",
+    international_airport="Graz Airport (GRZ)",
+    airport_distance_km=10,
+    climate={
+        "type": "temperate continental",
+        "summers": "warm",
+        "winters": "cold",
+        "note": "Graz has a continental climate with warm summers and cold winters. It is one of Austria's sunniest cities."
+    },
+    image_url=None,
+    description="Graz is Austria's second-largest city and a UNESCO World Heritage site, known for its Renaissance old town, vibrant student culture, and affordable living. Home to the University of Graz and TU Graz, it's a fantastic study abroad destination with Alpine access and a lively arts scene.",
+    tags=["UNESCO", "student city", "affordable", "Alpine", "culture", "exchange"],
+    priority=9,
+    source_name="University of Graz / General info"
+)

@@ -158,3 +158,151 @@ class TestTipsPriority:
         for tip in data["data"]:
             assert "priority" in tip
             assert isinstance(tip["priority"], int)
+
+
+class TestGetAllPrograms:
+    """Tests for GET /api/tips/programs endpoint"""
+
+    def test_get_all_programs_success(self, client):
+        """Test listing all unique programs"""
+        response = client.get("/api/tips/programs")
+        assert response.status_code == 200
+        data = response.json()
+        assert "programs" in data
+        assert "total" in data
+        assert isinstance(data["programs"], list)
+        assert data["total"] > 0
+
+    def test_programs_are_strings(self, client):
+        """Test that every program entry is a non-empty string"""
+        response = client.get("/api/tips/programs")
+        assert response.status_code == 200
+        for prog in response.json()["programs"]:
+            assert isinstance(prog, str)
+            assert len(prog) > 0
+
+
+class TestGetAllCategories:
+    """Tests for GET /api/tips/categories endpoint"""
+
+    def test_get_all_categories_success(self, client):
+        """Test listing all unique categories"""
+        response = client.get("/api/tips/categories")
+        assert response.status_code == 200
+        data = response.json()
+        assert "categories" in data
+        assert "total" in data
+        assert isinstance(data["categories"], list)
+        assert data["total"] > 0
+
+    def test_categories_are_strings(self, client):
+        """Test that every category entry is a non-empty string"""
+        response = client.get("/api/tips/categories")
+        assert response.status_code == 200
+        for cat in response.json()["categories"]:
+            assert isinstance(cat, str)
+            assert len(cat) > 0
+
+
+class TestGetCitiesForProgram:
+    """Tests for GET /api/tips/programs/{program_name}/cities endpoint"""
+
+    def test_get_cities_for_program_success(self, client):
+        """Test getting cities for a known program"""
+        import urllib.parse
+        programs_resp = client.get("/api/tips/programs")
+        if programs_resp.status_code == 200 and programs_resp.json()["programs"]:
+            prog = programs_resp.json()["programs"][0]
+            encoded = urllib.parse.quote(prog)
+            response = client.get(f"/api/tips/programs/{encoded}/cities")
+            assert response.status_code == 200
+            data = response.json()
+            assert "program" in data
+            assert "cities" in data
+            assert "total_cities" in data
+            assert "total_tips" in data
+            assert data["program"] == prog
+            assert len(data["cities"]) > 0
+
+    def test_get_cities_for_program_not_found(self, client):
+        """Test 404 for a non-existent program"""
+        response = client.get("/api/tips/programs/FakeProgram/cities")
+        assert response.status_code == 404
+
+    def test_cities_for_program_structure(self, client):
+        """Test each city object has slug, name, tips_count"""
+        import urllib.parse
+        programs_resp = client.get("/api/tips/programs")
+        if programs_resp.status_code == 200 and programs_resp.json()["programs"]:
+            prog = programs_resp.json()["programs"][0]
+            encoded = urllib.parse.quote(prog)
+            response = client.get(f"/api/tips/programs/{encoded}/cities")
+            assert response.status_code == 200
+            for city in response.json()["cities"]:
+                assert "slug" in city
+                assert "name" in city
+                assert "tips_count" in city
+                assert city["tips_count"] > 0
+
+
+class TestSearchTips:
+    """Tests for GET /api/tips/search endpoint"""
+
+    def test_search_tips_success(self, client):
+        """Test searching tips with a valid query"""
+        response = client.get("/api/tips/search?q=housing")
+        if response.status_code == 200:
+            data = response.json()
+            assert "query" in data
+            assert "data" in data
+            assert "total" in data
+            assert data["query"] == "housing"
+        else:
+            # 404 if no tips match — still valid
+            assert response.status_code == 404
+
+    def test_search_tips_pagination(self, client):
+        """Test search supports skip/limit"""
+        response = client.get("/api/tips/search?q=tip&limit=5&skip=0")
+        if response.status_code == 200:
+            data = response.json()
+            assert len(data["data"]) <= 5
+            assert data["limit"] == 5
+            assert data["skip"] == 0
+
+    def test_search_tips_too_short_query(self, client):
+        """Test that a query shorter than 2 chars is rejected"""
+        response = client.get("/api/tips/search?q=a")
+        assert response.status_code == 422
+
+    def test_search_tips_not_found(self, client):
+        """Test 404 for a search with no results"""
+        response = client.get("/api/tips/search?q=zzzznonexistenttip")
+        assert response.status_code == 404
+
+
+class TestTipsStatistics:
+    """Tests for GET /api/tips/stats endpoint"""
+
+    def test_get_tips_stats_success(self, client):
+        """Test getting tip statistics"""
+        response = client.get("/api/tips/stats")
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_tips" in data
+        assert "unique_programs" in data
+        assert "unique_categories" in data
+        assert "total_cities" in data
+        assert "tips_per_city" in data
+        assert "programs_list" in data
+
+    def test_tips_stats_values(self, client):
+        """Test that stat values are sensible"""
+        response = client.get("/api/tips/stats")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["total_tips"] > 0
+        assert data["unique_programs"] > 0
+        assert data["unique_categories"] > 0
+        assert data["total_cities"] > 0
+        assert isinstance(data["tips_per_city"], dict)

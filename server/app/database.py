@@ -67,6 +67,10 @@ class PhrasesVocabularyDB(DatabaseManager):
     def phrase_categories(self) -> Any:
         return self.get_collection("phrase_categories")
 
+    @property
+    def phrase_bookmarks(self) -> AsyncIOMotorCollection:
+        return self.get_collection("phrase_bookmarks")
+
 
 class Database:
     """Main database connection manager for all databases"""
@@ -113,7 +117,13 @@ class Database:
             print(f"  - {settings.phrases_db}")
         except Exception as e:
             print(f"✗ Failed to connect to MongoDB: {e}")
-            raise
+            print(f"")
+            print(f"  ⚠️  LIKELY FIX: Add your IP address to the MongoDB Atlas Network Access list.")
+            print(f"     Go to: https://cloud.mongodb.com → Network Access → Add Current IP Address")
+            print(f"     Or add 0.0.0.0/0 to allow all IPs (for development only).")
+            print(f"")
+            print(f"  The server will start but database operations will fail.")
+            print(f"  Login, registration, and data endpoints will return errors.")
     
     async def close(self) -> None:
         """Close MongoDB connection"""

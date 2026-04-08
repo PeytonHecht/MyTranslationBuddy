@@ -23,20 +23,7 @@ class PhraseRegister(str, Enum):
     INFORMAL = "informal"
     NEUTRAL = "neutral"
     FORMAL = "formal"
-
-
-class PhraseBase(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    """Base schema for German phrases"""
-    # Main content
-    german_phrase: str = Field(..., description="The German phrase")
-    english_translation: str = Field(..., description="English translation")
-    pronunciation: Optional[str] = Field(None, description="Phonetic pronunciation guide")
-    
-    # Categorization
-    category: PhraseCategory = Field(..., description="Phrase category")
-    register: PhraseRegister = Field(default=PhraseRegister.NEUTRAL, description="Formality level")
+    phrase_type: PhraseType = Field(default=PhraseType.STANDARD, description="Standard German, regional dialect, or local slang")
     
     # Geographic scope: can be general (all German-speaking), regional, or city-specific
     country_codes: List[str] = Field(default_factory=list, description="Country codes (DE, AT, CH) - empty = general/all countries")
@@ -139,22 +126,7 @@ class PhraseBase(BaseModel):
             seen.add(key)
             normalized.append(item)
         return normalized
-
-
-class PhraseCreate(PhraseBase):
-    """Schema for creating phrases"""
-    pass
-
-
-class PhraseUpdate(BaseModel):
-    """Schema for partially updating phrases"""
-    model_config = ConfigDict(extra="forbid")
-
-    german_phrase: Optional[str] = None
-    english_translation: Optional[str] = None
-    pronunciation: Optional[str] = None
-    category: Optional[PhraseCategory] = None
-    register: Optional[PhraseRegister] = None
+    phrase_type: Optional[PhraseType] = None
     city_slugs: Optional[List[str]] = None
     dialect_name: Optional[str] = None
     usage_context: Optional[str] = None

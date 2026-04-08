@@ -129,7 +129,7 @@ wurzburg_tips = [
     ),
 ]
 
-vienna_tips = [
+vienna_boku_exchange_tips = [
     CityTipCreate(
         city_slug="vienna",
         category="academics",
@@ -834,8 +834,267 @@ hamburg_tips = [
         short_description="Budget for shared student housing with basic essentials included.",
         tags=["housing", "budget", "students", "meal plan"],
         priority=2,
-        source_name="UF HAW Hamburg program page"
-    )
+        source_name="UF HAW Hamburg program page",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    # Student testimonials
+    CityTipCreate(
+        city_slug="hamburg",
+        category="fun",
+        title="Student Testimonial: Hamburg is one of the most beautiful cities",
+        content=(
+            "\"In my opinion, Hamburg is one of the most beautiful cities in Germany. "
+            "When you enjoy a drink in the Tower Bar you have an unbelievable view of the harbour, "
+            "the Elbe and the roof tops of Hamburg.\" - Shanti, Netherlands"
+        ),
+        short_description="Exchange student recommends the Tower Bar for harbour views.",
+        tags=["testimonial", "student life", "hamburg", "Tower Bar", "harbour"],
+        priority=3,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Student Testimonial: Professors with industry experience",
+        content=(
+            "\"The professors at the HAW Hamburg have all worked in industry and have a lot of knowledge because of this. "
+            "They can explain why the things you learn in class are relevant for your later working life.\" - Cheuk Ho, Hong Kong"
+        ),
+        short_description="HAW professors bring real industry experience into the classroom.",
+        tags=["testimonial", "academics", "professors", "industry"],
+        priority=4,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="excursions",
+        title="Student Testimonial: Airbus Hamburg site visit",
+        content=(
+            "\"As part of my classes I visited the Airbus Hamburg site. It was incredible to see the company "
+            "and its production facilities from the inside, from the perspective of the engineers working there.\" "
+            "- Vanessa, Australia"
+        ),
+        short_description="Engineering students can visit major companies like Airbus.",
+        tags=["testimonial", "excursions", "Airbus", "engineering", "industry visit"],
+        priority=5,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    # Course offerings by department
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Media & Film Courses at HAW Hamburg",
+        content=(
+            "Available courses: Artistic Composition 2, Camera Acting Project (Short Cut), Perception, "
+            "Practice Dramaturgy, Sound Design, Studio Hamburg Project, Video Technology & Production, "
+            "Video or Audio Project. Classes can be a mixture of German and English, but you do not need "
+            "German to complete the classes. Most courses are project-based. "
+            "Available: Winter (Sept-Feb) and Summer (March-July) semester."
+        ),
+        short_description="Project-based media & film courses; no German required.",
+        tags=["academics", "media", "film", "courses", "project-based"],
+        priority=10,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Design & Art Courses at HAW Hamburg",
+        content=(
+            "Available courses: Book Illustration*, Brand Design, Design Theory, Drawing, Editorial Design*, "
+            "Fashion Design*, Interaction Design*, Interactive Illustration & Games, Painting*, Photography*, "
+            "Textile Design, Type Design. Courses marked with * are in German with an English tutorial. "
+            "The other classes (except Design Theory) are a mixture of English and German. "
+            "In all cases you do not need German to complete the classes. "
+            "Available: Winter (Sept-Feb) and Summer (March-July) semester."
+        ),
+        short_description="Design & art courses with English tutorials; no German required.",
+        tags=["academics", "design", "art", "courses", "illustration", "fashion"],
+        priority=11,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="International Business Courses at HAW Hamburg",
+        content=(
+            "Available courses: International Accounting & Taxation, International Business Law, "
+            "International Capital Markets, International Corporate Finance, International Economics 2, "
+            "International Human Resource Management, International Management, International Marketing, "
+            "International Organisation & Cooperation, International Trade & Logistics/FDI, "
+            "Academic Research & Writing, Country Studies, Intercultural Communication & Competence, "
+            "Project Work. Available: Winter (Sept-Feb) and Summer (March-July) semester."
+        ),
+        short_description="Comprehensive international business program with 14+ courses.",
+        tags=["academics", "business", "international", "courses", "marketing", "finance"],
+        priority=12,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Social Work Courses at HAW Hamburg",
+        content=(
+            "Available courses: Child Abuse & Neglect, Child Protection & Family Treatment, "
+            "Children's Books, Digital Natives - youth & digital media, Future of Social Work, "
+            "Mental Health & Recovery, Organizational & System Development, "
+            "Morality Social Justice & Principles of Human Relationships in modern societies, "
+            "Social Policy in the European Union, Qualitative & Quantitative Research Methods. "
+            "Based on Bachelor programmes Social Work and Education & Learning in Childhood. "
+            "Available: Summer (March-July) semester only."
+        ),
+        short_description="Social work courses including child protection, mental health, and social policy.",
+        tags=["academics", "social work", "courses", "mental health", "child protection"],
+        priority=13,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Aeronautical Engineering Courses at HAW Hamburg",
+        content=(
+            "Available courses: Aircraft Design, Aircraft Engines, Aircraft Systems, "
+            "Architecture of the Aircraft Cabin, Electrical Aircraft Cabin Systems, "
+            "Mechanical Aircraft Cabin Systems, Aeronautical Engineering research (individual project), "
+            "Aeronautical Engineering Design (team project). Where capacity and schedules allow, "
+            "it is possible to combine these with automotive or mechanical engineering classes. "
+            "Available: Summer (March-July) semester only."
+        ),
+        short_description="Specialized aeronautical engineering with Airbus industry connections.",
+        tags=["academics", "aeronautical", "engineering", "aircraft", "courses"],
+        priority=14,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Automotive Engineering Courses at HAW Hamburg",
+        content=(
+            "Available courses: Introduction to Body in White Design, Introduction to Commercial Vehicle Design, "
+            "Introduction to Vehicle Dynamics, Drive Train Design, Finite Element Method (FEM), "
+            "Automotive Engineering Design (team project), Automotive Engineering research (individual project). "
+            "Where capacity and schedules allow, it is possible to combine these with aeronautical "
+            "or mechanical engineering classes. Available: Summer (March-July) semester only."
+        ),
+        short_description="Automotive engineering with FEM, vehicle dynamics, and team projects.",
+        tags=["academics", "automotive", "engineering", "vehicle design", "courses"],
+        priority=15,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Mechanical Engineering Courses at HAW Hamburg",
+        content=(
+            "Available courses: Energy Systems, Finite Elements, Machine Cutting Technology, "
+            "Systematic Product Development, Technical Thermodynamics 1. "
+            "Where capacity and schedules allow, it is possible to combine these with aeronautical "
+            "or automotive engineering classes. Available: Summer (March-July) semester only."
+        ),
+        short_description="Mechanical engineering fundamentals with cross-discipline options.",
+        tags=["academics", "mechanical", "engineering", "thermodynamics", "courses"],
+        priority=16,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Information Engineering Courses at HAW Hamburg",
+        content=(
+            "Winter semester: Algorithms & Data Structures, Digital Circuits, Economics & Management, "
+            "Electrical Engineering 1, Elective courses, Electronics 2, German, Learning & Study Methods 1, "
+            "Mathematics 1, Signals & Systems 1, Software Construction 1. "
+            "Summer semester: Bus Systems & Sensors, Databases, Digital Communication Systems, "
+            "Digital Signal Processing, Digital Systems 1, Electrical Engineering 2, Electronics 1, "
+            "Intercultural competence, Mathematics 2, Microcontrollers, Operating Systems, "
+            "Software Construction 2, Signals & Systems 2, Software Engineering. "
+            "Available: Winter (Sept-Feb) and Summer (March-July) semester."
+        ),
+        short_description="Full information engineering curriculum across both semesters.",
+        tags=["academics", "information engineering", "electrical", "software", "courses"],
+        priority=17,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Computer Science Courses at HAW Hamburg",
+        content=(
+            "Available courses: Computer Graphics, Databases, Lab for Application Integration (HAWAI), "
+            "Modelling & Simulation research project, Operating Systems, Seminar (Bachelor), "
+            "Software Construction 2, Software Engineering. This programme is a collaboration between "
+            "the Department of Computer Science and the Department of Information & Electrical Engineering. "
+            "Available: Summer (March-July) semester only."
+        ),
+        short_description="Computer science with collaborative projects between departments.",
+        tags=["academics", "computer science", "software engineering", "databases", "courses"],
+        priority=18,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Digital Information & Media Courses at HAW Hamburg",
+        content=(
+            "Available courses: Digital Culture and Critical Theory, International Communication Systems, "
+            "Knowledge Organization, Search Engine Technology and Search Engine Use, "
+            "Social Media and Innovation. These classes are from the Media & Information "
+            "Bachelor's degree programme and make up a 30 ECTS semester programme. "
+            "Available: Summer (March-July) semester only."
+        ),
+        short_description="Digital media programme covering social media, search engines, and digital culture.",
+        tags=["academics", "digital media", "information", "social media", "courses"],
+        priority=19,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Life Sciences Engineering Courses at HAW Hamburg",
+        content=(
+            "Available courses: Advanced Control Systems, Applied Limnology, Instrumental Analysis, "
+            "Mathematics 3, Particle Technology, Pharmacology/Toxicology, Photovoltaic Applications, "
+            "Plant Engineering, Protein Preparation/Preparative Chromatography, Project Management, "
+            "Sustainable Energy Economics. These are classes from the Bachelor's engineering programmes "
+            "in the Faculty of Life Sciences. Available: Summer (March-July) semester only."
+        ),
+        short_description="Life sciences engineering including pharmacology and sustainable energy.",
+        tags=["academics", "life sciences", "engineering", "pharmacology", "courses"],
+        priority=20,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="academics",
+        title="Nutrition & Health Courses at HAW Hamburg",
+        content=(
+            "Available courses: Consumer Behaviour, Eating Behaviour, Food Marketing, "
+            "German Food and Culture, International Human Resource Management & Leadership, "
+            "Marketing Research, Project Management, Public Health Nutrition, Public Health Project, "
+            "Quality of Nutrition and Hygiene in Catering Services, Scientific Ergonomics with lab, "
+            "Sensory Analysis, Working in multi-cultural groups, Academic English / Basic German. "
+            "Available: Summer (March-July) semester only."
+        ),
+        short_description="Nutrition & health programme with public health and food culture courses.",
+        tags=["academics", "nutrition", "health", "food", "public health", "courses"],
+        priority=21,
+        source_name="HAW Hamburg exchange brochure",
+        program="UF Exchange - HAW Hamburg"
+    ),
 ]
 
 munich_tips = [
@@ -889,7 +1148,8 @@ berlin_tips = [
         short_description="History, art, innovation, vibrant student life.",
         tags=["city life", "history", "art", "innovation", "students"],
         priority=0,
-        source_name="General city info"
+        source_name="General city info",
+        program="UF in Berlin - Master of International Business (MIB GIE)"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -899,7 +1159,8 @@ berlin_tips = [
         short_description="Eligibility is limited to approved MIB and graduate business students.",
         tags=["academics", "eligibility", "business", "graduate", "study abroad"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - Master of International Business (MIB GIE)"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -909,7 +1170,8 @@ berlin_tips = [
         short_description="The program includes a 2-credit global business immersion course.",
         tags=["academics", "credits", "business", "faculty-led"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - Master of International Business (MIB GIE)"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -919,7 +1181,8 @@ berlin_tips = [
         short_description="Check for future application cycles before planning around this program.",
         tags=["applications", "planning", "deadline", "study abroad"],
         priority=1,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - Master of International Business (MIB GIE)"
     ),
     CityTipCreate(
         city_slug="berlin",
@@ -929,7 +1192,8 @@ berlin_tips = [
         short_description="Students may be able to use financial aid and scholarships toward the program cost.",
         tags=["financial aid", "scholarships", "cost", "planning"],
         priority=2,
-        source_name="UF Berlin program page"
+        source_name="UF Berlin program page",
+        program="UF in Berlin - Master of International Business (MIB GIE)"
     ),
     # TASSEP - Technische Universität Berlin tips (differentiated)
     CityTipCreate(
@@ -1012,7 +1276,7 @@ berlin_tips = [
             tags=["UF-specific", "MIB", "graduate", "business", "faculty-led", "study tour"],
             priority=20,
             source_name="UF Berlin MIB GIE program page",
-            program="UF in Berlin - MIB GIE"
+            program="UF in Berlin - Master of International Business (MIB GIE)"
         ),
         CityTipCreate(
             city_slug="berlin",
@@ -1030,248 +1294,8 @@ berlin_tips = [
             tags=["general", "city overview", "history", "culture", "landmarks"],
             priority=21,
             source_name="General Berlin info",
-            program="UF in Berlin - MIB GIE"
+            program="UF in Berlin - Master of International Business (MIB GIE)"
         ),
-            CityTipCreate(
-                city_slug="berlin",
-                category="academics",
-                title="UF in Berlin - Globalizing the NFL Program Overview",
-                content=(
-                    "CJC’s Globalizing American Sports course includes traveling to Berlin to create media content surrounding the 2025 NFL game played in Germany. "
-                    "RTV4930 Globalizing American Sports teaches how American sports institutions expand internationally, with a short-term study abroad component. "
-                    "While in Europe, students create media content about the event atmosphere, local fans, and American football culture in Germany. "
-                    "Tickets to the game are not included or required. Pre-production and post-production are done from Gainesville throughout the semester. "
-                    "Open to UF undergraduate and CJC Professional Master’s students (additional graduate work required). "
-                    "Application deadline: August 13, 5 p.m. Requirements: Resume, Cover Letter/Statement of Interest, Project Pitch (2). "
-                    "Contacts: Study Abroad Advisor Morgan Williams-Franklin, Program Directors Dr. Roxane Coche (rcoche@jou.ufl.edu) and Prof. Eric Esterline (eesterline@jou.ufl.ed). "
-                    "Courses: RTV 4930 (1 UF GPA credit), MMC 6936 (1 UF GPA credit). Taught by UF faculty. "
-                    "Program Type: UF Sponsored - Faculty Led. Not open to non-UF students. "
-                    "Field of Study: Advertising, Film & Media Studies, Journalism, Marketing, Photography, Telecommunication. "
-                    "Excursions: Olympia Stadium Berlin, Berlin Tennis Club, UF-organized visits to cultural sites. Housing: Hostel living near downtown Berlin. "
-                    "Currently not accepting applications."
-                ),
-                short_description="UF-specific details for Globalizing the NFL program in Berlin.",
-                tags=["UF-specific", "NFL", "media", "journalism", "faculty-led", "study tour", "CJC"],
-                priority=30,
-                source_name="UF Berlin Globalizing the NFL program page",
-                program="UF in Berlin - Globalizing the NFL"
-            ),
-            CityTipCreate(
-                city_slug="berlin",
-                category="city life",
-                title="Berlin City Overview (Globalizing the NFL)",
-                content=(
-                    "Berlin is a vibrant city known for its rich history, diverse culture, and dynamic arts scene. "
-                    "Once divided by the Berlin Wall, Berlin is now a hub for innovation, technology, and creative industries. "
-                    "Iconic landmarks include the Brandenburg Gate, Reichstag, and Museum Island. "
-                    "Excursions for NFL-focused students include Olympia Stadium Berlin, Berlin Tennis Club, and UF-organized visits to cultural sites. "
-                    "Hostel living near downtown Berlin offers easy access to the city's attractions."
-                ),
-                short_description="General city overview for NFL-focused students.",
-                tags=["general", "city overview", "history", "culture", "landmarks", "NFL"],
-                priority=31,
-                source_name="General Berlin info",
-                program="UF in Berlin - Globalizing the NFL"
-            ),
-]
-
-detmold_tips = [
-    CityTipCreate(
-        city_slug="detmold",
-        category="city life",
-        title="Living in Detmold: Nature, architecture, and regional history",
-        content="Detmold is a smaller German university town surrounded by nature, architecture, and regional history. It offers a friendly student community and access to the Teutoburg Forest and cultural sites.",
-        short_description="Nature, architecture, regional history, student life.",
-        tags=["city life", "nature", "architecture", "history", "students"],
-        priority=0,
-        source_name="General city info"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="academics",
-        title="This summer program combines construction, design, and international collaboration",
-        content="The program was designed as a knowledge exchange between University of Florida students, students from other universities, and students from TH OWL in Germany. Participants attend lectures, workshops, laboratory studies, and site visits focused on German design, architecture, and construction methods.",
-        short_description="Students learn through lectures, labs, workshops, and site visits in Germany.",
-        tags=["academics", "construction", "design", "international", "exchange"],
-        priority=1,
-        source_name="UF Detmold program page"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="academics",
-        title="All instruction is in English",
-        content="The program is taught in English and includes lectures, discussions, excursions, and on-site learning activities. This makes it accessible even for students without German language proficiency.",
-        short_description="The program is accessible to English-speaking students.",
-        tags=["academics", "language", "english", "study abroad"],
-        priority=1,
-        source_name="UF Detmold program page"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="housing",
-        title="Housing is arranged locally in private homes or apartments with breakfast included",
-        content="Students are housed locally in Detmold, often in private homes or apartments. Breakfast is included, and the hosted arrangement adds to the immersion and cultural experience of the program.",
-        short_description="Students stay in local housing with breakfast included.",
-        tags=["housing", "breakfast", "local housing", "immersion"],
-        priority=1,
-        source_name="UF Detmold program page"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="planning",
-        title="The program is open to all majors and lasts about four weeks",
-        content="This program is open to all majors, requires a minimum 2.5 GPA, and is intended for students in good standing. The program consists of a four-week stay organized by the Department of Civil Engineering.",
-        short_description="Open to all majors with a minimum 2.5 GPA.",
-        tags=["eligibility", "planning", "gpa", "duration"],
-        priority=1,
-        source_name="UF Detmold program page"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="academics",
-        title="Students can earn 3 UF GPA credits in construction-focused coursework",
-        content="Undergraduate students take BCN 4956: International Studies in Construction for 3 credits, while graduate students take BCN 5957: Advanced International Studies in Construction for 3 credits.",
-        short_description="Students earn 3 UF GPA credits through construction-focused coursework.",
-        tags=["academics", "credits", "construction", "undergraduate", "graduate"],
-        priority=2,
-        source_name="UF Detmold program page"
-    ),
-    CityTipCreate(
-        city_slug="detmold",
-        category="excursions",
-        title="The program includes excursions and city visits, including Hamburg and optional Berlin",
-        content="Program activities include walking tours, industry visits, and excursions connected to design, sustainable construction, water management, and digital construction. Highlights include Hamburg and an optional visit to Berlin.",
-        short_description="Excursions are part of the experience, including Hamburg and optional Berlin.",
-        tags=["excursions", "hamburg", "berlin", "industry tours", "field work"],
-        priority=2,
-        source_name="UF Detmold program page"
-    )
-]
-
-osnabruck_tips = [
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="city life",
-        title="Living in Osnabrück: Historic town with international connections",
-        content="Osnabrück is a historic German town with medieval architecture, cultural festivals, and a vibrant student life. It is home to many international companies and offers easy access to Hamburg and Amsterdam.",
-        short_description="Historic town, festivals, international student life.",
-        tags=["city life", "history", "festivals", "international", "students"],
-        priority=0,
-        source_name="General city info"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="academics",
-        title="Internship opportunities at multinational firms",
-        content="UF business students at Hochschule Osnabrück can intern at multinational firms. While German fluency is not required, enrolling in a German crash course upon arrival is encouraged for those interested in interning.",
-        short_description="Internships available; German crash course recommended.",
-        tags=["internship", "business", "german", "crash course"],
-        priority=1,
-        source_name="UF Osnabrück program page"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="eligibility",
-        title="Eligibility requirements for UF students",
-        content="Applicants should be in the College of Agricultural and Life Sciences, have a 2.5 GPA or higher, and be in good disciplinary standing.",
-        short_description="2.5+ GPA, CALS students, good standing required.",
-        tags=["eligibility", "GPA", "CALS", "requirements"],
-        priority=2,
-        source_name="UF Osnabrück program page"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="academics",
-        title="Courses in English and German; ECTS credit system",
-        content="Students with B1/B2 German can choose from a wide range of courses. Many English-taught courses and semester programs are available for those with little or no German. ECTS credits typically convert 2:1 to UF credits.",
-        short_description="Wide course selection; ECTS credits convert 2:1 to UF credits.",
-        tags=["academics", "ECTS", "english", "german", "courses"],
-        priority=3,
-        source_name="UF Osnabrück program page"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="housing",
-        title="Student housing options for international students",
-        content="Student Services Osnabrück maintains 20+ apartment buildings, with furnished rooms for international students. Hochschule Osnabrück also helps exchange students secure rooms via Studentenwerk Osnabrück. Rent is about $300/month plus ~$500 deposit. Shared residences include internet, satellite TV, and laundry.",
-        short_description="Affordable, furnished student housing available for internationals.",
-        tags=["housing", "student housing", "international", "rent"],
-        priority=4,
-        source_name="UF Osnabrück program page"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="city life",
-        title="Historic city with vibrant student life and events",
-        content="Osnabrück is a historic German town with medieval architecture, theatres, museums, and festivals. The city is home to many international companies and offers easy access to Hamburg and Amsterdam.",
-        short_description="Historic, lively city with international connections.",
-        tags=["city life", "culture", "festivals", "international"],
-        priority=5,
-        source_name="UF Osnabrück program page"
-    )
-]
-
-# Tips for UF students studying abroad in Vallendar (WHU is the school UF students attend)
-vallendar_tips = [
-    CityTipCreate(
-        city_slug="vallendar",
-        category="city life",
-        title="Living in Vallendar: Picturesque town in the Central Rhine Valley",
-        content="Vallendar is a small, beautiful town in the UNESCO Central Rhine Valley, surrounded by vineyards and historic monuments. Students often visit Koblenz for dining and shopping. Frankfurt and Cologne are just over an hour away.",
-        short_description="Picturesque town, vineyards, historic monuments, student life.",
-        tags=["city life", "valley", "vineyards", "historic", "students"],
-        priority=0,
-        source_name="General city info"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="academics",
-        title="WHU – Otto Beisheim School of Management: Internationally accredited business school",
-        content="WHU is AACSB, EQUIS, and FIBBA accredited. Courses emphasize practical orientation, internationality, personality development, and technology. Industry professionals teach many courses with a hands-on approach.",
-        short_description="Accredited, practical, international business education.",
-        tags=["business", "accredited", "practical", "international"],
-        priority=1,
-        source_name="UF WHU program page"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="eligibility",
-        title="Eligibility requirements for UF students",
-        content="Applicants must have completed at least 12 credit hours at UF, have a 3.0 GPA or higher, be in good disciplinary standing, and should study in the Warrington College of Business. Non-business undergraduates need WCBA advisor permission.",
-        short_description="3.0+ GPA, 12+ credits, WCBA students, good standing required.",
-        tags=["eligibility", "GPA", "WCBA", "requirements"],
-        priority=2,
-        source_name="UF WHU program page"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="academics",
-        title="Wide range of business courses and equivalencies",
-        content="WHU offers a variety of business courses. Use WCBA's course equivalency database to find out which courses at WHU can apply to your UF degree. Academic advisors can provide more information about equivalencies.",
-        short_description="Wide business course selection; check equivalencies.",
-        tags=["academics", "business", "courses", "equivalency"],
-        priority=3,
-        source_name="UF WHU program page"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="housing",
-        title="University-arranged housing options for exchange students",
-        content="WHU has a housing coordinator who arranges dorms and apartments for exchange students. Most are semi-furnished and within a 10-20 minute walk from campus. Fully furnished, private apartments are also available. Placements are secured on a first-come, first-serve basis.",
-        short_description="Semi-furnished dorms and private apartments arranged by WHU.",
-        tags=["housing", "dorms", "apartments", "exchange"],
-        priority=4,
-        source_name="UF WHU program page"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="city life",
-        title="Student life in Vallendar and Koblenz",
-        content="Vallendar is a small, beautiful town in the UNESCO Central Rhine Valley, surrounded by vineyards and historic monuments. Students often visit Koblenz for dining and shopping. Frankfurt and Cologne are just over an hour away.",
-        short_description="Picturesque town, close to Koblenz, Frankfurt, Cologne.",
-        tags=["city life", "culture", "valley", "proximity"],
-        priority=5,
-        source_name="UF WHU program page"
     )
 ]
 
@@ -1325,16 +1349,6 @@ stuttgart_tips = [
         short_description="Shared student flats, single rooms, apply early for housing.",
         tags=["housing", "student flats", "shared", "apply early"],
         priority=4,
-        source_name="UF HdM program page"
-    ),
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="city life",
-        title="Festivals, student life, and international experience in Stuttgart",
-        content="Stuttgart is lively, with many festivals (Oktoberfest, wine, Christmas), vibrant student life, and proximity to Black Forest, Swabian Alb, Lake Constance, Heidelberg, Munich, France, and Switzerland. ESN Stuttgart organizes events and activities for exchange students.",
-        short_description="Lively city, festivals, ESN events, international experience.",
-        tags=["city life", "festivals", "ESN", "international", "student life"],
-        priority=5,
         source_name="UF HdM program page"
     )
 ]
@@ -1538,7 +1552,7 @@ lemgo_tips = [
 ]
 
 # Tips for UF students studying abroad in Munich (HM is the school UF students attend via Global E3)
-munich_tips = [
+munich_global_e3_tips = [
     CityTipCreate(
         city_slug="munich",
         category="city life",
@@ -2253,8 +2267,87 @@ leipzig_tips = [
     ),
 ]
 
-# Additional non-program boosters for undercovered cities
-hamburg_tips += [
+# Standalone cultural tips for Bern (no program tag → shows in Cultural tab)
+bern_cultural_tips = [
+    CityTipCreate(
+        city_slug="bern",
+        category="food",
+        title="Bernese Food & Dining Culture",
+        content=(
+            "Bern is famous for its hearty traditional cuisine. Try the Berner Platte — a massive platter of cured meats, sausages, "
+            "tongue, and sauerkraut served with potatoes and beans. Zibelechueche (onion tart) is a Bernese specialty, especially "
+            "popular during the Zibelemärit (onion market) in November. For a sweet treat, try Toblerone — it was invented in Bern! "
+            "Budget tip: university Mensas (cafeterias) offer meals for 7–10 CHF. Grocery shopping at Migros or Coop is much cheaper than eating out."
+        ),
+        short_description="Berner Platte, Zibelechueche, Toblerone — hearty Swiss-German food culture.",
+        tags=["food", "culture", "Bernese cuisine"],
+        priority=0,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="social norms",
+        title="Swiss Social Norms & Etiquette in Bern",
+        content=(
+            "The Swiss-German region values punctuality, politeness, and personal space. Always greet people with 'Grüezi' (formal) or 'Hoi' (casual). "
+            "Three-cheek-kiss greetings are common among friends (left-right-left). Quiet hours (Ruhezeit) are strictly observed: "
+            "no loud noises between 10 PM–7 AM, and all day on Sundays. Recycling is mandatory — use color-coded bags and bins. "
+            "Tipping is not expected (service is included) but rounding up is appreciated. Shops close early on Saturdays and are closed on Sundays."
+        ),
+        short_description="Punctuality, Grüezi, quiet hours, Sunday closures, mandatory recycling.",
+        tags=["social norms", "etiquette", "Swiss-German"],
+        priority=1,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="daily life",
+        title="Daily Life & Getting Around Bern",
+        content=(
+            "Bern has excellent public transport — trams and buses run frequently and are always on time. Buy a Libero monthly pass for unlimited travel. "
+            "In summer, locals swim in the Aare River — it's a beloved Bernese tradition (the current is strong, so follow the locals' lead). "
+            "The Bärengraben (bear park) is a must-visit — bears are the city's symbol. The Bundeshaus (parliament) offers free tours. "
+            "Bern's arcades (Lauben) are the longest covered shopping promenades in Europe — perfect for rainy days."
+        ),
+        short_description="Trams, Aare swimming, bear park, covered arcades, Libero pass.",
+        tags=["daily life", "transport", "activities"],
+        priority=2,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Weekend Trips & Events from Bern",
+        content=(
+            "From Bern, you can reach Interlaken and the Jungfrau region in under an hour — some of the most stunning Alpine scenery in the world. "
+            "Lucerne, Basel, and Zurich are all under 1.5 hours by train. The Zibelemärit (onion market) in late November is a beloved tradition "
+            "with confetti battles and onion braids. Bern's Gurtenfestival in July is a major open-air music festival on the Gurten hill. "
+            "In winter, the Christmas markets in the old town are magical."
+        ),
+        short_description="Jungfrau region, Zibelemärit, Gurtenfestival, easy Swiss rail travel.",
+        tags=["city life", "weekend trips", "events", "Alps"],
+        priority=3,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="language",
+        title="Language in Bern: Swiss-German Bernese Dialect",
+        content=(
+            "Bern sits in the Swiss-German part of Switzerland. Locals speak Berndütsch (Bernese German), which is quite different from Standard German. "
+            "For example, 'Wie geht's?' becomes 'Wi geit's?' and 'Nicht' becomes 'Nid'. Don't worry — everyone understands High German (Hochdeutsch) "
+            "and many speak excellent English, especially at the university. The French-speaking part of Switzerland (Romandie) starts just 30 minutes west, "
+            "so you may hear French too. Learning a few Swiss-German phrases will delight locals."
+        ),
+        short_description="Berndütsch dialect, everyone understands High German and English.",
+        tags=["language", "dialect", "Swiss-German", "Berndütsch"],
+        priority=4,
+        source_name="Swiss cultural guide"
+    ),
+]
+
+# Tips for UF Exchange - Eastern Switzerland University of Applied Sciences (OST)
+rapperswil_tips = [
     CityTipCreate(
         city_slug="hamburg",
         category="transportation",
@@ -2485,14 +2578,87 @@ zurich_tips += [
     ),
 ]
 
-# ============================================================================
-# CULTURAL TIPS AND CULTURAL GUIDES
-# ============================================================================
-# These tips provide deeper cultural insights, communication styles, social norms,
-# and practical cultural navigation advice for students abroad.
+# Standalone cultural tips for Rapperswil (no program tag → shows in Cultural tab)
+rapperswil_cultural_tips = [
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="food",
+        title="Rapperswil Food & Lake Zurich Dining",
+        content=(
+            "Rapperswil's lakeside setting means fresh fish from Lake Zurich is a local specialty — try Egli (perch) fillets at a Beizli (small Swiss tavern). "
+            "The town's old town has cozy restaurants serving Rösti, Raclette, and Zürcher Geschnetzeltes (veal in cream sauce). "
+            "For budget meals, the OST Mensa offers lunches for 7–9 CHF. Migros and Coop supermarkets are nearby. "
+            "In summer, lakeside Badi (swimming) cafés serve drinks and snacks with stunning views."
+        ),
+        short_description="Lake Zurich fish, Rösti, Raclette, budget Mensa meals, lakeside cafés.",
+        tags=["food", "culture", "Lake Zurich"],
+        priority=0,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="social norms",
+        title="Swiss Social Norms in the Zurich Region",
+        content=(
+            "The Zurich region is part of the Swiss-German cultural area. Locals are friendly but reserved — don't be surprised if people take time to warm up. "
+            "Greet with 'Grüezi' (formal) or 'Hoi' (casual). Be punctual — even a few minutes late is considered rude. "
+            "Quiet hours (Ruhezeit) are strictly enforced: no noise after 10 PM and all day Sunday. Laundry schedules in apartments are shared and strict. "
+            "Recycling is a way of life — separate glass by color, use official trash bags (Gebührensäcke), and compost organic waste."
+        ),
+        short_description="Grüezi, punctuality, strict quiet hours, shared laundry, detailed recycling.",
+        tags=["social norms", "etiquette", "Swiss-German"],
+        priority=1,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="daily life",
+        title="Daily Life & Activities in Rapperswil",
+        content=(
+            "Rapperswil is known as the 'Town of Roses' (Rosenstadt) — the castle rose garden has 15,000 rose bushes with lake views. "
+            "The medieval Rapperswil Castle hosts a Polish museum (a historic connection). The wooden footbridge to Hurden is a scenic 840m walk across the lake. "
+            "Knies Kinderzoo (children's zoo) is a family favorite. Public transport via ZVV connects to Zurich in 30 min. "
+            "The Jona river area is great for jogging. In summer, kayaking and paddleboarding on Lake Zurich are popular."
+        ),
+        short_description="Rose gardens, castle, wooden footbridge, 30 min to Zurich, water sports.",
+        tags=["daily life", "activities", "Lake Zurich"],
+        priority=2,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Weekend Trips & Events from Rapperswil",
+        content=(
+            "From Rapperswil, Zurich is 30 min by train — explore the Bahnhofstrasse, Kunsthaus, and vibrant nightlife. "
+            "The Appenzell region and Säntis mountain are under 1.5 hours east for hiking. Lucerne is about 1 hour south. "
+            "In summer, the Blues'n'Jazz festival in Rapperswil is a highlight. The lake ferry (Zürichsee-Schifffahrt) offers scenic cruises "
+            "connecting Rapperswil to Zurich with stops at lakeside villages."
+        ),
+        short_description="Zurich 30 min, Appenzell hiking, Blues'n'Jazz festival, lake ferries.",
+        tags=["city life", "weekend trips", "events"],
+        priority=3,
+        source_name="Swiss cultural guide"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="language",
+        title="Language in Rapperswil: Züritüütsch Dialect",
+        content=(
+            "Rapperswil is in the Zurich German-speaking region. Locals speak Züritüütsch (Zurich German), a Swiss-German dialect. "
+            "Standard German is understood everywhere, and English proficiency is high, especially among younger people and at OST. "
+            "Some useful Swiss-German: 'Merci vilmal' (thanks a lot), 'Uf Widerluege' (goodbye), 'Es Bier, bitte' (a beer, please). "
+            "Learning even a few words of Swiss-German will earn you smiles and respect."
+        ),
+        short_description="Züritüütsch dialect; High German and English widely understood.",
+        tags=["language", "dialect", "Swiss-German", "Züritüütsch"],
+        priority=4,
+        source_name="Swiss cultural guide"
+    ),
+]
 
-# VIENNA CULTURAL TIPS
-vienna_cultural_tips = [
+# Tips for UF Exchange - ZHAW School of Engineering (Winterthur)
+winterthur_tips = [
     CityTipCreate(
         city_slug="vienna",
         category="culture",
@@ -2639,1230 +2805,89 @@ vienna_cultural_tips = [
     ),
 ]
 
-# BERLIN CULTURAL TIPS
-berlin_cultural_tips = [
+# Standalone cultural tips for Winterthur (no program tag → shows in Cultural tab)
+winterthur_cultural_tips = [
     CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Berlin's Direct Communication and Casual Attitude",
+        city_slug="winterthur",
+        category="food",
+        title="Winterthur Food & Dining Scene",
         content=(
-            "Berlin culture is notably more direct and informal than Vienna. Formality in address is less rigid; many people use 'Du' (informal you) quickly. "
-            "Directness is valued and not seen as rudeness—criticism is objective feedback, not personal attack. Don't take bluntness as coldness. "
-            "Irony and sarcasm are very common; understanding context helps avoid misinterpretation. "
-            "Berlin attracts creative, independent thinkers who value authenticity over polish. Being genuine matters more than appearing polished. "
-            "Conversations can jump between topics; Germans like substantive discussion and debate."
+            "Winterthur has a surprisingly diverse food scene for its size. The Marktgasse (market street) in the old town is lined with restaurants, "
+            "cafés, and bakeries. Try classic Swiss-German dishes: Zürcher Geschnetzeltes (sliced veal in cream sauce with Rösti), Käseschnitte "
+            "(Swiss cheese toast), and Bündnerfleisch (air-dried beef). The weekly market on Tuesdays and Fridays has fresh local produce. "
+            "Student budget tip: the ZHAW Mensa offers meals for 7–9 CHF. Migros and Coop are everywhere for groceries."
         ),
-        short_description="Casual 'Du' culture, direct feedback, sarcasm, authenticity over formality.",
-        tags=["culture", "communication", "berlin", "social norms", "directness"],
-        priority=110,
-        source_name="Cultural Guide"
+        short_description="Diverse old town dining, Zürcher Geschnetzeltes, weekly markets, budget Mensa.",
+        tags=["food", "culture", "Swiss cuisine"],
+        priority=0,
+        source_name="Swiss cultural guide"
     ),
     CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Berlin's Diverse Neighborhoods and Subcultural Identity",
+        city_slug="winterthur",
+        category="social norms",
+        title="Swiss Social Norms in Winterthur",
         content=(
-            "Berlin neighborhoods have strong identities: Kreuzberg is edgy and alternative, Charlottenburg is affluent and traditional, Friedrichshain is bohemian and creative, Neukölln is multicultural and vibrant. "
-            "Each area has its own vibe, politics, and social scene. Locals are proud of their neighborhood identity and often spend most social time locally. "
-            "The 'real Berlin' spirit values individuality, street art, small independent venues, and community. "
-            "Gentrification is a sensitive topic; many Berliners are concerned about preserving the alternative culture. Be respectful when discussing neighborhood changes."
+            "Winterthur follows typical Swiss-German social norms. Punctuality is paramount — arriving late is seen as disrespectful. "
+            "Greet with 'Grüezi' (formal) or 'Hoi' (casual). On public transport, it's polite to offer seats to elderly passengers. "
+            "Noise rules are strict: quiet hours 10 PM–7 AM and all day Sunday. Apartment recycling is detailed — separate paper, cardboard, "
+            "glass (by color), PET bottles, aluminum, and use official Gebührensäcke (paid trash bags). "
+            "Sunday is rest day: shops are closed, avoid mowing lawns or doing laundry in shared facilities."
         ),
-        short_description="Neighborhood identities, subcultural pride, alternative spirit, gentrification sensitivity.",
-        tags=["culture", "neighborhoods", "berlin", "community", "identity"],
-        priority=111,
-        source_name="Cultural Guide"
+        short_description="Punctuality, Grüezi, strict quiet hours, detailed recycling, Sunday rest.",
+        tags=["social norms", "etiquette", "Swiss-German"],
+        priority=1,
+        source_name="Swiss cultural guide"
     ),
     CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Classroom Culture and Academic Informality",
+        city_slug="winterthur",
+        category="daily life",
+        title="Daily Life & Culture in Winterthur",
         content=(
-            "Berlin universities are more informal than Vienna: professors often prefer 'Du' and may ask students to call them by first name. "
-            "Large lectures are common, but seminars encourage discussion and debate. Professor-student hierarchy is flatter. "
-            "Attendance is less rigidly enforced than Vienna; some professors only care about exam performance. Check the syllabus. "
-            "Preparation is still important, but the culture is more forgiving of differing viewpoints. Debate is encouraged. "
-            "Office hours are more flexible; email or chat with professors casually about course questions."
+            "Winterthur is called the 'City of Museums' — it has 17 museums, including the world-renowned Oskar Reinhart Collection and the Fotomuseum. "
+            "The Stadtgarten (city garden) is a relaxing park in the center. The Technorama (Swiss Science Center) is a hands-on science museum "
+            "loved by all ages. Public transport via Stadtbus connects the entire city, and Zurich is just 20 minutes by S-Bahn. "
+            "The Eulachpark and Wildpark Bruderhaus (deer park) are great for jogging and nature walks."
         ),
-        short_description="Informal professor relations, flat hierarchy, debate-friendly, flexible structure.",
-        tags=["academics", "culture", "berlin", "classroom", "informality"],
-        priority=112,
-        source_name="Cultural Guide"
+        short_description="City of Museums, Technorama, Stadtgarten, 20 min to Zurich, nature parks.",
+        tags=["daily life", "museums", "culture", "transport"],
+        priority=2,
+        source_name="Swiss cultural guide"
     ),
     CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Berlin's Nightlife, Techno Culture, and Late Nights",
+        city_slug="winterthur",
+        category="city life",
+        title="Weekend Trips & Events from Winterthur",
         content=(
-            "Berlin's nightlife is legendary, especially techno and electronic music clubs. Clubs often don't open until 23:00 and go until morning. "
-            "Dress codes are minimal for most clubs; authenticity matters more than expensive clothing. "
-            "Cover charges (€5-15) are standard; some venues are free. Drinks are cheaper than major Western cities. "
-            "The culture is very inclusive and LGBTQ+ friendly. Many venues cater to specific communities; research before going. "
-            "Social hierarchy at clubs is minimal; anyone can join the dancefloor. Consent and respect for others' space is expected. "
-            "Warning: Use extreme caution with drugs and alcohol; Berlin's party scene can be intense."
+            "Winterthur's location is unbeatable for travel: Zurich (20 min), Zurich Airport (15 min), Konstanz/Germany (1 hr), "
+            "St. Gallen (45 min), and the Rhine Falls (30 min) — Europe's largest waterfall. "
+            "Major local events: Winterthurer Musikfestwochen (June) is one of Europe's biggest open-air music festivals and it's free. "
+            "The Albanifest (late June) is Switzerland's largest old town festival. Christmas markets in the Altstadt are charming."
         ),
-        short_description="Late-night clubs, techno scene, affordable drinks, inclusive culture, drug/alcohol caution.",
-        tags=["culture", "nightlife", "social", "berlin", "lifestyle"],
-        priority=113,
-        source_name="Cultural Guide"
+        short_description="Zurich 20 min, Rhine Falls 30 min, free Musikfestwochen, Albanifest.",
+        tags=["city life", "weekend trips", "events", "festivals"],
+        priority=3,
+        source_name="Swiss cultural guide"
     ),
     CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Discussing History, Politics, and WWII in Berlin",
+        city_slug="winterthur",
+        category="language",
+        title="Language in Winterthur: Swiss-German Dialect",
         content=(
-            "Berlin's history—especially WWII and the Cold War—is deeply personal and political. Many Berliners have family histories tied to the city's traumas. "
-            "It's acceptable to discuss history and ask genuine questions, but do so respectfully and with sensitivity. "
-            "Avoid jokes about WWII or casually comparing things to the Nazi era. "
-            "Political discussions are normal and encouraged; Berliners value critical thinking. Leftist/green politics dominate the city; be aware of this context. "
-            "Visit memorials and museums (Holocaust Memorial, Topography of Terror) to understand the depth of local engagement with history. "
-            "Show respect for these spaces; they're not tourist attractions but places of reflection."
+            "Winterthur is in the Zurich German-speaking region. Locals speak Swiss-German (Schwyzerdütsch), specifically the Zurich variety. "
+            "Standard German (Hochdeutsch) is understood by everyone and used in formal settings, university, and writing. "
+            "English proficiency is high, especially among students and at ZHAW. Useful phrases: 'Grüezi mitenand' (hello everyone), "
+            "'Merci' (thank you — yes, the French word is used!), 'Tschüss' or 'Ade' (bye). Swiss-German has no standard written form, "
+            "so don't be confused when texts look different from Standard German."
         ),
-        short_description="Sensitive history, respectful discussion norms, political engagement, memorial etiquette.",
-        tags=["culture", "history", "politics", "berlin", "sensitivity"],
-        priority=114,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Food Culture and Eating Out in Berlin",
-        content=(
-            "Berlin has excellent street food and international cuisine. Döner, currywurst, and falafel wraps are cheap, tasty, and ubiquitous. "
-            "Restaurant culture is casual; no dress code except at upscale places. Many restaurants don't have dress codes or reservations needed. "
-            "Tipping: add 5-10% or round up. Card payments are increasingly common but cash is still widely used. "
-            "Veganism and vegetarianism are very common; almost all restaurants have options. "
-            "Eating out is cheaper than Vienna or Zurich. Happy hours and specials are advertised on menus and social media. "
-            "Coffee culture is trendy; third-wave cafés and specialty roasters are popular."
-        ),
-        short_description="Cheap street food, casual dining, international options, vegan-friendly, affordable.",
-        tags=["culture", "food", "dining", "berlin", "lifestyle"],
-        priority=115,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Housing and Living Arrangements",
-        content=(
-            "Berlin has a strong house-share (WG) culture for students. Living with roommates is the norm and a social space as much as housing. "
-            "Rental contracts are crucial: always get written agreements. Deposit protection is required by law (usually 1 month's rent). "
-            "Landlord-tenant relationships can be formal. If you have an issue, document it and communicate in writing. "
-            "Neighborhoods: live centrally if budget allows (Mitte, Kreuzberg, Friedrichshain); outer areas require longer commutes. "
-            "Utilities (Nebenkosten) are separate from rent and can surprise you; ask specifics before renting."
-        ),
-        short_description="WG culture, housing contracts, deposit law, neighborhood selection, utility clarity.",
-        tags=["culture", "housing", "living", "berlin", "practical"],
-        priority=116,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="berlin",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid in Berlin",
-        content=(
-            "❌ Don't assume everyone is fine with English; many locals resent the 'English takes over' trend. Try German first. "
-            "❌ Don't fetishize or romanticize Berlin's subcultural scene as a tourist; respect it as a living community. "
-            "❌ Avoid making light of WWII, the Holocaust, or the Berlin Wall; these are serious historical traumas. "
-            "❌ Don't be loud or disruptive in public spaces; while Berlin is casual, respect for others' space is expected. "
-            "❌ Don't assume all Berliners are left-wing or alternative; there's a full spectrum of politics. "
-            "❌ Don't tip excessively; it's appreciated but unusual (unlike the US) and can feel condescending."
-        ),
-        short_description="Language effort, cultural respect, history sensitivity, noise awareness, political diversity.",
-        tags=["culture", "mistakes", "avoid", "berlin", "integration"],
-        priority=117,
-        source_name="Cultural Guide"
+        short_description="Swiss-German dialect; High German and English widely spoken.",
+        tags=["language", "dialect", "Swiss-German", "Schwyzerdütsch"],
+        priority=4,
+        source_name="Swiss cultural guide"
     ),
 ]
 
-# MUNICH CULTURAL TIPS
-munich_cultural_tips = [
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Bavarian Pride, Tradition, and Lederhosen",
-        content=(
-            "Munich and Bavaria have a distinct identity separate from Germany. Bavarian pride runs deep; locals often see themselves as Bavarian first, German second. "
-            "Traditional dress (Lederhosen, Dirndl) is worn at festivals and some social occasions, not as a costume but as cultural expression. "
-            "Oktoberfest is a massive celebration, but it's also deeply local and traditional, not just a tourist event. Participate respectfully. "
-            "Religious traditions are strong (Catholic-majority region); Christmas and Easter markets are major celebrations. "
-            "Alpine culture influences everything: tradition, efficiency, craftsmanship, and respect for nature are core values."
-        ),
-        short_description="Bavarian pride, traditional dress, festival participation, religious traditions, Alpine values.",
-        tags=["culture", "bavarian", "tradition", "munich", "identity"],
-        priority=120,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Munich's Formality and Reserved Nature",
-        content=(
-            "Munich is more formal than Berlin but less formal than Vienna. Bavarians value politeness, respect, and proper address. "
-            "Use titles initially ('Herr', 'Frau') until invited to 'Du.' Bavarians warm up to people but keep initial distance. "
-            "Conversations are thoughtful and substantive; small talk is less common. Bavarians appreciate genuine interest in topics. "
-            "Hierarchy and order are respected; don't challenge authority casually. "
-            "Humor is dry and often self-deprecating; sarcasm is used but be careful not to overdo it."
-        ),
-        short_description="Formal politeness, title respect, meaningful conversation, order/hierarchy value.",
-        tags=["culture", "communication", "munich", "formality", "social norms"],
-        priority=121,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Bavarian Cuisine and Beer Culture",
-        content=(
-            "Munich's food is hearty: Leberkäse (meatloaf), Weißwurst (white sausage), pretzels, dumplings, and schnitzel are staples. "
-            "Beer is more than a drink; it's part of Bavarian culture. Beer gardens (Biergärten) are social spaces for all ages, not just for drinking. "
-            "The local beer culture has rules: beer is served in large mugs (Maß = 1 liter), and you order in German. Tipping the server after opening gets you better service. "
-            "Restaurants often have 'Bavarian' sections with traditional food; expect hearty portions. "
-            "Coffee culture exists but beer gardens are the primary social venues. Lunch is the main meal; dinner is lighter."
-        ),
-        short_description="Hearty cuisine, beer gardens as social spaces, beer etiquette, meal timing.",
-        tags=["culture", "food", "beer", "munich", "social"],
-        priority=122,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Classroom Culture and Academic Expectations",
-        content=(
-            "Munich universities blend formality and modern teaching. Professors expect respect and proper address ('Herr Professor'/'Frau Professorin'). "
-            "Attendance is important and can be tracked; repeated absences may affect grades or standing. "
-            "Large lectures are common with smaller seminars. Seminars expect active participation and preparation. "
-            "Exams are rigorous; the culture values deep understanding over memorization. "
-            "Group projects are common; Germans expect high-quality work and on-time delivery. Organize early and divide tasks clearly."
-        ),
-        short_description="Formal professor relations, attendance importance, quality-focused exams, group project standards.",
-        tags=["academics", "culture", "munich", "classroom", "expectations"],
-        priority=123,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Social Life and Making Friends",
-        content=(
-            "Bavarians are friendly once you're accepted into a group, but initial connections can be harder than in more casual cultures. "
-            "Join clubs (sports, hobby, language) early—this is the primary way students make friends and integrate. "
-            "Invite people to do things; Bavarians don't always initiate but are happy to accept invitations. "
-            "Outdoor activities (hiking, cycling) are huge parts of social life, especially outside the city. "
-            "Student pubs and beer gardens are social hubs. Show up regularly to see the same people; consistency builds friendships. "
-            "Sports clubs are accessible and affordable; volleyball, cycling, and running clubs are popular."
-        ),
-        short_description="Group integration through clubs, outdoor activities, regular hangouts, sports participation.",
-        tags=["culture", "social", "friendship", "munich", "lifestyle"],
-        priority=124,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Outdoor Culture and Nature Connection",
-        content=(
-            "Bavarians have a deep connection to nature. The Alps are nearby, and weekend hiking/skiing is a major social activity. "
-            "Walking and cycling are normalized—Munich has excellent bike infrastructure, and many people commute by bike year-round. "
-            "Environmental consciousness is high; respect for nature is a cultural value. Don't litter or damage hiking trails. "
-            "Outdoor markets, parks, and gardens are central to summer social life. "
-            "If you're invited to a hiking day or outdoor activity, it's a significant social opportunity—prioritize attending."
-        ),
-        short_description="Alpine proximity, hiking/skiing culture, bike-friendly infrastructure, nature respect.",
-        tags=["culture", "outdoor", "nature", "munich", "lifestyle"],
-        priority=125,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="munich",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't disrespect Bavarian tradition or make jokes about traditional dress; it's not a costume. "
-            "❌ Avoid being loud or boisterous in public; quiet confidence and respect for space is valued. "
-            "❌ Don't discuss politics casually; Bavarians can be sensitive about regional identity. "
-            "❌ Don't assume everyone likes beer or Oktoberfest; ask about preferences. "
-            "❌ Don't arrive significantly late to plans; punctuality is very important. "
-            "❌ Avoid touching or taking photos of locals in traditional dress without permission."
-        ),
-        short_description="Tradition respect, volume awareness, political sensitivity, beer assumptions, punctuality.",
-        tags=["culture", "mistakes", "avoid", "munich", "integration"],
-        priority=126,
-        source_name="Cultural Guide"
-    ),
-]
-
-# SALZBURG CULTURAL TIPS
-salzburg_cultural_tips = [
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Salzburg's Alpine Culture and Austrian Charm",
-        content=(
-            "Salzburg embodies Alpine charm and Austrian hospitality. The city blends Baroque heritage with mountain culture. "
-            "Traditional dress and customs are visible, especially during local festivals. Dirndls and Lederhosen aren't costumes here. "
-            "The connection to Mozart and classical music is deep; respect for artistic tradition is cultural value. "
-            "Religious heritage (Salzburg is Catholic) influences festivals and daily life. Christmas and Easter markets are major events. "
-            "The city is smaller and more relaxed than Vienna; people are generally warmer and less formal in initial interactions."
-        ),
-        short_description="Alpine charm, Mozart tradition, Catholic heritage, warmer hospitality than Vienna.",
-        tags=["culture", "alpine", "tradition", "salzburg", "identity"],
-        priority=130,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Salzburg's Music Festival and Classical Culture",
-        content=(
-            "The Salzburg Festival (July-August) is a world-renowned event attracting musicians and opera lovers globally. "
-            "Classical music performances happen year-round; they're not 'touristy' but deeply embedded in local culture. "
-            "Even casual restaurants and cafés often have music references or posters. Attend at least one concert or performance while there. "
-            "The city's connection to Mozart is everywhere; respect this heritage without reducing Salzburg to a 'Sound of Music' stereotype. "
-            "Music tickets can be expensive, but student discounts are available for concerts and performances."
-        ),
-        short_description="World-class festival, classical music culture, Mozart legacy, concert opportunities.",
-        tags=["culture", "music", "arts", "salzburg", "lifestyle"],
-        priority=131,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Classroom Culture and Academic Expectations",
-        content=(
-            "Salzburg universities blend Alpine informality with Austrian academic standards. Professors expect respect but are often approachable. "
-            "Use titles ('Herr', 'Frau') initially, but informality comes faster than in Vienna. "
-            "Class sizes are manageable; seminars encourage participation and debate. Preparation is expected but mistakes are forgiven if you try. "
-            "Exam culture: oral exams are common; practice explaining concepts clearly. "
-            "Group work is valued; Germans and Austrians expect organized collaboration. Plan early and meet regularly."
-        ),
-        short_description="Moderate formality, participation-focused, manageable classes, team-work emphasis.",
-        tags=["academics", "culture", "salzburg", "classroom", "expectations"],
-        priority=132,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Social Life and Making Friends in Salzburg",
-        content=(
-            "Salzburg's student community is tight-knit and welcoming. Join clubs or groups early—sports, language exchanges, cultural activities. "
-            "Student bars and cafés near the university are social hubs where the same people gather regularly. Show up consistently. "
-            "Outdoor activities (hiking, cycling around nearby lakes) are huge social events, especially in warmer months. "
-            "Salzburg is a gateway to the Salzkammergut region (lakes and mountains); weekend trips are common and affordable. Invite yourself or ask to join. "
-            "Locals are more spontaneous and friendly than Vienna. Building friendships is easier if you're genuine and show interest."
-        ),
-        short_description="Tight student community, outdoor activities, local bars as hubs, friendly culture.",
-        tags=["culture", "social", "salzburg", "friendship", "lifestyle"],
-        priority=133,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Local Food and Café Culture",
-        content=(
-            "Salzburg's regional food reflects Alpine tradition: Mozartkugel (chocolate balls), Erdäpfelsuppe (potato soup), Wiener schnitzel, Salzburger Nockerl (sweet dumplings). "
-            "Café culture is strong; spend time in cafés with your books and laptop. Staff won't rush you out. "
-            "Beer gardens are social spaces for all ages, not just for drinking. Family-friendly and affordable. "
-            "Local bakeries (Bäckerei) are excellent for breakfast and snacks; buy fresh pastries in the morning. "
-            "Tipping: add 5-10% or round up. Not mandatory but appreciated in full-service restaurants."
-        ),
-        short_description="Alpine cuisine, café culture, beer gardens, local bakeries, tipping norms.",
-        tags=["culture", "food", "salzburg", "café", "lifestyle"],
-        priority=134,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="salzburg",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't reduce Salzburg to 'The Sound of Music' alone; it's a rich city with its own identity. "
-            "❌ Avoid loud behavior in public; quiet respect for space is valued. "
-            "❌ Don't disrespect traditional dress or treat it as a costume. "
-            "❌ Avoid casual discussion of politics or religion; Salzburg is conservative in some aspects. "
-            "❌ Don't assume all locals are musicians or into classical music; that's a stereotype. "
-            "❌ Avoid arriving significantly late to plans; punctuality matters but less rigidly than Vienna."
-        ),
-        short_description="Sound of Music stereotype, volume awareness, tradition respect, late-arrival impact.",
-        tags=["culture", "mistakes", "avoid", "salzburg", "integration"],
-        priority=135,
-        source_name="Cultural Guide"
-    ),
-]
-
-# HAMBURG CULTURAL TIPS
-hamburg_cultural_tips = [
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Hamburg's Maritime Heritage and Port City Identity",
-        content=(
-            "Hamburg's identity is built on its role as Germany's gateway to the world. The port, canals, and maritime history define the city. "
-            "Respect for international commerce and openness to the world are cultural values. The city is less nationalist and more cosmopolitan than inland cities. "
-            "The harbor is a social and recreational space, not just commercial. Walks along the Elbe and canal tours are normal weekend activities. "
-            "Hamburg locals are proud of their independence; the city has a distinct identity separate from Berlin or Munich."
-        ),
-        short_description="Port city identity, international openness, harbor as social space, civic pride.",
-        tags=["culture", "hamburg", "maritime", "identity", "values"],
-        priority=140,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Hamburg's Business Culture and Work Ethic",
-        content=(
-            "Hamburg is Germany's business hub after Frankfurt. Efficiency, professionalism, and work ethic are valued. "
-            "The culture balances work seriousness with social warmth; Germans are professional but approachable. "
-            "Long business lunches (sometimes 1.5-2 hours) are normal; meetings aren't rushed. "
-            "Networking is important; professional associations and business events are regular. "
-            "Students from business-focused programs find Hamburg naturally aligned with their field."
-        ),
-        short_description="Business hub culture, efficiency, professional networking, social balance.",
-        tags=["culture", "business", "hamburg", "work ethic", "networking"],
-        priority=141,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Classroom Culture and Academic Expectations",
-        content=(
-            "Hamburg universities are modern and pragmatic. Professors are often approachable and use less formal titles than Vienna. "
-            "Classes emphasize practical application alongside theory. Large lectures with practical seminars are common. "
-            "Attendance expectations vary by professor; check the syllabus. Preparation and participation are valued. "
-            "Group projects are common and expected to be high-quality; divide work clearly and communicate regularly. "
-            "Exams can be written or oral; both test deep understanding rather than memorization."
-        ),
-        short_description="Pragmatic approach, practical orientation, approachable professors, quality expectations.",
-        tags=["academics", "culture", "hamburg", "classroom", "expectations"],
-        priority=142,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Social Life and Nightlife in Hamburg",
-        content=(
-            "Hamburg has a vibrant nightlife: clubs, bars, and music venues are abundant, especially in Reeperbahn area (red-light district but with all entertainment). "
-            "The student scene is lively; younger crowds frequent different areas than the city center. Sternschanze and Altona are trendy student neighborhoods. "
-            "Sports culture is huge: hamburgers support the local football club (HSV), and rugby, hockey, and sailing are popular. "
-            "Outdoor activities: sailing, cycling, and harbor tours are major social activities. "
-            "Live music venues and festivals are regular; Hamburg attracts international performers year-round."
-        ),
-        short_description="Vibrant nightlife, football culture, water sports, music venues, student scene.",
-        tags=["culture", "social", "hamburg", "nightlife", "lifestyle"],
-        priority=143,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Food Culture and Local Dining",
-        content=(
-            "Hamburg's food reflects its position as a port city: seafood is a staple (fish sandwiches from harbor vendors are iconic). "
-            "Fish markets (like Fischmarkt) are early-morning social events, not just shopping; arrive early for the vibe. "
-            "International cuisine is abundant due to the multicultural, business-focused population. "
-            "Casual dining is the norm; dress codes are rare except at upscale restaurants. "
-            "Tipping: add 5-10%. Card payments are increasingly common but some places prefer cash."
-        ),
-        short_description="Seafood-centric, fresh fish markets, international cuisine, casual dining norm.",
-        tags=["culture", "food", "hamburg", "dining", "lifestyle"],
-        priority=144,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="hamburg",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't assume Hamburg is like Berlin; it has a different identity (business-focused, international, port city). "
-            "❌ Avoid being loud in public spaces; respect and professionalism are valued. "
-            "❌ Don't disrespect the football club (HSV) casually; locals are passionate about sports. "
-            "❌ Avoid assuming everyone speaks English; always ask in German first. "
-            "❌ Don't venture into the red-light district (Reeperbahn) with disrespect; it's a working neighborhood with specific norms. "
-            "❌ Avoid late arrivals to professional or academic appointments; punctuality is crucial."
-        ),
-        short_description="Distinct identity, professionalism, sports respect, language effort, red-light etiquette.",
-        tags=["culture", "mistakes", "avoid", "hamburg", "integration"],
-        priority=145,
-        source_name="Cultural Guide"
-    ),
-]
-
-# GENERIC GERMAN EXCHANGE CITY CULTURAL TIPS (for cities without unique tips yet)
-# These apply broadly to Bonn, Würzburg, Stuttgart, Aachen, etc.
-german_exchange_cultural_tips = [
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="German University Culture and Academic Norms Across Cities",
-        content=(
-            "German universities emphasize research, independent learning, and deep understanding over grades. The system expects you to self-motivate. "
-            "Professors are addressed formally initially ('Herr Professor', 'Frau Professorin') but become approachable once you engage. "
-            "Large lectures (100+ students) are common in introductory courses; seminars (10-30 students) are smaller and discussion-based. "
-            "Exams are rigorous and cumulative. Oral exams test your ability to explain concepts, not just recall facts. "
-            "Study groups are normalized and encouraged. Library time and group projects are core to student life across German universities. "
-            "Plagiarism is taken very seriously; always cite sources and understand proper academic integrity norms."
-        ),
-        short_description="Research focus, formal then approachable professors, rigorous exams, group learning.",
-        tags=["academics", "culture", "germany", "classroom", "student life"],
-        priority=150,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="German Directness, Feedback, and Communication Style",
-        content=(
-            "Germans are known for directness; criticism is objective feedback, not personal attack. Don't interpret bluntness as rudeness. "
-            "Small talk is less common than substantive conversation. Germans like to discuss real topics—politics, philosophy, current events. "
-            "Honesty is valued; 'white lies' for politeness are less common than in the US. "
-            "Sarcasm and dry humor are used frequently but can be hard to catch; context matters. "
-            "Formal politeness (using 'Sie' rather than 'du') with strangers is the default; wait to be invited to informal speech. "
-            "Written communication (email) is often formal and detail-oriented; check your tone."
-        ),
-        short_description="Directness, substantive conversation, sarcasm, formal politeness with strangers.",
-        tags=["culture", "communication", "germany", "social norms", "feedback"],
-        priority=151,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="Punctuality, Efficiency, and Time Management Across German Cities",
-        content=(
-            "Punctuality is fundamental to German culture. Arriving 5+ minutes late is disrespectful and requires an apology. "
-            "Even public transport is expected to be on time; if a train is 5 minutes late, it's considered a delay. "
-            "Scheduled activities (classes, meetings, social plans) start exactly on time. Don't arrive early casually, but arrive on time. "
-            "Cancellations require advance notice; last-minute cancellations damage relationships and professional standing. "
-            "Time blocking is respected; don't let informal plans run over into scheduled commitments."
-        ),
-        short_description="On-time culture, public transport reliability, cancellation protocol, time blocking.",
-        tags=["culture", "time", "punctuality", "germany", "planning"],
-        priority=152,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="German Sustainability and Environmental Consciousness",
-        content=(
-            "Germans (and Austrians) take environmental responsibility seriously. Recycling is mandatory and organized by type (paper, plastic, glass, metal, organic). "
-            "Trash sorting is important; violations can result in fines. Ask locals about correct sorting if unsure. "
-            "Plastic bags and disposable packaging are discouraged. Bring reusable bags to shopping. "
-            "Public transport use is the norm; having a car is less common and can be viewed as environmentally inconsiderate. "
-            "Energy conservation is valued; turning off lights and closing windows during heating is expected. "
-            "Food waste is minimized; composting and garden culture are common."
-        ),
-        short_description="Mandatory recycling, plastic minimization, public transit norm, energy conservation.",
-        tags=["culture", "environment", "sustainability", "germany", "values"],
-        priority=153,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="Housing and Living Arrangements Across German Cities",
-        content=(
-            "Shared apartments (WGs) are common and affordable for students. Living with roommates is normalized and a social space. "
-            "Rental contracts are crucial; get written agreements. Deposits are legally protected (usually 1 month's rent plus any utilities deposit). "
-            "Landlord-tenant relationships can be formal. Document issues in writing and communicate professionally. "
-            "Housing costs vary significantly by city (Berlin and Leipzig cheaper, Munich and Frankfurt expensive). "
-            "Utilities (Nebenkosten) are separate from rent; ask specifics before committing. Heating costs can be high in winter."
-        ),
-        short_description="WG culture, legal housing contracts, deposit protection, utility costs, regional variation.",
-        tags=["culture", "housing", "living", "germany", "practical"],
-        priority=154,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="bonn",
-        category="culture",
-        title="Common Cultural Mistakes Across German Cities",
-        content=(
-            "❌ Don't assume everyone speaks English; always ask politely in German first. "
-            "❌ Avoid loud behavior in public spaces; Germans value quiet respect for shared spaces. "
-            "❌ Don't treat German directness as coldness; it's honesty and professional. "
-            "❌ Avoid late arrivals; punctuality is non-negotiable culturally. "
-            "❌ Don't make light of WWII or Nazi history; it's a serious historical trauma. "
-            "❌ Avoid tipping excessively; it's appreciated but unusual (unlike US) and can feel condescending. "
-            "❌ Don't assume all Germans are serious; they have humor, just different from American style."
-        ),
-        short_description="Language effort, volume control, directness respect, punctuality, history sensitivity.",
-        tags=["culture", "mistakes", "avoid", "germany", "integration"],
-        priority=155,
-        source_name="Cultural Guide"
-    ),
-]
-
-# VALLENDAR/RHEINGAU CULTURAL TIPS (WHU - Otto Beisheim School of Management)
-vallendar_cultural_tips = [
-    CityTipCreate(
-        city_slug="vallendar",
-        category="culture",
-        title="Rhineland Hospitality and Wine Region Culture",
-        content=(
-            "Vallendar sits in the scenic Central Rhine Valley (UNESCO World Heritage site), a region steeped in wine culture and tradition. "
-            "The Rheingau is known for its Riesling wines and centuries-old winemaking heritage. Respect for tradition and craftsmanship are core values. "
-            "Locals are warm and welcoming; the pace of life is slower than larger cities. Personal relationships are valued over quick transactions. "
-            "Regional pride runs deep; locals refer to themselves as 'Rheingau people' before German identity. "
-            "The wine culture extends to daily social life—vineyard walks and wine tastings are normal weekend activities."
-        ),
-        short_description="Wine heritage, regional pride, warm hospitality, tradition-focused community.",
-        tags=["culture", "vallendar", "rheingau", "wine", "tradition", "hospitality"],
-        priority=160,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="culture",
-        title="Business School Formality and Professional Culture at WHU",
-        content=(
-            "WHU attracts ambitious business students from across Germany and internationally. The culture is professional, goal-oriented, and formal. "
-            "Professors expect business casual dress and formal address initially. Punctuality and preparation are non-negotiable. "
-            "Networking is emphasized; building professional relationships is part of the curriculum. "
-            "Competitiveness exists but is balanced with collaboration; group projects are common. "
-            "Case studies and real-world business problems are central to teaching, not just theory. "
-            "Student clubs often focus on business, entrepreneurship, and international finance."
-        ),
-        short_description="Professional atmosphere, networked mindset, business-focused culture, formal expectations.",
-        tags=["academics", "culture", "business", "vallendar", "whu", "professional"],
-        priority=161,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="culture",
-        title="Two-Location Campus Life and Commuting Culture",
-        content=(
-            "WHU operates on two campuses: Vallendar (main, scenic) and nearby Oestrich-Winkel (historic wine town). "
-            "Students regularly commute between locations for different classes or cohorts. Plan commute times into your schedule. "
-            "The split campuses create different social scenes: Vallendar is quieter and focused, Oestrich-Winkel is more vibrant and social. "
-            "Many students live in one location and travel to the other; housing choices should consider commute preferences. "
-            "The regional train system is reliable but plan buffers between campuses for back-to-back activities."
-        ),
-        short_description="Two-campus system, strategic location choice, reliable regional transit.",
-        tags=["culture", "practical", "commute", "vallendar", "whu", "housing"],
-        priority=162,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="culture",
-        title="Wine Culture and Dining in the Rheingau",
-        content=(
-            "Wine is not just a beverage but part of Rheingau identity and daily social life. Wine tastings are common social events. "
-            "Local restaurants feature Rheingau Riesling prominently; trying local wines shows cultural respect. "
-            "Small wine taverns (Weinstubes) are gathering places where locals spend hours over wine and simple food. "
-            "Seasonal wine festivals (summer and fall) are major community events; attending shows cultural engagement. "
-            "Food in the region is hearty but lighter than Bavarian; local dishes often feature fish and regional produce. "
-            "Tipping: add 5-10% in restaurants; round up in cafés."
-        ),
-        short_description="Wine as culture, Weinstubes as social spaces, seasonal festivals, local dining.",
-        tags=["culture", "food", "wine", "vallendar", "dining", "social"],
-        priority=163,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="vallendar",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't dismiss the wine culture as just tourism; it's integral to local identity. "
-            "❌ Avoid loud or boisterous behavior; the region values quiet, respectful atmosphere. "
-            "❌ Don't underestimate formality at WHU; maintain professional dress and address. "
-            "❌ Avoid arriving late to business school events; punctuality is paramount. "
-            "❌ Don't disrespect regional traditions or architecture; heritage is taken seriously. "
-            "❌ Avoid assuming everyone commutes easily; plan for transit delays on two-campus days."
-        ),
-        short_description="Wine respect, professional formality, punctuality, tradition appreciation.",
-        tags=["culture", "mistakes", "avoid", "vallendar", "whu", "integration"],
-        priority=164,
-        source_name="Cultural Guide"
-    ),
-]
-
-# ZURICH CULTURAL TIPS (CJC in Switzerland)
-zurich_cultural_tips = [
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Swiss Precision, Directness, and High Standards",
-        content=(
-            "Swiss culture values precision, punctuality, and efficiency to an extreme level. Everything is planned, organized, and runs on time. "
-            "Swiss people are direct—more so than Germans—but with underlying politeness. Feedback is objective and meant constructively. "
-            "Quality is non-negotiable; 'good enough' doesn't exist. This applies to work, products, and even casual interactions. "
-            "Privacy and personal space are highly respected; don't pry into personal matters or stand too close physically. "
-            "Neutrality is a Swiss value; avoid strong political statements or taking sides in conflicts."
-        ),
-        short_description="Precision culture, extreme punctuality, quality focus, privacy respect, neutrality value.",
-        tags=["culture", "communication", "zurich", "switzerland", "social norms", "values"],
-        priority=170,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Zurich's Multilingual and Multicultural Environment",
-        content=(
-            "Zurich is Switzerland's most international city with four official languages (German, French, Italian, Romansh) and many expatriates. "
-            "Many Zurich residents speak English fluently, but making effort to speak German is still appreciated. "
-            "The city attracts people from around the world; international perspectives are normalized and valued. "
-            "However, Swiss identity is strong; locals appreciate respect for Swiss traditions and values despite the international atmosphere. "
-            "Student communities (university, international) are quite active and welcoming. Many students and young professionals create social groups."
-        ),
-        short_description="Multilingual, international, English-friendly, Swiss identity strong, student networks vibrant.",
-        tags=["culture", "language", "zurich", "international", "community", "diversity"],
-        priority=171,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Work-Life Balance and Sunday Culture",
-        content=(
-            "Switzerland is famous for quality of life and work-life balance. Work is important but not all-consuming. "
-            "Sundays are sacred for rest and family; most shops close, and activities are quiet and calm. "
-            "Evening events (dinners, meetings) typically start and end early (7-9 pm). Late-night hangouts are less common than other countries. "
-            "Exercise and outdoor activities are a major part of life; hiking, cycling, and skiing are normalized hobbies. "
-            "Time off is respected; taking vacation is encouraged and protected by law. "
-            "Workaholism is viewed negatively; balance is valued."
-        ),
-        short_description="Work-life balance, sacred Sundays, outdoor focus, early evening culture, respect for time off.",
-        tags=["culture", "lifestyle", "zurich", "switzerland", "values", "wellbeing"],
-        priority=172,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Dining, Tipping, and Restaurant Etiquette",
-        content=(
-            "Zurich is expensive; restaurant meals are costly. Many students cook at home or use affordable lunch options (set menus). "
-            "Restaurant service is formal and professional. Waiters don't hover; flag them with a hand gesture when ready. "
-            "Tipping in Switzerland is different: service charge is included in bills. Small tips (rounding up) are optional for good service, not expected like the US. "
-            "Swiss food reflects the Alps: cheese (fondue, raclette), bread, chocolate, and cured meats are staples. "
-            "Dining is a formal, seated experience; eating while walking is considered disrespectful. "
-            "Lunch is 12-1:30 pm; dinner is 7-8:30 pm. Outside these hours, few restaurants serve full meals."
-        ),
-        short_description="Expensive dining, formal service, minimal tipping, Alpine cuisine, meal timing importance.",
-        tags=["culture", "food", "dining", "zurich", "etiquette", "budget"],
-        priority=173,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Banking, Money, and Financial Responsibility",
-        content=(
-            "Switzerland's banking and financial systems are renowned for precision and privacy. "
-            "Opening a bank account as a student requires documentation; plan for this early. "
-            "Cash is still widely used despite being a wealthy city; many local businesses prefer cash. "
-            "Credit cards are accepted but not as universally as in the US. Maestro and PostCard are common. "
-            "Financial responsibility is a cultural value; debt is viewed negatively. Budgeting and saving are normalized. "
-            "Student discounts are common but require ID. Many services offer 'student rates' if you ask."
-        ),
-        short_description="Banking formality, cash-preferred culture, student discounts, financial responsibility value.",
-        tags=["culture", "practical", "money", "zurich", "banking", "budgeting"],
-        priority=174,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="zurich",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't arrive late; even 5 minutes is unacceptable. "
-            "❌ Avoid being loud in public spaces; quiet respect is paramount. "
-            "❌ Don't assume everyone speaks English; always ask in German/French first. "
-            "❌ Avoid discussing personal finances or income casually; it's private. "
-            "❌ Don't overstep personal space or ask invasive questions; Swiss privacy is strict. "
-            "❌ Avoid strong political statements; neutrality and respect for diverse views are valued. "
-            "❌ Don't tip like the US does; it's unnecessary and can feel condescending."
-        ),
-        short_description="Punctuality critical, quiet demeanor, privacy respect, language effort, tipping restraint.",
-        tags=["culture", "mistakes", "avoid", "zurich", "switzerland", "integration"],
-        priority=175,
-        source_name="Cultural Guide"
-    ),
-]
-
-# JENA CULTURAL TIPS (Friedrich Schiller Universität - TASSEP science students)
-jena_cultural_tips = [
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="University Town Spirit and Student-Centric Culture",
-        content=(
-            "Jena is a historic university city where student culture is central to the city's identity. "
-            "The university is woven into daily city life; many locals are academics or former students. "
-            "The culture is intellectual, research-focused, and values critical thinking. "
-            "Student organizations and clubs are vibrant; joining early helps with integration. "
-            "The pace is slower and more relaxed than major cities; focus is on learning and discourse rather than partying. "
-            "Local pride in the university (Friedrich Schiller Universität) is high; respect the institution."
-        ),
-        short_description="University-centric town, intellectual culture, student organizations, research focus.",
-        tags=["culture", "jena", "university", "academic", "student life", "community"],
-        priority=180,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="Eastern German History and Regional Identity",
-        content=(
-            "Jena was in East Germany (GDR) until 1990; this history deeply shapes local identity and values. "
-            "The city transitioned through significant economic and social changes; locals have resilience and resourcefulness. "
-            "Environmental consciousness is high (post-East German legacy of pollution awareness). "
-            "Community spirit and collective action are valued (legacy of different governance styles). "
-            "Students should understand this context—it's not Berlin or Munich's culture, but distinctly eastern German. "
-            "The Thuringia region has unique traditions; show interest in learning about local history."
-        ),
-        short_description="East German heritage, transition experience, community values, environmental consciousness.",
-        tags=["culture", "jena", "history", "identity", "region", "values"],
-        priority=181,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="Science and Research Culture",
-        content=(
-            "Jena has a legacy of scientific achievement (Ernst Abbe, Zeiss optical company). The city values innovation and research. "
-            "Professors expect deep engagement with research; labs and field work are core to learning. "
-            "Collaboration across departments is encouraged; interdisciplinary thinking is valued. "
-            "Science seminars and departmental lectures are regular; attending shows professional commitment. "
-            "Library and lab culture is respectful and quiet; focus and concentration are valued. "
-            "Group study is normalized; find study partners early in your program."
-        ),
-        short_description="Research legacy, interdisciplinary focus, lab culture, science seminars, collaboration.",
-        tags=["academics", "culture", "science", "jena", "research", "laboratory"],
-        priority=182,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="Affordable Living and Student Budget Culture",
-        content=(
-            "Jena is one of Germany's most affordable university cities; cost of living is significantly lower than western cities. "
-            "Student budgets are normalized; many students are financially tight and this is accepted. "
-            "Shared apartments (WGs) are the standard and very affordable (€200-350/month). "
-            "Student discounts are generous; always ask for 'student rate' at restaurants, museums, events. "
-            "Local cafés and student bars are inexpensive and social hubs. "
-            "Many students work part-time; this is normalized and expected."
-        ),
-        short_description="Affordable city, WG culture standard, generous student discounts, part-time work normalized.",
-        tags=["culture", "budget", "housing", "jena", "student life", "practical"],
-        priority=183,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="Local Food and Café Culture",
-        content=(
-            "Jena's food reflects Thuringia region: hearty, simple, affordable. Bratwurst, schnitzel, soups, and breads are staples. "
-            "Student cafeterias offer very cheap meals (€2-5) and are primary eating venues for students. "
-            "Cafés are social spaces; students spend hours with a single coffee. "
-            "Bakeries (Bäckerei) are excellent and cheap for breakfast and snacks. "
-            "Local specialty: Thüringer Rostbratwurst (grilled sausage); try it from street vendors. "
-            "Tipping: add 5-10% in restaurants; round up in cafés."
-        ),
-        short_description="Hearty Thuringia cuisine, cheap cafeterias, café culture, student-friendly food prices.",
-        tags=["culture", "food", "dining", "jena", "budget", "student life"],
-        priority=184,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="jena",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't romanticize East German history; locals experienced real hardship during division. "
-            "❌ Avoid dismissing the city as 'small' or 'boring'; intellectual depth is the appeal. "
-            "❌ Don't skip departmental events or seminar visits; engagement is culturally valued. "
-            "❌ Avoid being loud in quiet study/lab spaces; respect is paramount. "
-            "❌ Don't assume everyone is poor; respect for financial diversity exists despite affordability. "
-            "❌ Avoid late arrivals to academic commitments; punctuality is important even in relaxed culture."
-        ),
-        short_description="History sensitivity, respect for intellectual culture, quiet demeanor, academic engagement.",
-        tags=["culture", "mistakes", "avoid", "jena", "integration", "academics"],
-        priority=185,
-        source_name="Cultural Guide"
-    ),
-]
-
-# Append cultural tips to city arrays
-vienna_tips.extend(vienna_cultural_tips)
-berlin_tips.extend(berlin_cultural_tips)
-munich_tips.extend(munich_cultural_tips)
-salzburg_tips.extend(salzburg_cultural_tips)
-hamburg_tips.extend(hamburg_cultural_tips)
-berlin_tips.extend(berlin_cultural_tips)
-munich_tips.extend(munich_cultural_tips)
-salzburg_tips.extend(salzburg_cultural_tips)
-hamburg_tips.extend(hamburg_cultural_tips)
-
-# STUTTGART CULTURAL TIPS (Media University / HdM)
-stuttgart_cultural_tips = [
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="culture",
-        title="Swabian Pride and Regional Identity",
-        content=(
-            "Stuttgart is the capital of Baden-Württemberg, a region with distinct Swabian identity separate from Bavaria or Prussia. "
-            "Swabians are stereotyped as hardworking, practical, and precise—values deeply embedded in the culture. "
-            "The region has industrial heritage (Daimler, Bosch, Porsche) with emphasis on engineering and quality craftsmanship. "
-            "Swabian dialect (Schwäbisch) is widely spoken and distinct from standard German; locals take pride in their language. "
-            "Regional traditions, food, and celebrations are important. Respect for Swabian heritage shows cultural integration."
-        ),
-        short_description="Swabian pride, industrial heritage, practical values, regional dialect, craftsmanship culture.",
-        tags=["culture", "stuttgart", "swabia", "identity", "regional", "pride"],
-        priority=190,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="culture",
-        title="Media and Design Culture in Stuttgart",
-        content=(
-            "Stuttgart is a major media and design hub. Creative industries, advertising, and technology thrive here. "
-            "HdM (Hochschule der Medien) attracts students focused on media production, design, and technology. "
-            "The student culture is project-focused and creative; collaboration between different disciplines is common. "
-            "Design thinking and user-centered approaches are emphasized in academics and industry. "
-            "Internships and industry partnerships are integral to studies; networking with local companies is expected. "
-            "The culture values innovation and practical application over theory alone."
-        ),
-        short_description="Media hub, design-focused culture, project-based learning, industry partnerships, innovation.",
-        tags=["academics", "culture", "media", "design", "stuttgart", "creative"],
-        priority=191,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="culture",
-        title="Festival Culture and Local Celebrations",
-        content=(
-            "Stuttgart hosts major festivals: Volksfest (folk festival), Weindorf (wine festival), and Oktoberfest-style celebrations. "
-            "These events are community traditions, not just tourist attractions; locals participate enthusiastically. "
-            "Attending festivals shows cultural engagement and helps with local integration. "
-            "Beer and wine gardens are social spaces year-round, not just at festivals. "
-            "Local markets (farmers markets, Christmas markets) are vibrant and important to community life. "
-            "Supporting local artisans and producers is a cultural value."
-        ),
-        short_description="Festival traditions, folk culture, beer gardens, local markets, community participation.",
-        tags=["culture", "festivals", "social", "stuttgart", "community", "traditions"],
-        priority=192,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="culture",
-        title="Work-Life Balance and Evening Culture",
-        content=(
-            "Stuttgart balances professional focus with relaxed social life. Evening culture is active but not as intense as Berlin. "
-            "Many people head to wine gardens or casual bars (Kneipen) after work. Social time is valued alongside professional commitment. "
-            "The nearby Swabian Alb and wine regions make weekend escapes very accessible and normalized. "
-            "Family-oriented culture; many locals prioritize family time and children. "
-            "Student life is balance of study and social activities; all-nighters and extreme party culture are less common."
-        ),
-        short_description="Professional + relaxed balance, wine garden culture, weekend escapes, family values.",
-        tags=["culture", "lifestyle", "work-life", "stuttgart", "social", "wellbeing"],
-        priority=193,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="stuttgart",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't mock or dismiss Swabian dialect; locals take pride in their language. "
-            "❌ Avoid underestimating precision and quality expectations in academic work. "
-            "❌ Don't skip team projects or collaborative work; it's central to HdM culture. "
-            "❌ Avoid loud behavior in public; Swabians value quiet professionalism. "
-            "❌ Don't assume industrial cities are boring; Stuttgart has vibrant cultural depth. "
-            "❌ Avoid arriving late to any commitment; punctuality is non-negotiable."
-        ),
-        short_description="Dialect respect, quality focus, collaboration, quiet demeanor, punctuality importance.",
-        tags=["culture", "mistakes", "avoid", "stuttgart", "integration", "swabia"],
-        priority=194,
-        source_name="Cultural Guide"
-    ),
-]
-
-# AACHEN CULTURAL TIPS (RWTH Aachen University - Global E3 engineering)
-aachen_cultural_tips = [
-    CityTipCreate(
-        city_slug="aachen",
-        category="culture",
-        title="Border City Identity and International Character",
-        content=(
-            "Aachen sits at the intersection of Germany, Belgium, and the Netherlands (Euregio region). This triple-border location creates unique identity. "
-            "The city is historic (Charlemagne's capital) but modern and international. Many students and residents are from neighboring countries. "
-            "Multilingual exposure is high; locals speak German, Dutch, and French. Learning phrases in multiple languages shows cultural respect. "
-            "Border proximity makes weekend travel to Belgium and Netherlands very easy and affordable. "
-            "The culture blends German precision with a more relaxed, international attitude from neighboring countries."
-        ),
-        short_description="Triple-border city, international character, multilingual, historic significance, easy travel.",
-        tags=["culture", "aachen", "international", "border", "history", "mobility"],
-        priority=200,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="aachen",
-        category="culture",
-        title="Engineering Excellence and RWTH Culture",
-        content=(
-            "RWTH Aachen is one of Germany's top engineering universities, attracting ambitious students worldwide. The culture is academically rigorous. "
-            "Engineering is treated as a serious discipline; exams are challenging and cumulative. Preparation is non-negotiable. "
-            "Lab work and practical application are emphasized; hands-on skills are valued alongside theory. "
-            "Global E3 students work alongside German and international students; multicultural learning is normalized. "
-            "Professional development and industry internships are expected; networking with engineering firms is part of the culture. "
-            "Collaboration in projects is emphasized; group work quality is high."
-        ),
-        short_description="Top engineering university, rigorous academics, practical focus, global student base, labs.",
-        tags=["academics", "culture", "engineering", "aachen", "rwth", "excellence"],
-        priority=201,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="aachen",
-        category="culture",
-        title="Carnival and Festive Culture",
-        content=(
-            "Aachen is known for its Carnival (Karneval) celebrations, especially in nearby Cologne and Düsseldorf regions. "
-            "The city celebrates Carnival enthusiastically; it's a genuine community tradition, not just tourism. "
-            "During Carnival season (January-February), cities erupt in parades, parties, and costumes. "
-            "Participating in Carnival is a fun way to integrate socially and understand local culture. "
-            "Outside Carnival, the city is quiet and academic; the contrast is striking. "
-            "Respect for festive traditions while understanding the academic seriousness is key."
-        ),
-        short_description="Carnival traditions, festive culture, community celebration, seasonal dynamics.",
-        tags=["culture", "aachen", "festivals", "carnival", "social", "traditions"],
-        priority=202,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="aachen",
-        category="culture",
-        title="Thermal Springs and Wellness Culture",
-        content=(
-            "Aachen is famous for its natural thermal springs (Aachener Quellen). The city has wellness and spa culture. "
-            "Public baths and saunas are social spaces and wellness centers; using them is normalized and affordable. "
-            "Student discounts at spas and thermal baths are common. "
-            "The thermal water has been used since Roman times; respect for this heritage is appreciated. "
-            "Weekend spa trips are affordable and popular among students for relaxation and social time. "
-            "Understanding German sauna etiquette (nude in saunas, gender-separated areas) is important."
-        ),
-        short_description="Thermal springs, spa culture, wellness focus, social bathing, Roman heritage, student discounts.",
-        tags=["culture", "wellness", "social", "aachen", "practical", "health"],
-        priority=203,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="aachen",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't overestimate English availability; try German, French, or Dutch first. "
-            "❌ Avoid viewing Aachen as just a stepping stone to Belgium/Netherlands; it's a city with its own culture. "
-            "❌ Don't underestimate academic rigor at RWTH; it's one of Germany's toughest universities. "
-            "❌ Avoid being disrespectful during Carnival; it's a genuine tradition, not a tourist party. "
-            "❌ Don't assume engineering culture is dry; students have active social lives. "
-            "❌ Avoid arriving late to lab sessions or group meetings; punctuality is critical in engineering culture."
-        ),
-        short_description="Language effort, city respect, academic rigor, carnival etiquette, punctuality.",
-        tags=["culture", "mistakes", "avoid", "aachen", "integration", "rwth"],
-        priority=204,
-        source_name="Cultural Guide"
-    ),
-]
-
-# LEMGO/DETMOLD CULTURAL TIPS (TH OWL - Interior Design / Design students)
-design_exchange_cultural_tips = [
-    CityTipCreate(
-        city_slug="lemgo",
-        category="culture",
-        title="Design Culture and Creative Expression",
-        content=(
-            "The TH OWL region (Lemgo, Detmold) attracts design students and creative professionals. Design is taken seriously as a discipline. "
-            "Interior design, product design, and user experience are emphasized. Creativity balanced with technical skills is valued. "
-            "Students present design work regularly; constructive critique is a learning norm. Feedback is direct and expected. "
-            "Practical skills matter; studios are well-equipped with tools and technology. "
-            "Collaboration with local businesses and craftspeople is encouraged; real-world application is expected. "
-            "Design thinking extends beyond academics into local culture—respect for aesthetics and functionality is visible in daily life."
-        ),
-        short_description="Design-focused culture, creative emphasis, studio practice, practical skills, local collaboration.",
-        tags=["academics", "culture", "design", "lemgo", "detmold", "creativity"],
-        priority=210,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="lemgo",
-        category="culture",
-        title="Small Town Charm and Regional Heritage",
-        content=(
-            "Lemgo and Detmold are smaller towns in the Lippe region, quite different from major cities. "
-            "The pace is slower; people know each other; community is tight-knit and welcoming. "
-            "Historic architecture is well-preserved; the towns showcase regional heritage proudly. "
-            "Nature is immediately accessible; hiking, cycling, and outdoor activities are primary leisure. "
-            "Local traditions (folk festivals, craft traditions) are important; respecting heritage shows cultural engagement. "
-            "Student life is quieter than Berlin or Munich; focus is on studies and nature, not nightlife."
-        ),
-        short_description="Small-town charm, tight community, historic architecture, nature-focused, heritage pride.",
-        tags=["culture", "lemgo", "detmold", "small-town", "community", "tradition"],
-        priority=211,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="lemgo",
-        category="culture",
-        title="Craftsmanship Tradition and Maker Culture",
-        content=(
-            "The Lippe region has centuries-old craftsmanship traditions: woodworking, ceramics, textiles, etc. "
-            "This heritage influences student culture; respect for quality craftsmanship is embedded in design education. "
-            "Local artisans and makers are valued; learning from established craftspeople is encouraged. "
-            "DIY and maker culture is strong; workshops and shared studio spaces are accessible to students. "
-            "Design student culture celebrates handmade, artisanal approaches alongside digital design. "
-            "Visiting local craft workshops and markets shows cultural appreciation."
-        ),
-        short_description="Craftsmanship heritage, maker culture, artisanal values, tradition integration, DIY workshops.",
-        tags=["culture", "design", "craft", "lemgo", "detmold", "tradition"],
-        priority=212,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="lemgo",
-        category="culture",
-        title="Regional Food and Agricultural Heritage",
-        content=(
-            "The Lippe region is agricultural; local food reflects farm-to-table traditions. "
-            "Regional specialties: Lippische Piekert (potato cake), local cheeses, produce from regional farms. "
-            "Farmers markets are important social and shopping venues. Supporting local producers is a cultural value. "
-            "Food culture is hearty but simpler than Bavarian; focus is on fresh, local ingredients. "
-            "Small-town restaurants often feature traditional regional cooking. "
-            "Tipping: add 5-10% in restaurants; round up in cafés."
-        ),
-        short_description="Agricultural heritage, farm-to-table culture, regional specialties, farmers markets, local support.",
-        tags=["culture", "food", "regional", "lemgo", "detmold", "tradition"],
-        priority=213,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="lemgo",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't dismiss small towns as boring; design culture and nature make them rich. "
-            "❌ Avoid disrespecting craft traditions or historic architecture; they're cultural anchors. "
-            "❌ Don't expect nightlife like major cities; student life is quieter and more nature-focused. "
-            "❌ Avoid arriving late to studio sessions; punctuality affects group work. "
-            "❌ Don't skip local engagement opportunities (craft workshops, farm visits); they're integrated into learning. "
-            "❌ Avoid loud behavior in quiet communities; respect for neighbors is important."
-        ),
-        short_description="Town respect, craft tradition, quiet demeanor, punctuality, community engagement.",
-        tags=["culture", "mistakes", "avoid", "lemgo", "detmold", "integration"],
-        priority=214,
-        source_name="Cultural Guide"
-    ),
-]
-
-# OSNABRÜCK CULTURAL TIPS (Hochschule Osnabrück - CALS business/exchange)
-osnabruck_cultural_tips = [
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="culture",
-        title="Peace and Reconciliation Heritage",
-        content=(
-            "Osnabrück has a unique historical identity: the city was center of 17th-century peace negotiations (Treaty of Osnabrück). "
-            "This heritage shaped local culture toward dialogue, negotiation, and peaceful conflict resolution. "
-            "The city celebrates this history; understanding it provides cultural context. "
-            "Modern Osnabrück attracts international students; the culture is notably open and inclusive. "
-            "International understanding and cross-cultural dialogue are valued cultural norms. "
-            "This makes Osnabrück a welcoming city for exchange students and internationals."
-        ),
-        short_description="Peace heritage, dialogue culture, international openness, historical significance, inclusive community.",
-        tags=["culture", "osnabruck", "history", "peace", "international", "identity"],
-        priority=220,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="culture",
-        title="Business and Entrepreneurial Culture",
-        content=(
-            "Osnabrück has a strong business sector with many family-owned companies and small enterprises. "
-            "Business school culture values practical application and real-world projects. "
-            "Internships and company partnerships are integral to studies. Networking is expected. "
-            "Small-to-medium enterprises (SMEs) are respected; learning from local businesses is encouraged. "
-            "The culture values hard work, reliability, and long-term thinking over quick profits. "
-            "Student entrepreneurship clubs and business networks are active."
-        ),
-        short_description="Business-oriented, SME culture, practical learning, networking expected, entrepreneur support.",
-        tags=["academics", "culture", "business", "osnabruck", "entrepreneurship", "practical"],
-        priority=221,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="culture",
-        title="Agricultural Roots and Sustainability",
-        content=(
-            "Osnabrück region is agricultural; farms and food production are important economically and culturally. "
-            "Sustainability and environmental responsibility are strong values. "
-            "Organic farming and local agricultural products are celebrated. "
-            "CALS (College of Agricultural and Life Sciences) students find natural alignment with local values. "
-            "Farmers markets and farm-to-table dining are normal. Supporting local agriculture is cultural practice. "
-            "Environmental consciousness is embedded in daily life (recycling, sustainability, nature respect)."
-        ),
-        short_description="Agricultural heritage, sustainability focus, organic culture, environmental values, farm economy.",
-        tags=["culture", "agriculture", "environment", "osnabruck", "sustainability", "values"],
-        priority=222,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="culture",
-        title="Regional Food and Local Commerce",
-        content=(
-            "Osnabrück has strong local food culture: Everstein cheese, local sausages, Münsterland produce, wheat beer. "
-            "Supporting local businesses (shops, restaurants, markets) is a cultural norm and value. "
-            "Chain stores exist but locals prefer independent shops and businesses. "
-            "Food quality and tradition matter more than cheapness. "
-            "Weekly farmers markets are vibrant community spaces, not just shopping venues. "
-            "Relationships with local shop owners are important; regulars are valued."
-        ),
-        short_description="Local food traditions, independent shops preferred, farmers markets important, relationship-based.",
-        tags=["culture", "food", "local", "osnabruck", "community", "commerce"],
-        priority=223,
-        source_name="Cultural Guide"
-    ),
-    CityTipCreate(
-        city_slug="osnabruck",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
-        content=(
-            "❌ Don't dismiss Osnabrück as boring or backward; it's historically significant and economically important. "
-            "❌ Avoid disrespecting the peace heritage; it's central to local identity. "
-            "❌ Don't skip internship/business networking opportunities; they're expected. "
-            "❌ Avoid preferring chain stores over local businesses; it's culturally tone-deaf. "
-            "❌ Don't assume everyone speaks English; make effort with German. "
-            "❌ Avoid loud or disruptive behavior; quiet professionalism is valued."
-        ),
-        short_description="Historical respect, business engagement, local support, German effort, quiet demeanor.",
-        tags=["culture", "mistakes", "avoid", "osnabruck", "integration", "history"],
-        priority=224,
-        source_name="Cultural Guide"
-    ),
-]
-
-# MANNHEIM CULTURAL TIPS (University or business programs)
-mannheim_cultural_tips = [
+# Tips for UF students studying abroad in Mannheim (UF Exchange - University of Mannheim)
+mannheim_tips = [
     CityTipCreate(
         city_slug="mannheim",
         category="culture",
@@ -4076,70 +3101,1354 @@ ebs_cultural_tips = [
         priority=251,
         source_name="Cultural Guide"
     ),
+]
+
+# ═══════════════════════════════════════════════════════════
+# Osnabrück ISU Summer Engineering Program
+# ═══════════════════════════════════════════════════════════
+osnabruck_isu_tips = [
     CityTipCreate(
-        city_slug="ebs",
-        category="culture",
-        title="Two-Location Management and Commuting Reality",
+        city_slug="osnabruck",
+        category="overview",
+        title="ISU Summer Engineering Program Overview",
         content=(
-            "EBS operates two campuses: Wiesbaden (administrative, some classes) and Oestrich-Winkel (main campus). "
-            "Students regularly commute between locations; planning is essential. Regional trains are reliable. "
-            "Different campuses have different vibes: Wiesbaden is more formal/urban, Oestrich-Winkel is village/wine-focused. "
-            "Housing choice affects commute burden; consider location carefully before signing lease. "
-            "Commute time becomes part of daily reality; build it into schedule planning. "
-            "The split campus creates unique two-location community experience."
+            "The ISU (Iowa State University) Summer Engineering Program in Osnabrück is a faculty-led summer program "
+            "open to UF students through the study abroad office. It focuses on Agricultural & Biological Engineering "
+            "(ABE) courses taught by UF/ISU faculty at the Osnabrück University of Applied Sciences. "
+            "The program runs roughly 5–6 weeks in May–June and includes excursions to German engineering firms, "
+            "farms, and renewable energy sites. All courses are taught in English."
         ),
-        short_description="Two-campus system, regular commuting, location choice impacts, regional transit reliable.",
-        tags=["culture", "practical", "ebs", "commute", "housing", "planning"],
-        priority=252,
-        source_name="Cultural Guide"
+        short_description="5–6 week summer engineering program at Osnabrück University of Applied Sciences.",
+        tags=["overview", "ISU", "engineering", "summer", "ABE", "faculty-led"],
+        priority=1,
+        program="ISU Summer Engineering - Osnabrück",
+        source_name="UF ISU Osnabrück program page"
     ),
     CityTipCreate(
-        city_slug="ebs",
-        category="culture",
-        title="International Student Integration and Diversity",
+        city_slug="osnabruck",
+        category="academics",
+        title="Courses Offered (ISU Summer Engineering)",
         content=(
-            "EBS is majority international (60%+ international students). English is primary language despite being in Germany. "
-            "German language not required for studies; many courses taught in English. "
-            "However, learning German shows respect and helps with local integration. "
-            "Multicultural student body means diverse perspectives are normalized. "
-            "International career focus; many peers are targeting multinational companies and global careers. "
-            "Social mix is global but tends toward business-oriented, ambitious individuals."
+            "Students typically take ABE 4932 special-topics courses in Agricultural & Biological Engineering. "
+            "Common topics include precision agriculture, renewable energy systems, biosystems engineering, "
+            "and water resource management. Courses carry UF GPA credit (3–6 credits). "
+            "Classes are held at the Osnabrück University of Applied Sciences campus and include lab visits, "
+            "field trips, and guest lectures by German industry professionals."
         ),
-        short_description="International majority, English-primary, global career focus, multicultural environment, German optional.",
-        tags=["culture", "international", "ebs", "language", "diversity", "community"],
-        priority=253,
-        source_name="Cultural Guide"
+        short_description="ABE 4932 courses: precision ag, renewable energy, biosystems; 3–6 UF GPA credits.",
+        tags=["courses", "ABE 4932", "credits", "precision agriculture", "renewable energy"],
+        priority=2,
+        program="ISU Summer Engineering - Osnabrück",
+        source_name="UF ISU Osnabrück program page"
     ),
     CityTipCreate(
-        city_slug="ebs",
-        category="culture",
-        title="Common Cultural Mistakes to Avoid",
+        city_slug="osnabruck",
+        category="excursions",
+        title="Excursions & Site Visits (ISU Summer Engineering)",
         content=(
-            "❌ Don't underestimate formality expectations; professional appearance and behavior matter. "
-            "❌ Avoid treating networking as optional; it's central to success. "
-            "❌ Don't assume German language isn't important; locals appreciate effort. "
-            "❌ Avoid arriving late to business school events; punctuality is critical. "
-            "❌ Don't dismiss wine culture as 'touristy'; it's genuine community tradition. "
-            "❌ Avoid viewing commuting as an inconvenience; it's part of EBS experience."
+            "The program includes organized excursions to major German engineering and agriculture sites: "
+            "CLAAS (agricultural machinery), Krone (forage harvesting equipment), wind farms and biogas plants, "
+            "the VW Autostadt in Wolfsburg, and local organic and conventional farms. "
+            "There's also a weekend trip to Berlin and sometimes Hamburg or Cologne. "
+            "These excursions bridge classroom theory with real-world German engineering and sustainability practices."
         ),
-        short_description="Professional formality, networking importance, language effort, punctuality, tradition respect.",
-        tags=["culture", "mistakes", "avoid", "ebs", "integration", "business"],
-        priority=254,
-        source_name="Cultural Guide"
+        short_description="Visits to CLAAS, Krone, VW, wind farms, biogas plants; weekend trips to Berlin.",
+        tags=["excursions", "CLAAS", "Krone", "VW", "wind farm", "biogas", "Berlin"],
+        priority=3,
+        program="ISU Summer Engineering - Osnabrück",
+        source_name="UF ISU Osnabrück program page"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="housing",
+        title="Housing & Living (ISU Summer Engineering)",
+        content=(
+            "Students are typically housed in student dormitories near the Osnabrück University of Applied Sciences campus. "
+            "Rooms are furnished with shared kitchen and bathroom facilities. "
+            "Osnabrück is a mid-sized city (170k population) with a low cost of living compared to larger German cities. "
+            "Expect to spend €600–€900 per month on housing, food, and local transport."
+        ),
+        short_description="Student dorms near campus; €600–€900/month total living costs.",
+        tags=["housing", "dorms", "cost of living", "Osnabrück"],
+        priority=4,
+        program="ISU Summer Engineering - Osnabrück",
+        source_name="UF ISU Osnabrück program page"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="costs",
+        title="Costs & Financial Aid (ISU Summer Engineering)",
+        content=(
+            "Program costs include UF tuition (summer rates), program fee (~$2,500–$3,500 covering excursions, "
+            "some meals, and administrative support), round-trip airfare (~$800–$1,200), and personal expenses. "
+            "Students remain enrolled at UF and can use Bright Futures and other state/federal financial aid. "
+            "Additional scholarships may be available through the UF Study Abroad office."
+        ),
+        short_description="UF tuition + ~$2,500–$3,500 program fee; Bright Futures and financial aid apply.",
+        tags=["costs", "tuition", "program fee", "financial aid", "Bright Futures", "scholarships"],
+        priority=5,
+        program="ISU Summer Engineering - Osnabrück",
+        source_name="UF ISU Osnabrück program page"
     ),
 ]
 
-# Now append all city-specific cultural tips
-bonn_tips.extend(german_exchange_cultural_tips)
-wurzburg_tips.extend(german_exchange_cultural_tips)
-stuttgart_tips.extend(german_exchange_cultural_tips + stuttgart_cultural_tips)
-aachen_tips.extend(german_exchange_cultural_tips + aachen_cultural_tips)
-lemgo_tips.extend(german_exchange_cultural_tips + design_exchange_cultural_tips)
-detmold_tips.extend(german_exchange_cultural_tips + design_exchange_cultural_tips)
-osnabruck_tips.extend(german_exchange_cultural_tips + osnabruck_cultural_tips)
-vallendar_tips.extend(german_exchange_cultural_tips + vallendar_cultural_tips)
-mannheim_tips.extend(german_exchange_cultural_tips + mannheim_cultural_tips)
-leipzig_tips.extend(german_exchange_cultural_tips + leipzig_cultural_tips)
-zurich_tips.extend(zurich_cultural_tips)
-jena_tips.extend(german_exchange_cultural_tips + jena_cultural_tips)
-ebs_tips.extend(german_exchange_cultural_tips + ebs_cultural_tips)
+# ═══════════════════════════════════════════════════════════
+# Würzburg TASSEP Program
+# ═══════════════════════════════════════════════════════════
+wurzburg_tassep_tips = [
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="overview",
+        title="TASSEP Exchange Program Overview (Würzburg)",
+        content=(
+            "TASSEP stands for Trans-Atlantic Science Student Exchange Program. It is a consortium of "
+            "European and North American universities that facilitates tuition-free semester exchanges for "
+            "science and engineering students. UF students pay UF tuition and receive transfer credit. "
+            "At the University of Würzburg (Julius-Maximilians-Universität), TASSEP students can study "
+            "biology, chemistry, physics, mathematics, computer science, and other STEM fields. "
+            "The program is ideal for students who want a genuine immersion experience at a full German research university."
+        ),
+        short_description="TASSEP = Trans-Atlantic Science Student Exchange Program; tuition-free semester exchange for STEM students.",
+        tags=["TASSEP", "overview", "exchange", "science", "STEM", "tuition-free"],
+        priority=1,
+        program="TASSEP - Universität Würzburg",
+        source_name="UF TASSEP Würzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="academics",
+        title="Academics at University of Würzburg (TASSEP)",
+        content=(
+            "The University of Würzburg is a leading German research university founded in 1402. "
+            "It is especially strong in the natural sciences — Wilhelm Röntgen discovered X-rays here. "
+            "TASSEP students take courses alongside German students (some in English, many in German). "
+            "Common fields: biology, biochemistry, chemistry, physics, mathematics, computer science, "
+            "and earth sciences. The ECTS credit system is used; 30 ECTS ≈ 15 US credits per semester."
+        ),
+        short_description="Founded 1402; strong in natural sciences; courses in English and German; ECTS credits.",
+        tags=["academics", "University of Würzburg", "research", "ECTS", "natural sciences", "Röntgen"],
+        priority=2,
+        program="TASSEP - Universität Würzburg",
+        source_name="UF TASSEP Würzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="eligibility",
+        title="Eligibility & Requirements (TASSEP Würzburg)",
+        content=(
+            "Requirements: minimum 3.0 GPA, sophomore standing or above, enrolled in a CLAS/STEM major. "
+            "German language proficiency is strongly recommended (B1 level or higher) since many courses are in German. "
+            "Students who don't speak German can find some English-taught courses but options may be limited. "
+            "Application deadlines: Fall/Academic Year — early February; Spring — early September."
+        ),
+        short_description="Min 3.0 GPA; STEM major; German B1+ recommended; Fall deadline early Feb.",
+        tags=["eligibility", "GPA", "STEM", "German language", "B1", "deadline"],
+        priority=3,
+        program="TASSEP - Universität Würzburg",
+        source_name="UF TASSEP Würzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="housing",
+        title="Housing in Würzburg (TASSEP)",
+        content=(
+            "The Studentenwerk Würzburg operates several student residence halls (Wohnheime). "
+            "TASSEP exchange students can apply for a room through the International Office. "
+            "Expect to pay €250–€400/month for a furnished room in a shared apartment (WG) or dorm. "
+            "Würzburg is a small, walkable city, so most student housing is within biking distance of campus."
+        ),
+        short_description="Student residence halls via Studentenwerk; €250–€400/month; walkable city.",
+        tags=["housing", "Studentenwerk", "dorm", "WG", "rent", "walkable"],
+        priority=4,
+        program="TASSEP - Universität Würzburg",
+        source_name="UF TASSEP Würzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Life in Würzburg",
+        content=(
+            "Würzburg is a charming baroque city of ~130,000 on the Main River in Lower Franconia, Bavaria. "
+            "It's famous for the UNESCO-listed Würzburg Residence palace, excellent Franconian wines, "
+            "and a vibrant student scene (1 in 5 residents is a student). "
+            "The Alte Mainbrücke (Old Main Bridge) is a beloved gathering spot for wine in the evening. "
+            "Würzburg is well-connected by train: Munich ~2 hrs, Frankfurt ~1 hr, Nuremberg ~1 hr."
+        ),
+        short_description="Baroque city on the Main River; UNESCO palace; Franconian wine; great student scene.",
+        tags=["city life", "baroque", "Main River", "wine", "Alte Mainbrücke", "UNESCO", "student city"],
+        priority=5,
+        program="TASSEP - Universität Würzburg",
+        source_name="General Würzburg info"
+    ),
+]
+
+# ═══════════════════════════════════════════════════════════
+# Berlin NFL (Globalizing American Sports) — CJC Faculty-led
+# ═══════════════════════════════════════════════════════════
+berlin_nfl_tips = [
+    CityTipCreate(
+        city_slug="berlin",
+        category="overview",
+        title="CJC: Globalizing American Sports — NFL in Berlin",
+        content=(
+            "This is a short-term, faculty-led program through UF's College of Journalism and Communications (CJC). "
+            "Students explore how American professional sports — especially the NFL — expand internationally, "
+            "using Berlin as a case study. The program typically runs 2–3 weeks in May or summer. "
+            "Students earn 3 UF GPA credits, attend NFL Europe events or related sports media activities, "
+            "and visit German media organizations."
+        ),
+        short_description="2–3 week CJC faculty-led program on NFL globalization; 3 UF GPA credits.",
+        tags=["overview", "CJC", "NFL", "sports media", "faculty-led", "Berlin"],
+        priority=1,
+        program="UF in Berlin - Globalizing the NFL",
+        source_name="UF CJC Berlin NFL program page"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="academics",
+        title="Coursework & Activities (NFL in Berlin)",
+        content=(
+            "The program centers on JOU/MMC/ADV/PUR special-topics courses examining sports communication, "
+            "media globalization, and brand management in international markets. "
+            "Activities include visits to German sports media outlets, the Olympiastadion, "
+            "meetings with NFL Germany representatives, and cultural excursions in Berlin. "
+            "Guest lectures from German journalists and sports marketing professionals are common."
+        ),
+        short_description="JOU/MMC/ADV/PUR courses; visits to Olympiastadion, German media, NFL Germany reps.",
+        tags=["courses", "JOU", "sports communication", "Olympiastadion", "media", "NFL Germany"],
+        priority=2,
+        program="UF in Berlin - Globalizing the NFL",
+        source_name="UF CJC Berlin NFL program page"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="costs",
+        title="Costs & Logistics (NFL in Berlin)",
+        content=(
+            "Program costs include UF tuition (summer rate), a program fee (~$2,000–$3,500 covering "
+            "accommodations, some meals, excursion entries, and group transport), and personal expenses. "
+            "Round-trip airfare to Berlin is typically $700–$1,100. "
+            "Students may use Bright Futures, financial aid, and study abroad scholarships. "
+            "The program is open to all UF undergraduates, not just CJC majors."
+        ),
+        short_description="UF tuition + ~$2,000–$3,500 program fee; open to all UF undergrads.",
+        tags=["costs", "program fee", "Bright Futures", "financial aid", "open enrollment"],
+        priority=3,
+        program="UF in Berlin - Globalizing the NFL",
+        source_name="UF CJC Berlin NFL program page"
+    ),
+]
+
+# ═══════════════════════════════════════════════════════════
+# CJC Switzerland & Austria (Zurich + Vienna)
+# ═══════════════════════════════════════════════════════════
+cjc_switzerland_austria_zurich_tips = [
+    CityTipCreate(
+        city_slug="zurich",
+        category="overview",
+        title="CJC: Global Media in Switzerland & Austria (Zurich)",
+        content=(
+            "This CJC (College of Journalism and Communications) faculty-led program explores global media, "
+            "communications, and journalism across Switzerland and Austria. Students spend time in Zurich and Vienna, "
+            "visiting media organizations, attending lectures, and producing content. "
+            "The program typically runs 2–3 weeks in May 2026 and awards 3 UF GPA credits."
+        ),
+        short_description="2–3 week CJC program in Zurich & Vienna; global media & communications; 3 credits.",
+        tags=["overview", "CJC", "global media", "journalism", "Switzerland", "Austria", "faculty-led"],
+        priority=1,
+        program="CJC: Global Media - Switzerland & Austria 2026",
+        source_name="UF CJC Switzerland/Austria program page"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="academics",
+        title="Coursework & Activities in Zurich (CJC)",
+        content=(
+            "In Zurich, students visit major Swiss media outlets, advertising agencies, and public broadcasting. "
+            "Coursework covers comparative media systems, press freedom, public diplomacy, and digital journalism. "
+            "Students may visit the Internationale Funkausstellung, Tamedia, SRF (Swiss Broadcasting), "
+            "and attend guest lectures on Swiss neutrality and media regulation."
+        ),
+        short_description="Visit Swiss media outlets, SRF, Tamedia; courses on media systems and digital journalism.",
+        tags=["academics", "Swiss media", "SRF", "Tamedia", "digital journalism", "press freedom"],
+        priority=2,
+        program="CJC: Global Media - Switzerland & Austria 2026",
+        source_name="UF CJC Switzerland/Austria program page"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="costs",
+        title="Costs & Logistics (CJC Switzerland & Austria)",
+        content=(
+            "Program costs include UF tuition (summer rate), a program fee (~$3,000–$4,500 covering "
+            "accommodations in both cities, some meals, inter-city travel, and excursion entries), "
+            "and personal spending money. Round-trip airfare typically $800–$1,200. "
+            "Financial aid and study abroad scholarships apply. Open to all UF undergraduates."
+        ),
+        short_description="UF tuition + ~$3,000–$4,500 program fee covering both cities; open to all UF students.",
+        tags=["costs", "program fee", "financial aid", "Zurich", "Vienna", "open enrollment"],
+        priority=3,
+        program="CJC: Global Media - Switzerland & Austria 2026",
+        source_name="UF CJC Switzerland/Austria program page"
+    ),
+]
+
+cjc_switzerland_austria_vienna_tips = [
+    CityTipCreate(
+        city_slug="vienna",
+        category="overview",
+        title="CJC: Global Media in Switzerland & Austria (Vienna)",
+        content=(
+            "The Vienna portion of the CJC program focuses on Austrian media, the role of Vienna "
+            "as a UN/international organization hub, and comparative European press systems. "
+            "Students visit the United Nations Vienna office, Austrian Broadcasting Corporation (ORF), "
+            "and explore how Austria's media landscape differs from the US and Switzerland."
+        ),
+        short_description="Vienna segment: UN office, ORF broadcasting, Austrian media analysis.",
+        tags=["overview", "Vienna", "CJC", "UN", "ORF", "Austrian media"],
+        priority=1,
+        program="CJC: Global Media - Switzerland & Austria 2026",
+        source_name="UF CJC Switzerland/Austria program page"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="academics",
+        title="Media & Communications Activities in Vienna (CJC)",
+        content=(
+            "In Vienna, students attend presentations at the United Nations Information Service, "
+            "visit ORF (Austrian Broadcasting), tour the Ringstraße and Habsburg cultural institutions, "
+            "and compare Austrian and Swiss media regulation. "
+            "The program includes cultural excursions to Schönbrunn Palace, the Belvedere, and Vienna's café culture."
+        ),
+        short_description="UN Information Service, ORF, Habsburg sites; compare Austrian vs Swiss media.",
+        tags=["academics", "UN", "ORF", "Habsburg", "Schönbrunn", "media regulation"],
+        priority=2,
+        program="CJC: Global Media - Switzerland & Austria 2026",
+        source_name="UF CJC Switzerland/Austria program page"
+    ),
+]
+
+# ============================================================================
+# Cities in Civilization (ALS 4404 / ALS 5405) — Multi-city faculty-led program
+# Berlin & Vienna portions
+# ============================================================================
+
+cities_in_civilization_berlin_tips = [
+    CityTipCreate(
+        city_slug="berlin",
+        category="overview",
+        title="Cities in Civilization (ALS 4404) – Program Overview",
+        content=(
+            "Cities in Civilization is a UF faculty-led summer program taught by Dr. James Jawitz (jawitz@ufl.edu). "
+            "The course (ALS 4404 for undergrads, ALS 5405 for grads) covers 6 major European cities in 6 weeks: "
+            "London → Paris → Berlin → Vienna → Florence → Rome. Students earn 6 UF credits while studying "
+            "the evolution of civilization through architecture, art, government, religion, and urban design. "
+            "Estimated cost: $9,754 (includes lodging, some meals, rail pass, museum entries)."
+        ),
+        short_description="6-week, 6-city European tour — 6 credits — taught by Dr. James Jawitz.",
+        tags=["overview", "faculty-led", "multi-city", "summer", "credits", "ALS 4404"],
+        priority=1,
+        program="Cities in Civilization",
+        source_name="UF Cities in Civilization program page"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="academics",
+        title="Berlin Segment – Cities in Civilization",
+        content=(
+            "In Berlin, students explore Germany's complex 20th-century history through "
+            "the Brandenburg Gate, Reichstag, Berlin Wall memorial, Checkpoint Charlie, "
+            "Museum Island, and the Jewish Museum. The program examines how Berlin rebuilt "
+            "itself after WWII and reunification, making it a living case study in urban resilience. "
+            "Students also visit Potsdam's Sanssouci Palace (Prussian royal history)."
+        ),
+        short_description="Brandenburg Gate, Berlin Wall, Museum Island, Reichstag, Potsdam excursion.",
+        tags=["academics", "Berlin", "history", "WWII", "reunification", "Museum Island"],
+        priority=2,
+        program="Cities in Civilization",
+        source_name="UF Cities in Civilization program page"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="eligibility",
+        title="Eligibility & Cost – Cities in Civilization",
+        content=(
+            "Open to all UF students in good standing with a minimum 2.0 GPA. "
+            "No foreign language prerequisite. Estimated cost: $9,754 includes housing, "
+            "Eurail pass, museum admissions, some group meals, and in-country travel. "
+            "UF tuition and airfare are additional. Bright Futures and financial aid can apply."
+        ),
+        short_description="Open to all majors, 2.0+ GPA, ~$9,754 program fee + UF tuition + airfare.",
+        tags=["eligibility", "cost", "GPA", "financial aid", "Bright Futures"],
+        priority=3,
+        program="Cities in Civilization",
+        source_name="UF Cities in Civilization program page"
+    ),
+]
+
+cities_in_civilization_vienna_tips = [
+    CityTipCreate(
+        city_slug="vienna",
+        category="overview",
+        title="Cities in Civilization (ALS 4404) – Vienna Segment",
+        content=(
+            "The Vienna segment of Cities in Civilization examines the Habsburg Empire's influence on European culture. "
+            "Students visit Schönbrunn Palace, the Hofburg, St. Stephen's Cathedral, the Vienna State Opera, "
+            "and Belvedere Museum (home to Klimt's 'The Kiss'). The curriculum covers Vienna's role as a center "
+            "of music (Mozart, Beethoven, Strauss), psychoanalysis (Freud), and the Austro-Hungarian Empire's legacy."
+        ),
+        short_description="Habsburg palaces, Vienna Opera, Klimt, Mozart — cultural capital of Central Europe.",
+        tags=["overview", "Vienna", "Habsburg", "culture", "music", "Klimt", "Mozart"],
+        priority=1,
+        program="Cities in Civilization",
+        source_name="UF Cities in Civilization program page"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="academics",
+        title="Academic Focus in Vienna – Cities in Civilization",
+        content=(
+            "In Vienna, students analyze the city as a crossroads of Eastern and Western European civilization. "
+            "Topics include the Ottoman sieges, the Congress of Vienna (1815), fin-de-siècle art (Secession movement), "
+            "and Austria's transition from empire to republic. Students keep reflective journals and participate "
+            "in group discussions comparing Vienna with London, Paris, and Berlin."
+        ),
+        short_description="Ottoman history, Congress of Vienna, Secession art, empire-to-republic transition.",
+        tags=["academics", "history", "Secession", "Congress of Vienna", "Ottoman", "comparative"],
+        priority=2,
+        program="Cities in Civilization",
+        source_name="UF Cities in Civilization program page"
+    ),
+]
+
+# ============================================================================
+# OWL Construction Management (Detmold/Lemgo) – expanded details
+# ============================================================================
+
+owl_construction_expanded_tips = [
+    CityTipCreate(
+        city_slug="detmold",
+        category="costs",
+        title="OWL Construction Program Costs & Financial Details",
+        content=(
+            "The UF in Detmold - International Construction program costs approximately €2,280 program fee "
+            "plus UF tuition. The program fee covers housing with breakfast, excursions, course materials, "
+            "and some group activities. Students are responsible for airfare, personal meals (except breakfast), "
+            "and spending money. The 4-week duration keeps overall costs lower than semester-long programs."
+        ),
+        short_description="~€2,280 program fee + UF tuition; includes housing with breakfast and excursions.",
+        tags=["costs", "program fee", "housing", "breakfast", "excursions", "budget"],
+        priority=3,
+        program="UF in Detmold - International Construction",
+        source_name="UF Detmold program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="academics",
+        title="TH OWL Lemgo Campus – Partner Institution",
+        content=(
+            "Technische Hochschule Ostwestfalen-Lippe (TH OWL) has campuses in both Detmold and Lemgo. "
+            "The Lemgo campus specializes in engineering and technology. UF construction students may visit "
+            "Lemgo's facilities for specialized labs in digital construction, Building Information Modeling (BIM), "
+            "and sustainable building technology. TH OWL is known for its hands-on, applied research approach."
+        ),
+        short_description="TH OWL Lemgo campus: engineering labs, BIM, sustainable construction tech.",
+        tags=["academics", "TH OWL", "Lemgo", "BIM", "engineering", "sustainability"],
+        priority=2,
+        program="UF in Detmold - International Construction",
+        source_name="TH OWL information"
+    ),
+]
+
+
+# ============================================================================
+# OWL INTERIOR DESIGN PROGRAM (Lemgo) - New detailed tips
+# ============================================================================
+
+owl_interior_design_tips = [
+    CityTipCreate(
+        city_slug="lemgo",
+        category="overview",
+        title="OWL Interior Design Program Overview",
+        content=(
+            "The UF in Lemgo - OWL Interior Design program is a summer program run through Technische "
+            "Hochschule Ostwestfalen-Lippe (TH OWL). Students explore European interior design philosophy, "
+            "sustainability in design, and cultural influences on spatial design. The program runs approximately "
+            "4 weeks during the summer and includes studio work, site visits, and excursions to design studios "
+            "and museums across the region."
+        ),
+        short_description="4-week summer interior design program at TH OWL in Lemgo.",
+        tags=["overview", "interior design", "TH OWL", "summer"],
+        priority=5,
+        program="UF in Lemgo - OWL Interior Design",
+        source_name="UF Lemgo program page"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="academics",
+        title="Interior Design Studio & Coursework",
+        content=(
+            "Students take a design studio course focused on a real-world project, often redesigning or "
+            "reimagining a space in the Lemgo or Detmold area. Coursework includes lectures on European design "
+            "trends, sustainability (Nachhaltigkeit), and Bauhaus influence. Students earn UF credits, typically "
+            "3-6 credits depending on the specific offering. The program integrates German design philosophy "
+            "with hands-on practice."
+        ),
+        short_description="Design studio with real-world projects, 3-6 UF credits, Bauhaus-influenced.",
+        tags=["academics", "studio", "Bauhaus", "credits", "sustainability"],
+        priority=4,
+        program="UF in Lemgo - OWL Interior Design",
+        source_name="UF Lemgo program page"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="costs",
+        title="OWL Interior Design Costs",
+        content=(
+            "Program costs typically include a program fee (approximately €2,000-€2,500) plus UF tuition. "
+            "The program fee usually covers housing, some meals, course materials, and excursion transport. "
+            "Students pay separately for flights, personal meals, and spending money. Lemgo's cost of living "
+            "is considerably lower than larger German cities."
+        ),
+        short_description="~€2,000-€2,500 program fee + UF tuition. Low cost of living in Lemgo.",
+        tags=["costs", "budget", "program fee", "affordable"],
+        priority=3,
+        program="UF in Lemgo - OWL Interior Design",
+        source_name="UF Lemgo program page"
+    ),
+]
+
+
+# ============================================================================
+# HOCHSCHULE OSNABRÜCK BUSINESS INTERNSHIP PROGRAM
+# ============================================================================
+
+osnabruck_business_internship_tips = [
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="overview",
+        title="Hochschule Osnabrück Business Internship Overview",
+        content=(
+            "The UF in Osnabrück - Business Internship program at Hochschule Osnabrück "
+            "(Osnabrück University of Applied Sciences) combines academic coursework with a professional "
+            "internship placement in a German company. Students gain practical work experience in an "
+            "international business environment. The program typically runs for one semester and offers "
+            "both classroom learning and real-world professional development."
+        ),
+        short_description="Semester-long business internship + coursework at Hochschule Osnabrück.",
+        tags=["overview", "internship", "business", "applied sciences"],
+        priority=5,
+        program="UF in Osnabrück - Business Internship",
+        source_name="UF Osnabrück program page"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="academics",
+        title="Business Internship Academic Requirements",
+        content=(
+            "Students take business courses at Hochschule Osnabrück alongside their internship placement. "
+            "Courses are typically taught in English and cover international business, management, and "
+            "European market dynamics. The internship component provides 3-6 credits depending on hours. "
+            "Some German language preparation may be required or recommended before departure."
+        ),
+        short_description="English-taught business courses + internship credits.",
+        tags=["academics", "courses", "english", "internship", "credits"],
+        priority=4,
+        program="UF in Osnabrück - Business Internship",
+        source_name="UF Osnabrück program page"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="housing",
+        title="Housing in Osnabrück",
+        content=(
+            "Students typically live in student housing (Studentenwohnheim) arranged through Hochschule "
+            "Osnabrück or the local Studentenwerk. Rooms are usually single or shared in furnished "
+            "apartments. The campus area is well-connected by bus, and Osnabrück is a very bikeable city. "
+            "Monthly rent is typically €250-€400, making it quite affordable compared to larger cities."
+        ),
+        short_description="Student housing €250-€400/month, bikeable city, good bus connections.",
+        tags=["housing", "studentenwohnheim", "affordable", "bike"],
+        priority=3,
+        program="UF in Osnabrück - Business Internship",
+        source_name="UF Osnabrück program page"
+    ),
+]
+
+
+# ============================================================================
+# SALZBURG EUROPEAN STUDIES PROGRAM
+# ============================================================================
+
+salzburg_european_studies_tips = [
+    CityTipCreate(
+        city_slug="salzburg",
+        category="overview",
+        title="Salzburg European Studies Program Overview",
+        content=(
+            "The UF in Salzburg - European Studies program is a semester or summer program focusing on "
+            "European politics, history, culture, and society. Based in Mozart's birthplace, students study "
+            "at a local partner institution while immersing themselves in Austrian culture. Salzburg's compact "
+            "size, stunning Alpine setting, and proximity to Munich (1.5 hours by train) make it an ideal "
+            "base for exploring Central Europe."
+        ),
+        short_description="European Studies in Mozart's birthplace, Alpine setting, near Munich.",
+        tags=["overview", "european studies", "culture", "Alps"],
+        priority=5,
+        program="UF in Salzburg - European Studies",
+        source_name="UF Salzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="academics",
+        title="European Studies Coursework",
+        content=(
+            "Courses cover European Union politics, Austrian history, comparative government, and cultural "
+            "studies. Many courses incorporate field trips to significant historical sites, including visits "
+            "to nearby concentration camp memorials, EU institutions, and cultural landmarks. Students earn "
+            "12-15 UF credits per semester. Some courses may be taught by local faculty with expertise in "
+            "European affairs."
+        ),
+        short_description="12-15 credits: EU politics, Austrian history, cultural studies with field trips.",
+        tags=["academics", "credits", "EU", "politics", "history", "field trips"],
+        priority=4,
+        program="UF in Salzburg - European Studies",
+        source_name="UF Salzburg program page"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="costs",
+        title="Salzburg Program Costs & Living Expenses",
+        content=(
+            "Salzburg uses the Euro (EUR). As a major tourist city, some areas are pricey, but student "
+            "discounts are widely available. A meal at a local Gasthaus costs €8-€15. The Salzburg Card "
+            "provides free public transport and museum entry. Student housing is typically included in the "
+            "program fee. The city's compact size means most students walk or bike everywhere."
+        ),
+        short_description="Euro currency, student discounts available, walkable city, Salzburg Card recommended.",
+        tags=["costs", "Euro", "student discounts", "walkable", "Salzburg Card"],
+        priority=3,
+        program="UF in Salzburg - European Studies",
+        source_name="UF Salzburg program page"
+    ),
+]
+
+
+# ============================================================================
+# BONN EXCHANGE PROGRAM
+# ============================================================================
+
+bonn_exchange_tips = [
+    CityTipCreate(
+        city_slug="bonn",
+        category="overview",
+        title="University of Bonn Exchange Program Overview",
+        content=(
+            "The UF Exchange at the University of Bonn (Rheinische Friedrich-Wilhelms-Universität Bonn) "
+            "is a semester-long exchange program at one of Germany's most prestigious universities. "
+            "Bonn is the former capital of West Germany and home to major international organizations "
+            "including the United Nations. The university was founded in 1818 and has produced multiple "
+            "Nobel laureates."
+        ),
+        short_description="Semester exchange at prestigious University of Bonn, former German capital.",
+        tags=["overview", "exchange", "Bonn", "prestigious", "UN"],
+        priority=5,
+        program="UF Exchange - Rheinische Friedrich-Wilhelms Universität Bonn",
+        source_name="UF Bonn program page"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="academics",
+        title="Bonn Exchange Academics & Course Selection",
+        content=(
+            "Exchange students can choose from the university's wide course catalog. Many graduate-level "
+            "courses are offered in English, while undergraduate courses are primarily in German (B2 level "
+            "recommended). Popular departments include economics, political science, and natural sciences. "
+            "Students typically earn 15-18 ECTS credits (European Credit Transfer System), which convert "
+            "to approximately 8-10 UF credits."
+        ),
+        short_description="Wide course catalog, English graduate courses, 15-18 ECTS credits typical.",
+        tags=["academics", "exchange", "ECTS", "European Credit Transfer System", "German language"],
+        priority=4,
+        program="UF Exchange - Rheinische Friedrich-Wilhelms Universität Bonn",
+        source_name="UF Bonn program page"
+    ),
+]
+
+
+# ============================================================================
+# BOKU VIENNA (University of Natural Resources and Life Sciences)
+# ============================================================================
+
+boku_vienna_tips = [
+    CityTipCreate(
+        city_slug="vienna",
+        category="overview",
+        title="BOKU Vienna Program Overview",
+        content=(
+            "BOKU (Universität für Bodenkultur Wien / University of Natural Resources and Life Sciences, "
+            "Vienna) offers exchange opportunities for students interested in environmental sciences, "
+            "agriculture, biotechnology, forestry, and sustainable development. Founded in 1872, BOKU is "
+            "Austria's premier life sciences university. The campus combines historic buildings with modern "
+            "research facilities across several locations in Vienna."
+        ),
+        short_description="Austria's top life sciences university: environment, agriculture, biotech.",
+        tags=["overview", "BOKU", "life sciences", "environment", "agriculture"],
+        priority=5,
+        program="UF Exchange - BOKU Vienna",
+        source_name="BOKU Vienna information"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="academics",
+        title="BOKU Academic Programs & Courses",
+        content=(
+            "BOKU offers courses in English at the master's level, covering topics like environmental "
+            "management, food science, biotechnology, and landscape architecture. Undergraduate courses "
+            "are primarily in German. Students earn ECTS credits (European Credit Transfer System). "
+            "BOKU is particularly strong in sustainability research, making it ideal for students in "
+            "environmental engineering, natural resource management, or agricultural sciences."
+        ),
+        short_description="English master's courses, ECTS credits, strong sustainability focus.",
+        tags=["academics", "ECTS", "European Credit Transfer System", "sustainability", "environmental"],
+        priority=4,
+        program="UF Exchange - BOKU Vienna",
+        source_name="BOKU Vienna information"
+    ),
+]
+
+
+# ============================================================================
+# UNIVERSITY OF GRAZ EXCHANGE
+# ============================================================================
+
+graz_tips = [
+    CityTipCreate(
+        city_slug="graz",
+        category="overview",
+        title="University of Graz Exchange Program",
+        content=(
+            "The Karl-Franzens-Universität Graz (University of Graz) is Austria's second-largest university, "
+            "located in the country's second city. Graz is a UNESCO World Heritage city known for its "
+            "Renaissance architecture, vibrant student culture, and affordable living. The University "
+            "of Graz is strong in humanities, social sciences, and natural sciences. "
+            "With over 30,000 students, Graz has a lively student scene with great nightlife, cafés, "
+            "and cultural events. The city is also a gateway to the Alps and only 2.5 hours from Vienna by train."
+        ),
+        short_description="Austria's second-largest university, UNESCO city, vibrant student culture.",
+        tags=["overview", "Graz", "exchange", "UNESCO", "humanities"],
+        priority=3,
+        program="UF Exchange - University of Graz",
+        source_name="University of Graz information"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="academics",
+        title="Academics at University of Graz",
+        content=(
+            "The University of Graz offers a wide range of courses in English at the master's level. "
+            "Strong departments include environmental sciences, law, linguistics, and molecular biology. "
+            "Graz is also home to the Technical University of Graz (TU Graz), which partners with the university. "
+            "ECTS credits transfer to UF. The semester runs from October to January (winter) and March to June (summer)."
+        ),
+        short_description="English master's courses, strong in environmental sciences and law, ECTS credits.",
+        tags=["academics", "ECTS", "environmental sciences", "law", "molecular biology"],
+        priority=2,
+        program="UF Exchange - University of Graz",
+        source_name="University of Graz information"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Living in Graz",
+        content=(
+            "Graz is Austria's second-largest city (~290,000 people) and a UNESCO World Heritage site. "
+            "The historic old town features Renaissance and baroque architecture, the famous Schlossberg hill "
+            "with its clock tower, and Kunsthaus Graz (the 'friendly alien' art museum). "
+            "The Mur River runs through the center. Cost of living is lower than Vienna or Salzburg. "
+            "Graz has excellent public transit and is very bike-friendly."
+        ),
+        short_description="UNESCO city, affordable, bike-friendly, Schlossberg landmark, vibrant arts scene.",
+        tags=["city life", "UNESCO", "affordable", "Schlossberg", "arts", "bike-friendly"],
+        priority=1,
+        program="UF Exchange - University of Graz",
+        source_name="General Graz info"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="housing",
+        title="Housing in Graz",
+        content=(
+            "Student housing in Graz is affordable compared to other Austrian cities. "
+            "OeAD Housing manages rooms for exchange students (€250-€400/month). "
+            "Shared apartments (WGs) are very common and easy to find on platforms like WG-Gesucht. "
+            "Most student neighborhoods are in Geidorf, Leonhard, and St. Leonhard, all within walking distance of the university."
+        ),
+        short_description="Affordable housing €250-€400/month via OeAD; popular WGs near campus.",
+        tags=["housing", "OeAD", "affordable", "WG", "student neighborhoods"],
+        priority=2,
+        program="UF Exchange - University of Graz",
+        source_name="OeAD Housing / University of Graz"
+    ),
+]
+
+
+# ============================================================================
+# UF MUNICH TECHNOLOGY & INNOVATION PROGRAM
+# ============================================================================
+
+munich_tech_innovation_tips = [
+    CityTipCreate(
+        city_slug="munich",
+        category="overview",
+        title="UF Munich Technology & Innovation Program Overview",
+        content=(
+            "The UF in Munich - Technology & Innovation program focuses on Germany's technology ecosystem, "
+            "with visits to major companies like BMW, Siemens, and Munich's thriving startup scene. Students "
+            "study at a partner institution in Munich while participating in company visits, workshops, and "
+            "innovation challenges. Munich is Germany's tech capital with the highest concentration of "
+            "engineering talent in Europe."
+        ),
+        short_description="Tech & innovation program with BMW, Siemens visits in Germany's tech capital.",
+        tags=["overview", "technology", "innovation", "BMW", "Siemens", "startups"],
+        priority=5,
+        program="UF in Munich - Technology Innovation & Entrepreneurship",
+        source_name="UF Munich program page"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="academics",
+        title="Technology & Innovation Coursework",
+        content=(
+            "Courses cover topics like German engineering culture, technology management, innovation "
+            "ecosystems, and European tech policy. Site visits to companies are integrated into the "
+            "curriculum. Students also explore the intersection of traditional German engineering "
+            "(Maschinenbau) and modern digital innovation. Credits typically range from 6-9 UF credits."
+        ),
+        short_description="6-9 credits: engineering culture, tech management, company site visits.",
+        tags=["academics", "credits", "engineering", "tech management", "site visits"],
+        priority=4,
+        program="UF in Munich - Technology Innovation & Entrepreneurship",
+        source_name="UF Munich program page"
+    ),
+]
+
+
+# ============================================================================
+# HOCHSCHULE OSNABRÜCK AG & LIFE SCIENCES
+# ============================================================================
+
+osnabruck_ag_life_tips = [
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="overview",
+        title="Hochschule Osnabrück Agriculture & Life Sciences Overview",
+        content=(
+            "The UF in Osnabrück - Agriculture & Life Sciences program at Hochschule Osnabrück "
+            "(Osnabrück University of Applied Sciences) offers students in agriculture, animal sciences, "
+            "food science, and environmental studies the chance to study German and European approaches to "
+            "these fields. Lower Saxony is Germany's top agricultural state, making Osnabrück an ideal "
+            "location for this program."
+        ),
+        short_description="Agriculture & Life Sciences at Hochschule Osnabrück in Germany's top ag state.",
+        tags=["overview", "agriculture", "life sciences", "applied sciences"],
+        priority=5,
+        program="UF in Osnabrück - Agriculture & Life Sciences",
+        source_name="UF Osnabrück program page"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="academics",
+        title="Agriculture & Life Sciences Coursework",
+        content=(
+            "Courses are taught in English and cover European agricultural policy (Common Agricultural "
+            "Policy / CAP), sustainable farming, food production systems, and animal welfare standards. "
+            "Farm visits and field trips to agricultural research facilities are integral to the program. "
+            "Students typically earn 6-12 credits depending on the program length."
+        ),
+        short_description="English-taught: EU ag policy, sustainable farming, farm visits, 6-12 credits.",
+        tags=["academics", "CAP", "sustainable farming", "field trips", "credits"],
+        priority=4,
+        program="UF in Osnabrück - Agriculture & Life Sciences",
+        source_name="UF Osnabrück program page"
+    ),
+]
+
+
+# ============================================================================
+# WHU VALLENDAR PROGRAM (Additional details)
+# ============================================================================
+
+whu_vallendar_expanded_tips = [
+    CityTipCreate(
+        city_slug="vallendar",
+        category="overview",
+        title="WHU – Otto Beisheim School of Management Overview",
+        content=(
+            "WHU – Otto Beisheim School of Management in Vallendar is one of Germany's and Europe's most "
+            "prestigious business schools. It is triple-accredited (AACSB, EQUIS, AMBA) and consistently "
+            "ranked among Europe's top business schools. The intimate campus sits along the Rhine River near "
+            "Koblenz. WHU is known for its strong entrepreneurship focus, with many graduates founding "
+            "successful companies."
+        ),
+        short_description="Triple-accredited elite business school on the Rhine, strong entrepreneurship focus.",
+        tags=["overview", "WHU", "business school", "accredited", "entrepreneurship", "Rhine"],
+        priority=5,
+        program="UF Exchange - WHU Vallendar",
+        source_name="WHU Otto Beisheim School of Management"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="academics",
+        title="WHU Academic Programs & Courses",
+        content=(
+            "WHU offers exchange spots primarily in its Bachelor of Science in International Business "
+            "Administration and its Master in Management programs. Many courses are taught in English, "
+            "covering finance, strategy, entrepreneurship, and international management. The academic "
+            "calendar follows European semester dates. Students earn ECTS credits (European Credit Transfer "
+            "System). Class sizes are small, fostering close interaction with faculty."
+        ),
+        short_description="English-taught business courses, small classes, ECTS credits.",
+        tags=["academics", "ECTS", "European Credit Transfer System", "business", "finance", "small classes"],
+        priority=4,
+        program="UF Exchange - WHU Vallendar",
+        source_name="WHU Otto Beisheim School of Management"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="housing",
+        title="Living in Vallendar & the Rhine Valley",
+        content=(
+            "Vallendar is a small town (population ~9,000) on the Rhine River, about 7 km from Koblenz. "
+            "Student housing is typically arranged by WHU in local apartments or the student residence. "
+            "The Rhine Valley is a UNESCO World Heritage site with stunning scenery, castles, and wine "
+            "villages. Students often take the train to Koblenz for nightlife, shopping, and dining. "
+            "Rent is quite affordable at €200-€350/month."
+        ),
+        short_description="Small Rhine Valley town, affordable housing €200-€350, near Koblenz.",
+        tags=["housing", "Rhine Valley", "affordable", "Koblenz", "UNESCO"],
+        priority=3,
+        program="UF Exchange - WHU Vallendar",
+        source_name="WHU Otto Beisheim School of Management"
+    ),
+]
+
+
+# ============================================================================
+# EBS UNIVERSITÄT (Additional detail - Graduate focus)
+# ============================================================================
+
+ebs_graduate_tips = [
+    CityTipCreate(
+        city_slug="ebs",
+        category="overview",
+        title="EBS Universität – Graduate Programs",
+        content=(
+            "EBS Universität für Wirtschaft und Recht (EBS University of Business and Law) in Wiesbaden "
+            "is primarily a graduate-level institution for UF exchange students. The university offers "
+            "Master's programs in Management, Finance, Real Estate, and Business Law. The Wiesbaden campus "
+            "is located in a historic villa, and the Oestrich-Winkel campus sits among Rhine vineyards. "
+            "EBS is EQUIS-accredited and known for its strong corporate connections."
+        ),
+        short_description="Graduate-focused business & law, EQUIS-accredited, historic Wiesbaden campus.",
+        tags=["overview", "graduate", "EBS", "business", "law", "EQUIS"],
+        priority=5,
+        program="UF Exchange - EBS Universität (Graduate)",
+        source_name="EBS Universität information"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="academics",
+        title="EBS Graduate Course Offerings",
+        content=(
+            "Graduate exchange students at EBS can choose from courses in corporate finance, strategic "
+            "management, real estate economics, and German business law. Courses are taught in English at "
+            "the Master's level. The university emphasizes case-study methodology and practitioner guest "
+            "lectures. ECTS credits (European Credit Transfer System) are awarded. Small cohort sizes "
+            "ensure personalized attention."
+        ),
+        short_description="English Master's courses: finance, strategy, real estate, law. ECTS credits.",
+        tags=["academics", "graduate", "ECTS", "European Credit Transfer System", "finance", "case study"],
+        priority=4,
+        program="UF Exchange - EBS Universität (Graduate)",
+        source_name="EBS Universität information"
+    ),
+]
+
+# ============================================================================
+# STUTTGART HdM (Hochschule der Medien) — Expanded Program Tips
+# ============================================================================
+stuttgart_hdm_expanded_tips = [
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="overview",
+        title="Hochschule der Medien (HdM) Stuttgart — Program Overview",
+        content=(
+            "HdM welcomes exchange students from around the world each semester, offering a vibrant international "
+            "atmosphere and a wide range of English-taught programs. HdM is perhaps the most CJC-like institution "
+            "in Germany, with a dedication to hands-on learning and a focus on media and communication. Programs "
+            "typically run for one semester and offer 30 ECTS credits (usually equivalent to about 15 UF credits). "
+            "Stuttgart is a modern city in southern Germany known as a manufacturing hub and headquarters to prominent "
+            "companies including Mercedes-Benz and Porsche, who partner with HdM on many student projects. The city "
+            "hosts festivals throughout the year including Frühlingsfest, an early spring event similar to Oktoberfest."
+        ),
+        short_description="CJC-like media university with English-taught programs, 30 ECTS/semester.",
+        tags=["HdM", "CJC", "media", "communication", "ECTS", "exchange", "Stuttgart"],
+        priority=10,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="academics",
+        title="HdM Minor Programs — Advertising & App Design",
+        content=(
+            "Advertising: Covers planning, design, and production of communications in advertising — from 'first idea' "
+            "to visual design to finished product dissemination. Specializations include Analysis & Strategy, Design & "
+            "Advertising, and Publishing & Production. Students learn about all phases of conception, publishing, and "
+            "distribution of printed and digital media, including mobile web apps.\n\n"
+            "App Design & Development: Provides an introduction and practical experience in interaction design and "
+            "front-end development of mobile applications. This Minor focuses on practice-oriented HCI (Human Centred "
+            "Iterative interaction design). Due to the close proximity to the automotive industry in Stuttgart, there "
+            "will be at least one project working directly with an automotive partner."
+        ),
+        short_description="Advertising covers full campaign lifecycle; App Design focuses on HCI and mobile dev with automotive partners.",
+        tags=["advertising", "app design", "HCI", "mobile", "automotive", "minor programs"],
+        priority=5,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="academics",
+        title="HdM Minor Programs — Data, Film & Games",
+        content=(
+            "Data-Driven Consulting: Equips students with cutting-edge skills in consulting projects, emphasizing the "
+            "role of data in deriving actionable business insights. Students learn to navigate consulting engagements, "
+            "manage stakeholder relationships, and leverage advanced analytical tools.\n\n"
+            "Experimental & Nonfiction Film: Explores filmic forms beyond conventional storytelling — experimental cinema, "
+            "documentary film, essay video, immersive environments, and hybrid nonfictional formats.\n\n"
+            "Games Development: Covers history of game development, business aspects, youth protection regulations, "
+            "games design fundamentals, architecture of games systems, and in-depth insight into component functionality."
+        ),
+        short_description="Data consulting, experimental film, and games development minor programs.",
+        tags=["data", "consulting", "film", "games", "minor programs"],
+        priority=5,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="academics",
+        title="HdM Minor Programs — Product Design, Publishing & Journalism",
+        content=(
+            "Integrated Product Design: Responds to the increasingly complex context of product development in an "
+            "interconnected, globalized, and digitalized world. Provides skills for developing future-proof and "
+            "sustainable products and product-service systems.\n\n"
+            "International Publishing: The publishing industry makes more money than TV, radio, film and music combined. "
+            "This program offers an exciting mix of print and digital media, preparing students for the digital "
+            "transformation in publishing.\n\n"
+            "Journalism & Communication Management: For students with content-oriented backgrounds (journalism, "
+            "media, PR, corporate communications). Learn to develop new concepts and strategies addressing core "
+            "audience needs and improve skills in leading innovative teams."
+        ),
+        short_description="Product design, publishing, and journalism & communication management programs.",
+        tags=["product design", "publishing", "journalism", "communication", "minor programs"],
+        priority=5,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="academics",
+        title="HdM Minor Programs — Psychology, Social Media & More",
+        content=(
+            "Media & Business Psychology: Research-driven learning experience exploring how psychology shapes media, "
+            "business, and technology, with real-world applications.\n\n"
+            "Media Creation & Management: Gain inside knowledge in creating and capitalizing media — from having an "
+            "idea, putting it into practice through production, and managing finances.\n\n"
+            "Social Media & Management: Equips you with both online marketing and management skills through "
+            "hands-on content production for social media sites.\n\n"
+            "Storytelling: Discover the hidden secrets of storytelling in film, media, marketing, and everyday life. "
+            "Stories have been shared in every culture for thousands of years — find your story.\n\n"
+            "Visual Communication: Introduction to user interfaces, user-centered design and UX, basic scripting "
+            "languages, and strategic design for socially relevant questions."
+        ),
+        short_description="Psychology, media creation, social media, storytelling, and visual communication minors.",
+        tags=["psychology", "social media", "storytelling", "visual communication", "UX", "minor programs"],
+        priority=5,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="housing",
+        title="HdM Stuttgart — Support & Orientation",
+        content=(
+            "HdM provides comprehensive support to help exchange students settle in smoothly:\n"
+            "• Orientation Week to get familiar with campus life\n"
+            "• HdM Exchange Network for social and academic support\n"
+            "• Assistance with housing and local integration\n\n"
+            "For more information, including program costs, housing information, application details, and other "
+            "resources, visit UFIC Hochschule der Medien.\n\n"
+            "Contacts: UFIC Study Abroad Advisor — Morgan Williams-Franklin; "
+            "CJC Study Abroad Program Director — Dr. Roxanne Coche."
+        ),
+        short_description="Orientation week, exchange network, housing assistance. Contact Morgan Williams-Franklin or Dr. Roxanne Coche.",
+        tags=["housing", "orientation", "support", "contacts", "HdM"],
+        priority=6,
+        program="CJC Exchange - Hochschule der Medien Stuttgart",
+        source_name="UFIC HdM Stuttgart program page"
+    ),
+]
+
+# ============================================================================
+# DETMOLD — UF Interior Design Expanded Tips
+# ============================================================================
+detmold_interior_design_tips = [
+    CityTipCreate(
+        city_slug="detmold",
+        category="overview",
+        title="UF in Lippe — Ostwestfalen-Lippe Interior Design Program Overview",
+        content=(
+            "The program was developed so UF students and TH OWL Interior Architecture, Architecture, and "
+            "Construction Engineering students could benefit from mutual exchange of design knowledge. German "
+            "students from the Detmolder Schule für Architektur und Innenarchitektur participate by enrolling "
+            "in regular UF Interior Design courses, while UF students attend this summer program in Germany.\n\n"
+            "Students attend lectures and visit various locations to observe different design processes, techniques, "
+            "and methods used in Germany. They also learn about German history, government, culture, social norms, "
+            "preservation techniques, restoration efforts, and construction practices. The 6-week program includes "
+            "completion of a design studio project utilizing cutting-edge lab facilities and additional design firm "
+            "and industry tours. All instruction is in English."
+        ),
+        short_description="6-week summer design exchange with TH OWL — studio project, industry tours, all in English.",
+        tags=["interior design", "TH OWL", "Detmold", "summer", "design exchange"],
+        priority=10,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="eligibility",
+        title="Interior Design Program — Eligibility & Requirements",
+        content=(
+            "• Students should study in the College of Design, Construction, and Planning\n"
+            "• Minimum 2.5 GPA required\n"
+            "• Must be in good standing at UF\n"
+            "• Open to non-UF students as well\n\n"
+            "Program runs Summer A 2026. Application deadline: March 2, 2026.\n"
+            "Contacts: Study Abroad Advisor — Morgan Williams-Franklin; "
+            "Program Director — Roberto Rengel (352-294-1397, rrengel@ufl.edu)."
+        ),
+        short_description="College of Design, Construction, and Planning; 2.5+ GPA; open to non-UF students.",
+        tags=["eligibility", "GPA", "design", "construction", "planning"],
+        priority=9,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="academics",
+        title="Interior Design Program — Courses & Credits",
+        content=(
+            "Courses taught by UF faculty. Total: 6 UF GPA credits.\n\n"
+            "Undergraduates:\n"
+            "• IND 4940: Design Field Experience (3 credits)\n"
+            "• IND 4930: Design in Detmold (3 credits)\n\n"
+            "Graduates:\n"
+            "• IND 6941: Design Field Experience (3 credits)\n"
+            "• IND 5937: Design in Detmold (3 credits)\n\n"
+            "The multidisciplinary summer program at TH-OWL in Detmold runs seven weeks over the summer semester. "
+            "Students take an advanced lighting and color course, participate in TH-OWL's design project week, "
+            "get acquainted with the German lighting industry, visit regional design offices, and experience "
+            "German culture. Field trips include regional design offices and showrooms, museums, the Cologne "
+            "cathedral, and a week-long stay in Berlin."
+        ),
+        short_description="6 UF GPA credits — studio, design field experience, lighting & color, Berlin field trip.",
+        tags=["academics", "credits", "IND courses", "lighting", "Berlin trip"],
+        priority=8,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="costs",
+        title="Interior Design Program — Costs & Financial Aid",
+        content=(
+            "A $525 nonrefundable administrative charge is due at application. Remaining payments due 45 days "
+            "before departure (deferrable with financial aid).\n\n"
+            "Three invoices:\n"
+            "1. OWL Program Fee: €1,100 — excursions, travel while in Germany\n"
+            "2. OWL Accommodations with local host: approx. €2,000\n"
+            "3. UF Bursar: Tuition for 6 credits based on residency\n"
+            "Plus: UF International Center health insurance ~$40\n\n"
+            "NOT included: round-trip airfare, some meals, additional personal travel, personal expenses.\n\n"
+            "Financial aid that you would normally receive can typically be applied. Contact SFA at (352) 392-1275 "
+            "or sfa-help@mail.ufl.edu. UFIC also sponsors many study abroad scholarships."
+        ),
+        short_description="$525 admin fee + €1,100 program + €2,000 housing + tuition. Most financial aid applies.",
+        tags=["costs", "financial aid", "scholarships", "tuition", "housing costs"],
+        priority=7,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="housing",
+        title="Interior Design Program — Housing & Location",
+        content=(
+            "Students are housed in dorms at Technische Hochschule Ostwestfalen-Lippe.\n\n"
+            "Lippe is a district in North Rhine-Westphalia. The most prominent cities are Detmold and Lemgo, "
+            "both where TH OWL is located. The district is marked by the Teutoburg Forest, offering countless "
+            "nature opportunities. Attractions include:\n"
+            "• Schieder See — idyllic lake with an amusement park (Funtastico), skate course, and horse park\n"
+            "• Externsteine — mysterious Stone Age rock formation\n"
+            "• Bad Salzuflen — spa town with centuries-old salt water springs"
+        ),
+        short_description="TH OWL dorms in Detmold. Teutoburg Forest, Schieder See, Externsteine nearby.",
+        tags=["housing", "dorms", "Lippe", "Teutoburg Forest", "nature"],
+        priority=6,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="excursions",
+        title="Interior Design Program — Excursions & Experiences",
+        content=(
+            "Excursions include visits to museums, prominent architectural and modern design locations, hiking "
+            "trails, and various landmarks within Detmold and surrounding towns. The field trip schedule also "
+            "includes a week-long stay in Berlin.\n\n"
+            "Students visit regional design offices and showrooms, museums including the Cologne cathedral, and "
+            "experience German cultural sites. The program emphasizes experiential learning — much of the "
+            "education comes from experiencing the places visited firsthand."
+        ),
+        short_description="Museums, architectural sites, Cologne cathedral, week in Berlin, design office tours.",
+        tags=["excursions", "Berlin", "Cologne", "design offices", "museums"],
+        priority=5,
+        program="UF in Lippe - OWL Interior Design",
+        source_name="UFIC OWL Interior Design program page"
+    ),
+]
+
+# ============================================================================
+# JENA — TASSEP Friedrich Schiller Universität Expanded Tips
+# ============================================================================
+jena_tassep_expanded_tips = [
+    CityTipCreate(
+        city_slug="jena",
+        category="overview",
+        title="TASSEP — Friedrich Schiller Universität Jena Program Overview",
+        content=(
+            "The Trans-Atlantic Science Student Exchange Program (TASSEP) is a consortium of member universities "
+            "from the European Union, Canada, and the United States. Through strong academic advising by science "
+            "faculty working in close cooperation with study abroad offices, TASSEP ensures students are properly "
+            "advised about course selection and eases credit transfer.\n\n"
+            "The goal is to permit students to take most of their normal junior-level courses abroad and still "
+            "graduate on time. As an exchange program, TASSEP provides the most affordable means for students to "
+            "study abroad by allowing students to pay their home university's tuition.\n\n"
+            "There are 20 European member institutions. Friedrich Schiller Universität Jena is one of Germany's "
+            "most traditional universities, founded in 1558."
+        ),
+        short_description="TASSEP science exchange — pay UF tuition, take junior-level courses, graduate on time.",
+        tags=["TASSEP", "science", "exchange", "consortium", "affordable"],
+        priority=10,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="eligibility",
+        title="TASSEP Jena — Eligibility & Application",
+        content=(
+            "• Open to all majors\n"
+            "• Minimum 2.5 GPA required\n"
+            "• Must be in good standing at UF\n"
+            "• Language of instruction: German\n"
+            "• Not open to non-UF students\n\n"
+            "Available terms: Fall 2026 (deadline May 4, 2026), Spring 2027 (deadline October 9, 2026), "
+            "or full Academic Year 2027 (deadline May 4, 2026).\n\n"
+            "TASSEP Coordinators: Tammy Davidson (davidson@chem.ufl.edu) and Valeria Kleiman (kleiman@ufl.edu). "
+            "Program Advisor: Morgan Williams-Franklin."
+        ),
+        short_description="All majors, 2.5+ GPA, instruction in German. UF-only. Contact Davidson or Kleiman.",
+        tags=["eligibility", "GPA", "German language", "TASSEP coordinators"],
+        priority=9,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="academics",
+        title="TASSEP Jena — Academics & Fields of Study",
+        content=(
+            "Friedrich Schiller University Jena offers courses across many science disciplines. Eligible fields "
+            "of study include: Astronomy, Biochemistry, Biology, Chemistry, Geological Sciences, Mathematics, "
+            "Microbiology and Cell Science, Physics, and Statistics.\n\n"
+            "The program is classified as UF Exchange, providing UF GPA credit. TASSEP's unique vertical "
+            "curriculum approach addresses the challenge that science students face with large numbers of "
+            "required courses in a standard 4-5 year curriculum.\n\n"
+            "Credit type: UF GPA. College: Liberal Arts and Sciences."
+        ),
+        short_description="Science fields: astronomy, bio, chem, physics, math, stats. UF GPA credit.",
+        tags=["academics", "science", "STEM", "astronomy", "chemistry", "biology", "physics"],
+        priority=8,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="housing",
+        title="TASSEP Jena — Housing",
+        content=(
+            "The Studierendenwerk Thuringia manages 29 residential buildings in Jena with around 3,000 places. "
+            "Most students live in a single room within a shared apartment with 1-8 other students, sharing "
+            "a kitchen and bathroom. There are a few single apartments available.\n\n"
+            "Rental prices: approximately €200-350/month, fixed for 6-month periods. "
+            "The Studierendenwerk requires a €300 deposit after signing the rental agreement."
+        ),
+        short_description="Shared apartments, €200-350/month, €300 deposit. 29 dorm buildings available.",
+        tags=["housing", "dorms", "Studierendenwerk", "shared apartment", "affordable"],
+        priority=7,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="costs",
+        title="TASSEP Jena — Costs & Financial Aid",
+        content=(
+            "As a UF Exchange student, you pay UF tuition for the semester. Housing, meals, and other expenses "
+            "are paid directly to the host university or third parties. A $525 nonrefundable administrative "
+            "charge is due at application.\n\n"
+            "Most financial aid can be applied toward program costs. Contact the Office of Student Financial Aid "
+            "and Scholarships at (352) 392-1275 or sfa-help@mail.ufl.edu.\n\n"
+            "UFIC sponsors a large number of study abroad scholarships for academic year, semester, and summer "
+            "programs. Students who apply for UFIC scholarships are considered for all eligible scholarships."
+        ),
+        short_description="Pay UF tuition + $525 admin fee + housing. Financial aid & UFIC scholarships available.",
+        tags=["costs", "tuition", "financial aid", "scholarships", "UFIC"],
+        priority=6,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="About Jena, Germany",
+        content=(
+            "Jena is a German city known for the Optical Museum displaying vintage Zeiss microscopes and a "
+            "spectacles collection. Planetary projections and musical laser shows take place at the Zeiss "
+            "Planetarium. The Botanical Garden features a tropical greenhouse and medicinal plants.\n\n"
+            "The Karmelitenklosterruine is the remains of a 15th-century monastery. The Saaleradweg cycle path "
+            "follows the Saale River through the city, perfect for weekend bike rides.\n\n"
+            "Jena has a strong student culture — Friedrich Schiller University was founded in 1558 and the city "
+            "revolves around its academic community. Living costs are very affordable compared to Western Germany."
+        ),
+        short_description="Zeiss Planetarium, Botanical Garden, Saale River cycling, affordable student city.",
+        tags=["Jena", "city life", "Zeiss", "planetarium", "cycling", "affordable"],
+        priority=5,
+        program="TASSEP - Friedrich Schiller Universität Jena",
+        source_name="UFIC TASSEP Jena program page"
+    ),
+]

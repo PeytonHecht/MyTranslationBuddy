@@ -21,14 +21,13 @@ const UpdatePassword = () => {
     }
 
     const payload = {
-      email,
+      email: email || localStorage.getItem("email"),
       new_password,
-      confirm_password,
     };
 
     try {
       // Using the Vite proxy to route to your FastAPI backend
-      const response = await fetch("/api/update-password", {
+      const response = await fetch("/api/user/change-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
