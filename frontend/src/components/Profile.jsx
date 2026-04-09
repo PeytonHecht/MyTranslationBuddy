@@ -41,6 +41,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const userEmail = localStorage.getItem("email") || "";
   const mounted = useRef(true);
+  const manageCitiesRef = useRef(null);
 
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -57,6 +58,22 @@ const Profile = () => {
   const [cityFilter, setCityFilter] = useState("");
   const [cityToast, setCityToast] = useState("");
   const [ready, setReady] = useState(false);
+  const scrollToManageCities = () => {
+    setActiveTab("cities"); // First switch to cities tab
+    setTimeout(() => {
+      if (manageCitiesRef.current) {
+        const element = manageCitiesRef.current;
+        const headerOffset = 80; // Adjust this value based on your header height (in pixels)
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    }, 100); // Small delay to ensure tab is rendered
+  };
 
   useEffect(() => {
     mounted.current = true;
@@ -175,23 +192,61 @@ const Profile = () => {
   };
 
   return (
-    <div style={S.page}>
-      {/* NAV */}
-      <header style={S.hdr}>
-        <div style={S.hdrIn}>
-          <div style={S.hdrL} onClick={() => navigate("/")}>
-            <img src={logo} alt="MTB" style={{height:72}}/>
-            <span style={S.brand}>MyTranslationBuddy</span>
-          </div>
-          <nav style={S.nav}>
-            <button onClick={() => navigate("/tips")} style={S.nb}><Compass size={15}/> Explore</button>
-            <button onClick={() => navigate("/reservations")} style={S.nb}><ClipboardList size={15}/> Study</button>
-            <button onClick={() => navigate("/events")} style={S.nb}><Calendar size={15}/> Events</button>
-            <button onClick={() => navigate("/")} style={S.nb}><Home size={15}/> Home</button>
-            <button style={{...S.nb,backgroundColor:"#fff",fontWeight:700,color:"#0021A5",boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}><User size={15}/> Profile</button>
-          </nav>
+  <div style={S.page}>
+    {/* NAV */}
+    <header style={S.hdr}>
+      <div style={S.hdrIn}>
+        <div style={S.hdrL} onClick={() => navigate("/")}>
+          <img src={logo} alt="MTB" style={{height:72}}/>
+          <span style={S.brand}>MyTranslationBuddy</span>
         </div>
-      </header>
+        <nav style={S.nav}>
+          <button 
+            onClick={() => navigate("/tips")} 
+            style={S.nb}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Compass size={15}/> Explore
+          </button>
+          <button 
+            onClick={() => navigate("/reservations")} 
+            style={S.nb}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <ClipboardList size={15}/> Study
+          </button>
+          <button 
+            onClick={() => navigate("/events")} 
+            style={S.nb}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Calendar size={15}/> Events
+          </button>
+          <button 
+            onClick={() => navigate("/")} 
+            style={S.nb}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Home size={15}/> Home
+          </button>
+          <button style={{...S.nb,backgroundColor:"#fff",fontWeight:700,color:"#0021A5",boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}>
+            <User size={15}/> Profile
+          </button>
+          <button 
+            onClick={handleLogout} 
+            style={{...S.nb,color:"#DC2626",marginLeft:"0.25rem"}} 
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}} 
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280";}}
+          >
+            <LogOut size={14}/> Logout
+          </button>
+        </nav>
+      </div>
+    </header>
 
       <main style={S.main}>
         {/* -------- HERO BANNER -------- */}
@@ -217,7 +272,7 @@ const Profile = () => {
                 <span style={S.statLbl}>Phrases</span>
               </div>
               <div style={S.statDiv}/>
-              <div style={S.stat} onClick={() => setActiveTab("cities")}>
+              <div style={S.stat} onClick={scrollToManageCities}>
                 <span style={S.statNum}>{myCities.length}</span>
                 <span style={S.statLbl}>Cities</span>
               </div>
@@ -301,7 +356,7 @@ const Profile = () => {
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.6rem"}}>
                   {[
-                    {num:myCities.length, lbl:"Cities Saved", color:"#0021A5", bg:"#EFF6FF", icon:<MapPin size={14} color="#0021A5"/>, action:()=>{}},
+                    {num:myCities.length, lbl:"Cities Saved", color:"#0021A5", bg:"#EFF6FF", icon:<MapPin size={14} color="#0021A5"/>, action:scrollToManageCities},
                     {num:bookmarkCount, lbl:"Phrases", color:"#7C3AED", bg:"#F5F3FF", icon:<Bookmark size={14} color="#7C3AED"/>, action:()=>setActiveTab("saved")},
                     {num:savedEvents.length, lbl:"Events", color:"#DC2626", bg:"#FEF2F2", icon:<Heart size={14} color="#DC2626"/>, action:()=>setActiveTab("saved")},
                     {num:(()=>{try{const c=JSON.parse(localStorage.getItem("vocabCards")||"[]");return c.filter(v=>v.mastery>=3).length;}catch{return 0;}})(), lbl:"Mastered", color:"#059669", bg:"#ECFDF5", icon:<GraduationCap size={14} color="#059669"/>, action:()=>{}},
@@ -320,7 +375,7 @@ const Profile = () => {
               </div>
             </div>
 
-            <div style={S.card}>
+            <div ref={manageCitiesRef} style={S.card}>
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"1rem",flexWrap:"wrap",gap:"0.5rem"}}>
                 <div>
                   <h3 style={S.cardTitle}>Manage Cities</h3>
@@ -531,7 +586,7 @@ const S = {
   page:{minHeight:"100vh",backgroundColor:"#F5F7FA",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif"},
   /* header */
   hdr:{backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:"1px solid rgba(229,231,235,0.5)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"},
-  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
+  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.2rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
   hdrL:{display:"flex",alignItems:"center",gap:"0.6rem",cursor:"pointer"},
   brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.01em"},
   nav:{display:"flex",gap:"0.15rem",alignItems:"center",background:"#F3F4F6",borderRadius:"0.65rem",padding:"0.2rem"},

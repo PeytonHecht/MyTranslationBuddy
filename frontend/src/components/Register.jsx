@@ -167,8 +167,12 @@ const Register = () => {
               </div>
             </div>
 
-            <p style={S.hint}>Only @ufl.edu emails accepted. Password: 8\u201324 chars, 1 uppercase, 1 lowercase, 1 number.</p>
-
+            <p style={S.hint}>
+              Only @ufl.edu emails accepted.
+              <br />
+              Password: at least 8 characters, 1 uppercase, 1 lowercase, 1 number.
+            </p>
+            
             <button onClick={handleRegister} disabled={isSubmitting} style={{...S.primary, opacity: isSubmitting ? 0.7 : 1}}>
               {isSubmitting ? "Creating account..." : "Create Account"} <ArrowRight size={16}/>
             </button>

@@ -6,7 +6,7 @@ import {
   Calendar, Sparkles, Compass, ClipboardList, ChevronRight,
   GraduationCap, Languages, Map as MapIcon, Star, User, Info, X,
   Search, ChevronDown, Train, ExternalLink, Plane, Clock,
-  DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen
+  DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen, LogOut
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
 
@@ -244,6 +244,11 @@ const LandingPage = () => {
   const [myCityDropdown, setMyCityDropdown] = useState(false);
   const routeLayerRef = useRef(null);
 
+  const [routeFrom, setRouteFrom] = useState("");
+  const [routeTo, setRouteTo] = useState("");
+  const [showRouteFinder, setShowRouteFinder] = useState(false);
+  const [foundRoute, setFoundRoute] = useState(null); 
+
   const readUserData = () => ({
     email: localStorage.getItem("email") || "",
     name: localStorage.getItem("full_name") || "",
@@ -445,8 +450,16 @@ const LandingPage = () => {
     const map = mapInstanceRef.current;
     const layer = routeLayerRef.current;
     if (!map || !layer) return;
-    if (showRoutes && !map.hasLayer(layer)) layer.addTo(map);
-    else if (!showRoutes && map.hasLayer(layer)) map.removeLayer(layer);
+    if (showRoutes && !map.hasLayer(layer)) {
+    layer.addTo(map);
+    // Remove temporary highlight line if it exists
+    if (window._tempRouteLine) {
+      map.removeLayer(window._tempRouteLine);
+      window._tempRouteLine = null;
+    }
+    } else if (!showRoutes && map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
   }, [showRoutes]);
 
   const flyToCity = useCallback((slug) => {
@@ -456,7 +469,16 @@ const LandingPage = () => {
     map.flyTo([city.lat, city.lng], 13, { duration: 1.5 });
     setMapSearch("");
     const el = document.getElementById("mtb-map");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el) {
+      const headerOffset = 50; 
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      }); 
+    }
   }, []);
 
   const flyToCountry = useCallback((code) => {
@@ -464,6 +486,90 @@ const LandingPage = () => {
     const bounds = { DE: [[47.2,5.8],[55.1,15.1]], AT: [[46.3,9.5],[49.0,17.2]], CH: [[45.8,5.9],[47.9,10.5]] };
     if (bounds[code]) map.flyToBounds(bounds[code], { duration: 1.2, padding: [30,30] });
   }, []);
+
+  const findRoute = () => {
+    if (!routeFrom || !routeTo) return;
+    
+    // Try direct route
+    let route = TRAVEL_ROUTES.find(r => 
+      (r.from === routeFrom && r.to === routeTo)
+    );
+    
+    // Try reverse direction
+    if (!route) {
+      route = TRAVEL_ROUTES.find(r => 
+        r.from === routeTo && r.to === routeFrom
+      );
+    }
+    
+    if (route) {
+      setFoundRoute(route);
+      
+      const fromCity = CITY_COORDS.find(c => c.slug === route.from);
+      const toCity = CITY_COORDS.find(c => c.slug === route.to);
+      
+      if (fromCity && toCity && mapInstanceRef.current) {
+        // Remove any existing temporary route line
+        if (window._tempRouteLine) {
+          mapInstanceRef.current.removeLayer(window._tempRouteLine);
+        }
+        
+        const isFree = isStudentFree(route);
+        
+        // Create the flashy dotted line (same as train connections)
+        const line = L.polyline([[fromCity.lat, fromCity.lng], [toCity.lat, toCity.lng]], {
+          color: isFree ? "#10B981" : "#FA4616",
+          weight: 3,
+          opacity: 0.9,
+          dashArray: "8, 8",
+          className: "mtb-route"  // This adds the flashy animation
+        });
+        
+        // Add pulsing effect with a second line underneath
+        const pulseLine = L.polyline([[fromCity.lat, fromCity.lng], [toCity.lat, toCity.lng]], {
+          color: isFree ? "#10B981" : "#FA4616",
+          weight: 5,
+          opacity: 0.3,
+          className: "mtb-route-pulse"
+        });
+        
+        line.bindTooltip(`
+          <div style="font-family:Inter,system-ui,sans-serif;padding:8px 10px;text-align:center">
+            <strong style="font-size:0.82rem;color:#111827">${fromCity.name} → ${toCity.name}</strong>
+            <div style="display:flex;gap:8px;justify-content:center;margin-top:4px;font-size:0.72rem;color:#4B5563">
+              <span>⏱ ${route.time}</span>
+              <span style="${isFree ? 'color:#059669;font-weight:600' : ''}">${isFree ? '🎓 Free' : route.price}</span>
+            </div>
+            ${route.type ? `<div style="font-size:0.65rem;color:#6B7280;margin-top:3px">${route.type}</div>` : ''}
+            ${isFree ? '<div style="font-size:0.62rem;color:#059669;font-weight:600;margin-top:4px;background:#ECFDF5;padding:2px 6px;border-radius:4px;display:inline-block">✓ Included w/ Student Train Pass</div>' : ''}
+          </div>
+        `, { sticky: true, className: "city-tooltip" });
+        
+        // Add both layers
+        pulseLine.addTo(mapInstanceRef.current);
+        line.addTo(mapInstanceRef.current);
+        
+        // Store both layers for cleanup
+        window._tempRouteLine = { line, pulseLine };
+        
+        // Fly to show the route
+        const bounds = L.latLngBounds([fromCity.lat, fromCity.lng], [toCity.lat, toCity.lng]);
+        mapInstanceRef.current.fitBounds(bounds, { padding: [50, 50], duration: 1.5 });
+        
+        // Auto-remove after 8 seconds
+        setTimeout(() => {
+          if (window._tempRouteLine && mapInstanceRef.current) {
+            mapInstanceRef.current.removeLayer(window._tempRouteLine.line);
+            mapInstanceRef.current.removeLayer(window._tempRouteLine.pulseLine);
+            window._tempRouteLine = null;
+          }
+        }, 8000);
+      }
+    } else {
+      setFoundRoute(null);
+      alert("No direct route found between these cities. Try a different combination!");
+    }
+  };
 
   const getPhraseRegionInfo = () => {
     if(!phraseOfDay?.city_slugs?.length) return null;
@@ -480,18 +586,65 @@ const LandingPage = () => {
   const atCities = CITY_COORDS.filter(c=>c.country==="AT").length;
   const chCities = CITY_COORDS.filter(c=>c.country==="CH").length;
 
+  const handleLogout = async () => {
+    try { 
+      if (userEmail) {
+        await axios.post("/api/logout", { email: userEmail });
+      }
+    } catch(err) {
+      console.error("Logout error:", err);
+    }
+    localStorage.removeItem("email"); 
+    localStorage.removeItem("full_name"); 
+    localStorage.removeItem("study_abroad_city");
+    navigate("/login");
+  };
+
   return (
     <div style={S.page}>
       {/* HEADER */}
       <header style={S.hdr}><div style={S.hdrIn}>
         <div style={S.hdrL} onClick={()=>navigate("/")}><img src={logo} alt="MTB" style={{height:72}}/><span style={S.brand}>MyTranslationBuddy</span></div>
-        <nav style={S.nav}>
-          {[{path:"/tips",icon:<Compass size={15}/>,label:"Explore"},{path:"/reservations",icon:<ClipboardList size={15}/>,label:"Study"},{path:"/events",icon:<Calendar size={15}/>,label:"Events"},{path:"/",icon:<MapPin size={15}/>,label:"Home"}].map(({path,icon,label})=>{
-            const active = isActive(path);
-            return <button key={path} onClick={()=>navigate(path)} style={{...S.nb,...(active?S.nbActive:{})}}>{icon} {label}</button>;
-          })}
-          {userEmail ? <button onClick={()=>navigate("/profile")} style={S.nbA}><User size={14}/> Profile</button> : <button onClick={()=>navigate("/login")} style={S.nbA}>Sign In</button>}
-        </nav>
+      <nav style={S.nav}>
+        {[{path:"/tips",icon:<Compass size={15}/>,label:"Explore"},{path:"/reservations",icon:<ClipboardList size={15}/>,label:"Study"},{path:"/events",icon:<Calendar size={15}/>,label:"Events"},{path:"/",icon:<MapPin size={15}/>,label:"Home"}].map(({path,icon,label})=>{
+          const active = isActive(path);
+          return (
+            <button 
+              key={path} 
+              onClick={()=>navigate(path)} 
+              style={{...S.nb,...(active?S.nbActive:{})}}
+              onMouseEnter={e=>{
+                if(!active){
+                  e.currentTarget.style.backgroundColor="#dfdfdf";
+                  e.currentTarget.style.color="#0021A5";
+                  e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";
+                }
+              }}
+              onMouseLeave={e=>{
+                if(!active){
+                  e.currentTarget.style.backgroundColor="transparent";
+                  e.currentTarget.style.color="#6B7280";
+                  e.currentTarget.style.boxShadow="none";
+                }
+              }}
+            >
+              {icon} {label}
+            </button>
+          );
+        })}
+        {userEmail ? (
+          <>
+            <button onClick={()=>navigate("/profile")} style={S.nbA}><User size={14}/> Profile</button>
+            <button onClick={handleLogout} style={{...S.nb, color:"#DC2626", marginLeft:"0.25rem"}} 
+              onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}} 
+              onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280";}}>
+              <LogOut size={14}/> Logout
+            </button>
+          </>
+        ) : (
+          <button onClick={()=>navigate("/login")} style={S.nbA}>Sign In</button>
+        )}
+      </nav>
       </div></header>
 
       {/* HERO */}
@@ -557,35 +710,137 @@ const LandingPage = () => {
       {/* MAP — full-bleed, no robotic header */}
       <section id="mtb-map" style={S.mapSection}>
         {/* Floating toolbar */}
-        <div style={S.mapToolbar}>
-          <div style={S.mapSearchWrap}>
-            <Search size={14} color="#9CA3AF"/>
-            <input value={mapSearch} onChange={e=>setMapSearch(e.target.value)} placeholder={userCities.length > 0 ? 'Search or type "my"' : 'Search cities...'} style={S.mapSearchInput}/>
-            {mapSearch && (
-              <div style={S.mapSearchDrop}>
-                {/* Show user's pinned cities at the top */}
-                {userCities.length > 0 && mapSearch.toLowerCase() === "my" && (
-                  <div style={{padding:"0.35rem 0.75rem",fontSize:"0.65rem",fontWeight:700,color:"#6B7280",textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:"1px solid #F3F4F6"}}>📌 Your Cities</div>
-                )}
-                {userCities.length > 0 && mapSearch.toLowerCase().startsWith("my") && (
-                  userCities.map(slug => {
-                    const c = CITY_COORDS.find(cc => cc.slug === slug);
-                    if (!c) return null;
-                    return (
-                      <div key={c.slug} onClick={() => { flyToCity(c.slug); setMapSearch(""); }} style={{...S.mapSearchItem, backgroundColor:"#F0FDF4"}}>
-                        {PIN_EMOJI[c.country]} {c.name} <span style={{color:"#059669",fontSize:"0.7rem",fontWeight:600}}>📌 Saved</span>
-                      </div>
-                    );
-                  })
-                )}
-                {CITY_COORDS.filter(c => c.name.toLowerCase().includes(mapSearch.toLowerCase()) && !mapSearch.toLowerCase().startsWith("my")).slice(0,5).map(c => (
-                  <div key={c.slug} onClick={() => { flyToCity(c.slug); setMapSearch(""); }} style={S.mapSearchItem}>
-                    {PIN_EMOJI[c.country]} {c.name} <span style={{color:"#9CA3AF",fontSize:"0.7rem"}}>{"\u00B7"} {c.uni?.split(",")[0]}</span>
-                  </div>
+      <div style={S.mapToolbar}>
+        <div style={S.mapSearchWrap}>
+          <Search size={14} color="#9CA3AF"/>
+          <input value={mapSearch} onChange={e=>setMapSearch(e.target.value)} placeholder={userCities.length > 0 ? 'Search or type "my"' : 'Search cities...'} style={S.mapSearchInput}/>
+          {mapSearch && (
+            <div style={S.mapSearchDrop}>
+              {/* Show user's pinned cities at the top */}
+              {userCities.length > 0 && mapSearch.toLowerCase() === "my" && (
+                <div style={{padding:"0.35rem 0.75rem",fontSize:"0.65rem",fontWeight:700,color:"#6B7280",textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:"1px solid #F3F4F6"}}>📌 Your Cities</div>
+              )}
+              {userCities.length > 0 && mapSearch.toLowerCase().startsWith("my") && (
+                userCities.map(slug => {
+                  const c = CITY_COORDS.find(cc => cc.slug === slug);
+                  if (!c) return null;
+                  return (
+                    <div key={c.slug} onClick={() => { flyToCity(c.slug); setMapSearch(""); }} style={{...S.mapSearchItem, backgroundColor:"#F0FDF4"}}>
+                      {PIN_EMOJI[c.country]} {c.name} <span style={{color:"#059669",fontSize:"0.7rem",fontWeight:600}}>📌 Saved</span>
+                    </div>
+                  );
+                })
+              )}
+              {CITY_COORDS.filter(c => c.name.toLowerCase().includes(mapSearch.toLowerCase()) && !mapSearch.toLowerCase().startsWith("my")).slice(0,5).map(c => (
+                <div key={c.slug} onClick={() => { flyToCity(c.slug); setMapSearch(""); }} style={S.mapSearchItem}>
+                  {PIN_EMOJI[c.country]} {c.name} <span style={{color:"#9CA3AF",fontSize:"0.7rem"}}>{"\u00B7"} {c.uni?.split(",")[0]}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* Route Finder Section */}
+        <div style={{position:"relative"}}>
+          <button onClick={() => setShowRouteFinder(!showRouteFinder)} style={{
+            ...S.routeToggle,
+            ...(showRouteFinder ? {backgroundColor:"rgba(250,70,22,0.08)",color:"#FA4616",borderColor:"rgba(250,70,22,0.35)"} : {})
+          }}>
+            <Train size={14}/> Plan Trip
+          </button>
+          
+          {showRouteFinder && (
+            <div style={{
+              position:"absolute",
+              top:"100%",
+              left:0,
+              marginTop:"0.5rem",
+              backgroundColor:"#fff",
+              borderRadius:"0.75rem",
+              border:"1px solid #E5E7EB",
+              boxShadow:"0 8px 24px rgba(0,0,0,0.12)",
+              padding:"0.75rem",
+              minWidth:"280px",
+              zIndex:1000
+            }}>
+              <div style={{fontSize:"0.7rem",fontWeight:700,color:"#374151",marginBottom:"0.5rem"}}>Find a Direct Train Connection</div>
+              
+              <select value={routeFrom} onChange={(e) => setRouteFrom(e.target.value)} style={{
+                width:"100%",
+                padding:"0.4rem 0.6rem",
+                borderRadius:"0.5rem",
+                border:"1px solid #E5E7EB",
+                fontSize:"0.75rem",
+                marginBottom:"0.5rem",
+                backgroundColor:"#fff"
+              }}>
+                <option value="">From: Select city</option>
+                {CITY_COORDS.map(city => (
+                  <option key={city.slug} value={city.slug}>{PIN_EMOJI[city.country]} {city.name}</option>
                 ))}
-              </div>
-            )}
-          </div>
+              </select>
+              
+              <select value={routeTo} onChange={(e) => setRouteTo(e.target.value)} style={{
+                width:"100%",
+                padding:"0.4rem 0.6rem",
+                borderRadius:"0.5rem",
+                border:"1px solid #E5E7EB",
+                fontSize:"0.75rem",
+                marginBottom:"0.5rem",
+                backgroundColor:"#fff"
+              }}>
+                <option value="">To: Select city</option>
+                {CITY_COORDS.map(city => (
+                  <option key={city.slug} value={city.slug}>{PIN_EMOJI[city.country]} {city.name}</option>
+                ))}
+              </select>
+              
+              <button onClick={findRoute} style={{
+                width:"100%",
+                padding:"0.4rem",
+                borderRadius:"0.5rem",
+                border:"none",
+                background:"linear-gradient(135deg,#0021A5,#003087)",
+                color:"#fff",
+                cursor:"pointer",
+                fontSize:"0.75rem",
+                fontWeight:600,
+                marginBottom:"0.5rem"
+              }}>
+                Find Route
+              </button>
+              
+              {foundRoute && (
+                <div style={{
+                  backgroundColor:"#ECFDF5",
+                  border:"1px solid #A7F3D0",
+                  borderRadius:"0.5rem",
+                  padding:"0.5rem",
+                  marginTop:"0.5rem"
+                }}>
+                  <div style={{fontSize:"0.7rem",fontWeight:700,color:"#065F46",marginBottom:"0.25rem"}}>✓ Route Found!</div>
+                  <div style={{fontSize:"0.7rem",color:"#064E3B"}}>
+                    <div>🚂 {foundRoute.type || "Train"}</div>
+                    <div>⏱️ {foundRoute.time}</div>
+                    <div>{isStudentFree(foundRoute) ? "🎓 FREE with Student Pass" : `💰 ${foundRoute.price}`}</div>
+                  </div>
+                </div>
+              )}
+              
+              {foundRoute === null && routeFrom && routeTo && (
+                <div style={{
+                  backgroundColor:"#FEF2F2",
+                  border:"1px solid #FECACA",
+                  borderRadius:"0.5rem",
+                  padding:"0.5rem",
+                  marginTop:"0.5rem"
+                }}>
+                  <div style={{fontSize:"0.7rem",color:"#991B1B"}}>No direct route found. Try a different combination!</div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
           <div style={S.flyBtns}>
             {[{code:"DE",flag:"\uD83C\uDDE9\uD83C\uDDEA"},{code:"AT",flag:"\uD83C\uDDE6\uD83C\uDDF9"},{code:"CH",flag:"\uD83C\uDDE8\uD83C\uDDED"}].map(c => (
               <button key={c.code} onClick={()=>flyToCountry(c.code)} style={S.flyBtn}>{c.flag}</button>
@@ -1040,7 +1295,7 @@ const LandingPage = () => {
 const S = {
   page:{minHeight:"100vh",backgroundColor:"#F9FAFB",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif"},
   hdr:{backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderBottom:"1px solid rgba(229,231,235,0.5)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.04)"},
-  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.5rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
+  hdrIn:{maxWidth:1280,margin:"0 auto",padding:"0.2rem 2rem",display:"flex",justifyContent:"space-between",alignItems:"center"},
   hdrL:{display:"flex",alignItems:"center",gap:"0.6rem",cursor:"pointer"},
   brand:{fontSize:"1.05rem",fontWeight:800,color:"#0021A5",letterSpacing:"-0.01em"},
   nav:{display:"flex",gap:"0.15rem",alignItems:"center",flexWrap:"wrap",background:"#F3F4F6",borderRadius:"0.65rem",padding:"0.2rem"},
@@ -1061,7 +1316,7 @@ const S = {
   picksScroll:{display:"flex",gap:"0.75rem",overflowX:"auto",paddingBottom:"0.75rem"},
   pickCard:{display:"flex",alignItems:"center",gap:"0.75rem",padding:"1rem 1.25rem",backgroundColor:"#fff",borderRadius:"1rem",border:"1px solid #E5E7EB",boxShadow:"0 4px 20px rgba(0,0,0,0.06)",cursor:"pointer",minWidth:220,transition:"all 0.25s ease",flexShrink:0},
   mapSection:{position:"relative",margin:"2rem 0 0"},
-  mapToolbar:{position:"absolute",top:"1rem",left:"1rem",right:"auto",display:"flex",alignItems:"center",gap:"0.4rem",zIndex:500,padding:"0.5rem 0.65rem",backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",borderRadius:"0.85rem",border:"1px solid rgba(229,231,235,0.6)",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"},
+  mapToolbar:{position:"absolute",top:".75rem",left:"1rem",right:"auto",display:"flex",alignItems:"center",gap:"0.4rem",zIndex:500,padding:"0.5rem 0.65rem",backgroundColor:"rgba(255,255,255,0.92)",backdropFilter:"blur(16px)",borderRadius:"0.85rem",border:"1px solid rgba(229,231,235,0.6)",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"},
   mapSearchWrap:{position:"relative",display:"flex",alignItems:"center",gap:"0.35rem",padding:"0.35rem 0.65rem",border:"1px solid #E5E7EB",borderRadius:"0.5rem",backgroundColor:"rgba(249,250,251,0.8)",minWidth:160},
   mapSearchInput:{border:"none",outline:"none",fontSize:"0.78rem",backgroundColor:"transparent",width:110,color:"#374151"},
   mapSearchDrop:{position:"absolute",top:"100%",left:0,right:0,marginTop:4,backgroundColor:"#fff",border:"1px solid #E5E7EB",borderRadius:"0.6rem",boxShadow:"0 8px 24px rgba(0,0,0,0.12)",zIndex:100,overflow:"hidden"},
@@ -1069,11 +1324,11 @@ const S = {
   flyBtns:{display:"flex",gap:"0.25rem"},
   flyBtn:{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.25rem",padding:"0.35rem 0.55rem",border:"1px solid #E5E7EB",borderRadius:"0.5rem",backgroundColor:"#fff",cursor:"pointer",fontSize:"0.75rem",fontWeight:600,color:"#374151",transition:"all 0.2s ease",whiteSpace:"nowrap"},
   routeToggle:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.35rem 0.65rem",border:"1.5px solid #E5E7EB",borderRadius:"0.5rem",backgroundColor:"#fff",cursor:"pointer",fontSize:"0.75rem",fontWeight:600,color:"#374151",transition:"all 0.2s ease",whiteSpace:"nowrap"},
-  mapLegend:{position:"absolute",bottom:"1rem",left:"1rem",display:"flex",gap:"0.6rem",zIndex:500,padding:"0.4rem 0.65rem",backgroundColor:"rgba(255,255,255,0.88)",backdropFilter:"blur(12px)",borderRadius:"0.6rem",border:"1px solid rgba(229,231,235,0.5)",boxShadow:"0 2px 10px rgba(0,0,0,0.06)"},
+  mapLegend:{position:"absolute",bottom:".75rem",left:"1rem",display:"flex",gap:"0.6rem",zIndex:500,padding:"0.4rem 0.65rem",backgroundColor:"rgba(255,255,255,0.88)",backdropFilter:"blur(12px)",borderRadius:"0.6rem",border:"1px solid rgba(229,231,235,0.5)",boxShadow:"0 2px 10px rgba(0,0,0,0.06)"},
   legI:{display:"flex",alignItems:"center",gap:"0.25rem",fontSize:"0.68rem",color:"#374151",fontWeight:500},
   legD:{width:9,height:9,borderRadius:"50%",display:"inline-block"},
-  mapW:{width:"100%",height:"80vh",minHeight:600,zIndex:1},
-  cityPanel:{position:"absolute",top:"1rem",right:"1rem",width:320,maxHeight:"calc(100% - 2rem)",overflowY:"auto",backgroundColor:"rgba(255,255,255,0.97)",backdropFilter:"blur(16px)",borderRadius:"1rem",border:"1px solid #E5E7EB",boxShadow:"0 16px 48px rgba(0,0,0,0.18)",padding:"1.25rem",zIndex:500,animation:"slideUp 0.3s ease-out"},
+  mapW:{width:"100%",height:"65vh",minHeight:500,zIndex:1},
+  cityPanel:{position:"absolute",top:".75rem",right:"1rem",width:320,maxHeight:"calc(100% - 2rem)",overflowY:"auto",backgroundColor:"rgba(255,255,255,0.97)",backdropFilter:"blur(16px)",borderRadius:"1rem",border:"1px solid #E5E7EB",boxShadow:"0 16px 48px rgba(0,0,0,0.18)",padding:"1.25rem",zIndex:500,animation:"slideUp 0.3s ease-out"},
   cityPanelX:{position:"absolute",top:"0.6rem",right:"0.6rem",background:"#F3F4F6",border:"none",borderRadius:"50%",width:28,height:28,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:"#6B7280",transition:"all 0.15s"},
   cpRow:{display:"flex",alignItems:"center",gap:"0.35rem",marginBottom:"0.5rem"},
   cpVibe:{display:"flex",alignItems:"center",gap:"0.3rem",fontSize:"0.75rem",color:"#6B7280",marginBottom:"0.6rem",padding:"0.35rem 0.6rem",backgroundColor:"#F9FAFB",borderRadius:"0.5rem",border:"1px solid #F3F4F6"},
