@@ -10,6 +10,7 @@ import OAuthAuthenticate from './components/OAuthAuthenticate.jsx';
 import DialectTips from "./components/DialectTips.jsx";
 import EventDetail from "./components/EventDetail.jsx";
 import Reservations from "./components/Reservations.jsx";
+import TranslateWidget from "./components/TranslateWidget.jsx";
 
 function App() {
   return (
@@ -20,18 +21,16 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/update-password" element={<UpdatePassword />} />
-
         <Route path="/oauth-callback" element={<OAuthAuthenticate />} />
         <Route path="/events" element={<Events />} />
         <Route path="/event-details/:event_id" element={<EventDetail />} />
-
-        {/* Core MyTranslationBuddy Features */}
         <Route path="/tracking" element={<Navigate to="/reservations" replace />} />
         <Route path="/reservations" element={<Reservations />} />
         <Route path="/tips" element={<DialectTips />} />
-        {/* Saved phrases now live inside Study Hub */}
         <Route path="/saved" element={<Navigate to="/reservations?tab=saved" replace />} />
       </Routes>
+
+      <TranslateWidget />
     </Router>
   );
 }
