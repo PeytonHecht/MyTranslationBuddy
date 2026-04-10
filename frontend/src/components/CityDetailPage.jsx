@@ -16,8 +16,14 @@ import {
   ArrowLeft,
   Loader,
   AlertTriangle,
-  ExternalLink
+  ExternalLink,
+  LogOut,
+  Compass,
+  ClipboardList,
+  Calendar,
+  User
 } from 'lucide-react';
+import logo from '../assets/MTBLogo.png';
 import '../styles/CityDetailPage.css';
 
 const CityDetailPage = () => {
@@ -30,6 +36,22 @@ const CityDetailPage = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [relatedPhrases, setRelatedPhrases] = useState({});
 
+  const userEmail = localStorage.getItem("email") || "";  // Changed from null to ""
+
+  const handleLogout = async () => {
+    try { 
+      if (userEmail) {
+        await axios.post("/api/logout", { email: userEmail });
+      }
+    } catch(err) {
+      console.error("Logout error:", err);
+    }
+    localStorage.removeItem("email"); 
+    localStorage.removeItem("full_name"); 
+    localStorage.removeItem("study_abroad_city");
+    navigate("/login");
+  };
+  
   useEffect(() => {
     const fetchCityData = async () => {
       try {
@@ -98,6 +120,33 @@ const CityDetailPage = () => {
 
   return (
     <div className="city-detail-page">
+      {/* NAVBAR */}
+      <header style={styles.header}>
+        <div style={styles.headerInner}>
+          <div style={styles.headerLeft} onClick={() => navigate("/")}>
+            <img src={logo} alt="MTB" style={{ height: 55 }} />
+            <span style={styles.brand}>MyTranslationBuddy</span>
+          </div>
+          <nav style={styles.nav}>
+            <button onClick={() => navigate("/tips")} style={styles.navBtn}><Compass size={15}/> Explore</button>
+            <button onClick={() => navigate("/reservations")} style={styles.navBtn}><ClipboardList size={15}/> Study</button>
+            <button onClick={() => navigate("/events")} style={styles.navBtn}><Calendar size={15}/> Events</button>
+            <button onClick={() => navigate("/")} style={styles.navBtn}><Home size={15}/> Home</button>
+            {localStorage.getItem("email") ? (
+              <>
+                <button onClick={() => navigate("/profile")} style={styles.profileBtn}><User size={14}/> Profile</button>
+                <button onClick={handleLogout} style={{...styles.navBtn, color:"#DC2626", marginLeft:"0.25rem"}} 
+                  onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}} 
+                  onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280";}}>
+                  <LogOut size={14}/> Logout
+                </button>
+              </>
+            ) : (
+              <button onClick={() => navigate("/login")} style={styles.profileBtn}>Sign In</button>
+            )}
+          </nav>
+        </div>
+      </header>
       {/* Header */}
       <div className="city-header" style={{
         backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4))`,
@@ -500,6 +549,78 @@ const CityDetailPage = () => {
       </div>
     </div>
   );
+};
+
+const styles = {
+  header: {
+    backgroundColor: "rgba(255,255,255,0.92)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderBottom: "1px solid rgba(229,231,235,0.5)",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+    boxShadow: "0 1px 3px rgba(0,0,0,0.04)"
+  },
+  headerInner: {
+    maxWidth: 1280,
+    margin: "0 auto",
+    padding: "0.2rem 2rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  headerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.6rem",
+    cursor: "pointer"
+  },
+  brand: {
+    fontSize: "1.05rem",
+    fontWeight: 800,
+    color: "#0021A5",
+    letterSpacing: "-0.01em"
+  },
+  nav: {
+    display: "flex",
+    gap: "0.15rem",
+    alignItems: "center",
+    flexWrap: "wrap",
+    background: "#F3F4F6",
+    borderRadius: "0.65rem",
+    padding: "0.2rem"
+  },
+  navBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.3rem",
+    padding: "0.45rem 0.85rem",
+    border: "none",
+    borderRadius: "0.5rem",
+    backgroundColor: "transparent",
+    color: "#6B7280",
+    cursor: "pointer",
+    fontSize: "0.78rem",
+    fontWeight: 500,
+    transition: "all 0.2s"
+  },
+  profileBtn: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.3rem",
+    padding: "0.45rem 1.1rem",
+    border: "none",
+    borderRadius: "0.5rem",
+    background: "linear-gradient(135deg,#FA4616,#FF6B35)",
+    color: "#fff",
+    cursor: "pointer",
+    fontSize: "0.78rem",
+    fontWeight: 700,
+    letterSpacing: "0.02em",
+    boxShadow: "0 2px 8px rgba(250,70,22,0.25)",
+    marginLeft: "0.35rem"
+  }
 };
 
 export default CityDetailPage;

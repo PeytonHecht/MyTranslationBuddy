@@ -5,7 +5,7 @@ import {
   Trash2, Calendar, MapPin, Compass, Bookmark, Home, CheckCircle, Target,
   TrendingUp, Plus, BookOpen, User, Lightbulb, Languages, Search,
   Volume2, Brain, Star, ChevronRight, X, Flame, RotateCcw, Zap, Award,
-  ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp
+  ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp, LogOut
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
 
@@ -199,6 +199,21 @@ const Reservations = () => {
       localStorage.setItem("studyHistory", JSON.stringify(history));
     }
   }, []);
+
+  const handleLogout = async () => {
+    try { 
+      const userEmail = localStorage.getItem("email");
+      if (userEmail) {
+        await axios.post("/api/logout", { email: userEmail });
+      }
+    } catch(err) {
+      console.error("Logout error:", err);
+    }
+    localStorage.removeItem("email"); 
+    localStorage.removeItem("full_name"); 
+    localStorage.removeItem("study_abroad_city");
+    navigate("/login");
+  };
 
   const goalPercent = dailyGoal > 0 ? Math.min(100, Math.round((todayProgress / dailyGoal) * 100)) : 0;
 
@@ -449,28 +464,58 @@ const Reservations = () => {
   /* ════════════════════════════════════════════════════
      RENDER
      ════════════════════════════════════════════════════ */
-  return (
-    <div style={S.page}>
-      {/* ─── NAVBAR ─────────────────────────────────── */}
-      <header style={S.header}>
-        <div style={S.headerInner}>
-          <div style={S.headerLeft} onClick={() => navigate("/")}>
-            <img src={logo} alt="MTB" style={{ height: 72 }} />
-            <span style={S.brand}>MyTranslationBuddy</span>
-          </div>
-          <nav style={S.headerRight}>
-            <button onClick={() => navigate("/tips")} style={S.navBtn}><Compass size={15}/> Explore</button>
-            <button style={{...S.navBtn, backgroundColor:"#fff", fontWeight:700, color:"#0021A5", boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}><ClipboardList size={15}/> Study</button>
-            <button onClick={() => navigate("/events")} style={S.navBtn}><Calendar size={15}/> Events</button>
-            <button onClick={() => navigate("/")} style={S.navBtn}><Home size={15}/> Home</button>
-            {localStorage.getItem("email") ? (
-              <button onClick={() => navigate("/profile")} style={S.profileBtn}><User size={15}/> Profile</button>
-            ) : (
-              <button onClick={() => navigate("/login")} style={S.profileBtn}>Sign In</button>
-            )}
-          </nav>
+return (
+  <div style={S.page}>
+    {/* ─── NAVBAR ─────────────────────────────────── */}
+    <header style={S.header}>
+      <div style={S.headerInner}>
+        <div style={S.headerLeft} onClick={() => navigate("/")}>
+          <img src={logo} alt="MTB" style={{ height: 72 }} />
+          <span style={S.brand}>MyTranslationBuddy</span>
         </div>
-      </header>
+        <nav style={S.headerRight}>
+          <button 
+            onClick={() => navigate("/tips")} 
+            style={S.navBtn}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Compass size={15}/> Explore
+          </button>
+          <button style={{...S.navBtn, backgroundColor:"#fff", fontWeight:700, color:"#0021A5", boxShadow:"0 1px 3px rgba(0,0,0,0.08)"}}>
+            <ClipboardList size={15}/> Study
+          </button>
+          <button 
+            onClick={() => navigate("/events")} 
+            style={S.navBtn}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Calendar size={15}/> Events
+          </button>
+          <button 
+            onClick={() => navigate("/")} 
+            style={S.navBtn}
+            onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}
+            onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}
+          >
+            <Home size={15}/> Home
+          </button>
+          {localStorage.getItem("email") ? (
+            <>
+              <button onClick={() => navigate("/profile")} style={S.profileBtn}><User size={15}/> Profile</button>
+              <button onClick={handleLogout} style={{...S.navBtn, color:"#DC2626", marginLeft:"0.25rem"}} 
+                onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}} 
+                onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280";}}>
+                <LogOut size={14}/> Logout
+              </button>
+            </>
+          ) : (
+            <button onClick={() => navigate("/login")} style={S.profileBtn}>Sign In</button>
+          )}
+        </nav>
+      </div>
+    </header>
 
       {/* ─── CELEBRATION TOAST ──────────────────────── */}
       {celebrationMsg && (
@@ -1423,7 +1468,7 @@ const S = {
 
   /* Header / Nav — blue text, no gradients */
   header:{ backgroundColor:"rgba(255,255,255,0.92)", backdropFilter:"blur(20px)", WebkitBackdropFilter:"blur(20px)", borderBottom:"1px solid rgba(229,231,235,0.5)", position:"sticky", top:0, zIndex:1000, boxShadow:"0 1px 3px rgba(0,0,0,0.04)" },
-  headerInner:{ maxWidth:1280, margin:"0 auto", padding:"0.5rem 2rem", display:"flex", justifyContent:"space-between", alignItems:"center" },
+  headerInner:{ maxWidth:1280, margin:"0 auto", padding:"0.2rem 2rem", display:"flex", justifyContent:"space-between", alignItems:"center" },
   headerLeft:{ display:"flex", alignItems:"center", gap:"0.6rem", cursor:"pointer" },
   brand:{ fontSize:"1.05rem", fontWeight:800, color:"#0021A5", letterSpacing:"-0.01em" },
   headerRight:{ display:"flex", gap:"0.15rem", alignItems:"center", flexWrap:"wrap", background:"#F3F4F6", borderRadius:"0.65rem", padding:"0.2rem" },
