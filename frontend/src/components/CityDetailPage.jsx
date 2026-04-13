@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { handleLogout as sharedLogout } from '../utils/auth.js';
 import {
   ChevronDown,
   ChevronUp,
@@ -38,19 +39,7 @@ const CityDetailPage = () => {
 
   const userEmail = localStorage.getItem("email") || "";  // Changed from null to ""
 
-  const handleLogout = async () => {
-    try { 
-      if (userEmail) {
-        await axios.post("/api/logout", { email: userEmail });
-      }
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("full_name"); 
-    localStorage.removeItem("study_abroad_city");
-    navigate("/login");
-  };
+  const handleLogout = () => sharedLogout(navigate);
   
   useEffect(() => {
     const fetchCityData = async () => {

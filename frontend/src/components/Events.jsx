@@ -10,6 +10,7 @@ import {
   Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap, LogOut
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
+import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND = "/api";
 
@@ -117,7 +118,7 @@ const loadSavedEvents=()=>{try{return JSON.parse(localStorage.getItem("savedEven
 const persistSavedEvents=(arr,email)=>{
   localStorage.setItem("savedEvents",JSON.stringify(arr));
   if(email){
-    axios.put("/api/user/profile",{email,saved_events:arr}).catch(()=>{});
+    axios.put("/api/user/profile",{email,saved_events:arr},authHeaders()).catch(()=>{});
   }
 };
 
@@ -127,7 +128,7 @@ const Events = () => {
   const isActive = (p) => location.pathname === p;
   const userEmail = localStorage.getItem("email")||"";
   const userCity = localStorage.getItem("study_abroad_city")||"";
-  const myCitiesRaw = localStorage.getItem("myCities");
+  const myCitiesRaw = userEmail ? localStorage.getItem("myCities") : null;
   const myCities = myCitiesRaw ? JSON.parse(myCitiesRaw) : [];
   const initCountry = userCity ? findCountryForCity(userCity) : "DE";
 
@@ -149,6 +150,7 @@ const Events = () => {
   const [savedEvents,setSavedEvents]=useState(loadSavedEvents);
   const [myCitiesDrop,setMyCitiesDrop]=useState(false);
   const [sidePanel,setSidePanel]=useState("saved");
+  const [saveLoginPrompt,setSaveLoginPrompt]=useState(false);
   const [bookmarkedPhrases,setBookmarkedPhrases]=useState(()=>{try{return JSON.parse(localStorage.getItem("eventPhraseBookmarks")||"[]");}catch{return[];}});
   const [speakingIdx,setSpeakingIdx]=useState(-1);
   const [cityDrop,setCityDrop]=useState(false);
@@ -200,7 +202,7 @@ const Events = () => {
 
   useEffect(()=>{window.scrollTo(0,0);
     if(userEmail){
-      axios.get("/api/user/profile",{params:{email:userEmail}}).then(res=>{
+      axios.get("/api/user/profile",{params:{email:userEmail},...authHeaders()}).then(res=>{
         const serverSaved=res.data.saved_events||[];
         if(serverSaved.length>0){
           setSavedEvents(serverSaved);
@@ -227,6 +229,7 @@ const Events = () => {
   };
   const handleSearch=(e)=>{e.preventDefault();fetchEvents(0);};
   const toggleSave=(event)=>{
+    if(!userEmail){setSaveLoginPrompt(true);setTimeout(()=>setSaveLoginPrompt(false),4000);return;}
     setSavedEvents(prev=>{
       const exists=prev.some(e=>e.id===event.id);
       const next=exists?prev.filter(e=>e.id!==event.id):[...prev,{id:event.id,name:event.name,url:event.url,date:event.dates?.start?.localDate,time:event.dates?.start?.localTime,city:event._embedded?.venues?.[0]?.city?.name||"",venue:event._embedded?.venues?.[0]?.name||"",image:event.images?.[0]?.url||""}];
@@ -234,20 +237,7 @@ const Events = () => {
     });
   };
 
-  const handleLogout = async () => {
-    try { 
-      const userEmail = localStorage.getItem("email");
-      if (userEmail) {
-        await axios.post("/api/logout", { email: userEmail });
-      }
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("full_name"); 
-    localStorage.removeItem("study_abroad_city");
-    navigate("/login");
-  };
+  const handleLogout = () => sharedLogout(navigate);
 
   const isSaved=(id)=>savedEvents.some(e=>e.id===id);
   const seasonPicks=getSeasonPicks();
@@ -410,6 +400,39 @@ const Events = () => {
         </div>
       </div>
 
+      {/* ── SAVE LOGIN PROMPT TOAST ── */}
+      {saveLoginPrompt && (
+        <div style={{
+          position:"fixed", top:90, left:"50%", transform:"translateX(-50%)", zIndex:10000,
+          display:"flex", alignItems:"center", gap:"0.75rem",
+          padding:"0.85rem 1.5rem", borderRadius:"0.85rem",
+          background:"#fff",
+          color:"#111827", boxShadow:"0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.04)",
+          animation:"evtToastIn 0.35s cubic-bezier(0.16,1,0.3,1)",
+          fontSize:"0.88rem", fontWeight:600, letterSpacing:"-0.01em",
+        }}>
+          <Heart size={16} color="#EF4444" style={{flexShrink:0}}/>
+          <span>Sign in to save events</span>
+          <button onClick={()=>{setSaveLoginPrompt(false);navigate("/login");}} style={{
+            marginLeft:"0.5rem", padding:"0.4rem 1rem", borderRadius:"0.5rem",
+            border:"none", background:"linear-gradient(135deg,#FA4616,#FF6B35)",
+            color:"#fff", cursor:"pointer", fontSize:"0.8rem", fontWeight:700, transition:"all 0.15s",
+            boxShadow:"0 2px 8px rgba(250,70,22,0.25)",
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.opacity="0.85";e.currentTarget.style.transform="translateY(-1px)";}}
+          onMouseLeave={e=>{e.currentTarget.style.opacity="1";e.currentTarget.style.transform="none";}}>
+            Sign In
+          </button>
+          <button onClick={()=>setSaveLoginPrompt(false)} style={{
+            background:"none", border:"none", color:"#9CA3AF", cursor:"pointer",
+            padding:"2px", display:"flex", alignItems:"center",
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.color="#6B7280";}}
+          onMouseLeave={e=>{e.currentTarget.style.color="#9CA3AF";}}
+          ><X size={14}/></button>
+        </div>
+      )}
+
       {/* ── FILTER PILLS — floating over background, not boxed ── */}
       <div style={S.filterStrip}>
         <div style={S.filterInner}>
@@ -515,10 +538,10 @@ const Events = () => {
                         {isToday ? <><Zap size={10}/> TODAY</> : <><span style={{fontSize:"0.55rem",opacity:0.7}}>{weekday}</span> <span style={{fontWeight:800}}>{monthShort} {dayNum}</span></>}
                       </div>
                       {/* Save button */}
-                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"rgba(254,242,242,0.95)",borderColor:"#FCA5A5",boxShadow:"0 2px 12px rgba(239,68,68,0.2)"}:{})}}
-                        onMouseEnter={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.3)";e.currentTarget.style.transform="scale(1.1)";}}}
-                        onMouseLeave={e=>{if(!saved){e.currentTarget.style.background="rgba(0,0,0,0.2)";e.currentTarget.style.transform="scale(1)";}}}>
-                        <Heart size={14} fill={saved?"#EF4444":"none"} color={saved?"#EF4444":"#fff"}/>
+                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"#FEF2F2",borderColor:"#FECACA",boxShadow:"0 2px 12px rgba(239,68,68,0.18)"}:{})}}
+                        onMouseEnter={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.95)";e.currentTarget.style.transform="scale(1.08)";e.currentTarget.style.boxShadow="0 4px 14px rgba(0,0,0,0.15)";}}}
+                        onMouseLeave={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.85)";e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.1)";}}}>
+                        <Heart size={14} fill={saved?"#EF4444":"none"} color={saved?"#EF4444":"#6B7280"} strokeWidth={saved?0:2}/>
                       </button>
                     </div>
 
@@ -613,7 +636,24 @@ const Events = () => {
                         onMouseLeave={e=>{e.currentTarget.style.background="#fff";}}><X size={10}/></button>
                     </div>
                   </div>
-                )) : (
+                )) : !userEmail ? (
+                  <div style={{textAlign:"center",padding:"1.25rem 0.75rem"}}>
+                    <Heart size={20} color="#D1D5DB" style={{marginBottom:8}}/>
+                    <p style={{fontSize:"0.78rem",fontWeight:600,color:"#374151",margin:"0 0 0.3rem"}}>Sign in to save events</p>
+                    <p style={{fontSize:"0.68rem",color:"#9CA3AF",margin:"0 0 0.75rem",lineHeight:1.4}}>Create a free account to bookmark events and access them anywhere.</p>
+                    <button onClick={()=>navigate("/login")} style={{
+                      display:"inline-flex",alignItems:"center",gap:"0.35rem",padding:"0.5rem 1.1rem",
+                      borderRadius:"0.5rem",border:"none",
+                      background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",
+                      cursor:"pointer",fontSize:"0.72rem",fontWeight:700,
+                      boxShadow:"0 2px 8px rgba(0,33,165,0.25)",transition:"all 0.2s",
+                    }}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 4px 12px rgba(0,33,165,0.35)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,33,165,0.25)";}}>
+                      Sign In
+                    </button>
+                  </div>
+                ) : (
                   <div style={{textAlign:"center",padding:"1rem 0.5rem"}}>
                     <Heart size={18} color="#D1D5DB" style={{marginBottom:6}}/>
                     <p style={{fontSize:"0.72rem",color:"#9CA3AF",margin:0,lineHeight:1.4}}>Tap the heart on any event card to save it here.</p>
@@ -765,7 +805,7 @@ const S = {
   eventGrid:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"1rem",marginBottom:"1.5rem"},
   eventCard:{backgroundColor:"#fff",borderRadius:"1rem",overflow:"hidden",border:"1px solid rgba(229,231,235,0.35)",transition:"all 0.35s cubic-bezier(.4,0,.2,1)",cursor:"default",boxShadow:"0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",display:"flex",flexDirection:"column"},
   cardImg:{position:"relative",width:"100%",height:155,overflow:"hidden",flexShrink:0},
-  heartBtn:{position:"absolute",top:"0.55rem",right:"0.55rem",background:"rgba(0,0,0,0.2)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",border:"1.5px solid rgba(255,255,255,0.15)",borderRadius:"50%",width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.25s cubic-bezier(.4,0,.2,1)",zIndex:2},
+  heartBtn:{position:"absolute",top:"0.55rem",right:"0.55rem",background:"rgba(255,255,255,0.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.6)",borderRadius:"0.55rem",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s cubic-bezier(.4,0,.2,1)",zIndex:2,boxShadow:"0 2px 8px rgba(0,0,0,0.1)"},
   dateBadge:{position:"absolute",bottom:"0.55rem",left:"0.55rem",display:"flex",alignItems:"center",gap:"0.2rem",padding:"0.22rem 0.55rem",borderRadius:9999,backgroundColor:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)",border:"1px solid rgba(229,231,235,0.3)",color:"#111827",fontSize:"0.58rem",fontWeight:700,boxShadow:"0 2px 10px rgba(0,0,0,0.08)",letterSpacing:"0.02em"},
   cardBody:{padding:"0.7rem 0.8rem",display:"flex",flexDirection:"column",flex:1,minHeight:0},
   eventTitle:{fontSize:"0.84rem",fontWeight:700,color:"#111827",margin:"0 0 0.3rem",lineHeight:1.35,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",letterSpacing:"-0.01em"},
@@ -803,6 +843,7 @@ if(typeof document!=="undefined"){
   el.textContent=`
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes evtToastIn{from{opacity:0;transform:translateX(-50%) translateY(-12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
     [data-events-bar] input::placeholder{color:rgba(255,255,255,0.4)!important}
     [data-events-bar] input:focus{outline:none}
     [data-events-bar] form:focus-within{border-color:rgba(255,255,255,0.22)!important;background:rgba(255,255,255,0.1)!important;box-shadow:0 0 0 3px rgba(255,255,255,0.06)!important}

@@ -5,9 +5,10 @@ import {
   Trash2, Calendar, MapPin, Compass, Bookmark, Home, CheckCircle, Target,
   TrendingUp, Plus, BookOpen, User, Lightbulb, Languages, Search,
   Volume2, Brain, Star, ChevronRight, X, Flame, RotateCcw, Zap, Award,
-  ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp, LogOut
+  ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp, LogOut, Download, Lock
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
+import { handleLogout as sharedLogout, isLoggedIn, authHeaders } from "../utils/auth.js";
 
 /* ═══════════════════════════════════════════════════════
    STUDY HUB — A smart, engaging language-learning space
@@ -113,23 +114,90 @@ const Reservations = () => {
   useEffect(() => {
     const stored = localStorage.getItem("reservations");
     if (stored) setReservations(JSON.parse(stored));
-    const storedCards = localStorage.getItem("vocabCards");
-    if (storedCards) setVocabCards(JSON.parse(storedCards));
+
+    // Load study stats from localStorage first as defaults
     const storedGoal = localStorage.getItem("dailyGoal");
     if (storedGoal) setDailyGoal(parseInt(storedGoal));
     const storedProgress = localStorage.getItem("todayProgress");
     const storedDate = localStorage.getItem("progressDate");
     const today = new Date().toISOString().split("T")[0];
     if (storedProgress && storedDate === today) setTodayProgress(parseInt(storedProgress));
+
+    // Load everything from server if logged in
+    if (isLoggedIn()) {
+      const email = localStorage.getItem("email");
+      axios.get("/api/user/profile", authHeaders())
+        .then(r => {
+          // Vocab cards
+          const serverCards = r.data.vocab_cards || [];
+          if (serverCards.length > 0) {
+            setVocabCards(serverCards);
+            localStorage.setItem("vocabCards", JSON.stringify(serverCards));
+          } else {
+            const local = localStorage.getItem("vocabCards");
+            if (local) {
+              const parsed = JSON.parse(local);
+              setVocabCards(parsed);
+              if (parsed.length > 0) {
+                axios.put("/api/user/profile", { email, vocab_cards: parsed }, authHeaders()).catch(() => {});
+              }
+            }
+          }
+          // Study stats (dailyGoal, progress)
+          const stats = r.data.study_stats;
+          if (stats && typeof stats === "object") {
+            if (stats.daily_goal) setDailyGoal(stats.daily_goal);
+            if (stats.progress_date === today && stats.today_progress != null) {
+              setTodayProgress(stats.today_progress);
+            }
+          }
+        })
+        .catch(() => {
+          const local = localStorage.getItem("vocabCards");
+          if (local) setVocabCards(JSON.parse(local));
+        });
+    } else {
+      const storedCards = localStorage.getItem("vocabCards");
+      if (storedCards) setVocabCards(JSON.parse(storedCards));
+    }
   }, []);
 
   useEffect(() => { localStorage.setItem("reservations", JSON.stringify(reservations)); }, [reservations]);
-  useEffect(() => { localStorage.setItem("vocabCards", JSON.stringify(vocabCards)); }, [vocabCards]);
-  useEffect(() => { localStorage.setItem("dailyGoal", dailyGoal.toString()); }, [dailyGoal]);
+  useEffect(() => {
+    localStorage.setItem("vocabCards", JSON.stringify(vocabCards));
+    // Sync to server (debounced via timeout)
+    if (isLoggedIn() && vocabCards.length >= 0) {
+      const timer = setTimeout(() => {
+        const email = localStorage.getItem("email");
+        axios.put("/api/user/profile", { email, vocab_cards: vocabCards }, authHeaders()).catch(() => {});
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [vocabCards]);
+  useEffect(() => {
+    localStorage.setItem("dailyGoal", dailyGoal.toString());
+    // Sync to server
+    if (isLoggedIn()) {
+      const timer = setTimeout(() => {
+        const email = localStorage.getItem("email");
+        const today = new Date().toISOString().split("T")[0];
+        axios.put("/api/user/profile", { email, study_stats: { daily_goal: dailyGoal, today_progress: todayProgress, progress_date: today } }, authHeaders()).catch(() => {});
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [dailyGoal]);
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
     localStorage.setItem("todayProgress", todayProgress.toString());
     localStorage.setItem("progressDate", today);
+    // Sync to server
+    if (isLoggedIn()) {
+      const timer = setTimeout(() => {
+        const email = localStorage.getItem("email");
+        axios.put("/api/user/profile", { email, study_stats: { daily_goal: dailyGoal, today_progress: todayProgress, progress_date: today } }, authHeaders()).catch(() => {});
+      }, 800);
+      return () => clearTimeout(timer);
+    }
   }, [todayProgress]);
 
   /* ── Phrases fetch ────────────────────────────────── */
@@ -200,19 +268,23 @@ const Reservations = () => {
     }
   }, []);
 
-  const handleLogout = async () => {
-    try { 
-      const userEmail = localStorage.getItem("email");
-      if (userEmail) {
-        await axios.post("/api/logout", { email: userEmail });
-      }
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("full_name"); 
-    localStorage.removeItem("study_abroad_city");
-    navigate("/login");
+  const handleLogout = () => sharedLogout(navigate);
+
+  /** Export vocab flashcards as CSV download */
+  const handleExportCSV = () => {
+    if (vocabCards.length === 0) return;
+    const header = "German,English,Context,Mastery,Created\n";
+    const rows = vocabCards.map(c => {
+      const escape = (s) => `"${(s || "").replace(/"/g, '""')}"`;
+      return [escape(c.german), escape(c.english), escape(c.context), c.mastery, c.created].join(",");
+    }).join("\n");
+    const blob = new Blob([header + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `vocab_flashcards_${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const goalPercent = dailyGoal > 0 ? Math.min(100, Math.round((todayProgress / dailyGoal) * 100)) : 0;
@@ -364,7 +436,7 @@ const Reservations = () => {
 
   useEffect(() => {
     if (userEmail) {
-      axios.get("/api/phrases/bookmarks", { params: { user_email: userEmail } })
+      axios.get("/api/phrases/bookmarks", { ...authHeaders(), params: { user_email: userEmail } })
         .then(res => {
           const bks = res.data.bookmarks || [];
           const ids = new Set();
@@ -385,11 +457,11 @@ const Reservations = () => {
     try {
       if (bookmarkedIds.has(phraseId)) {
         const bkId = bookmarkMap[phraseId] || phraseId;
-        await axios.delete("/api/phrases/bookmarks/" + bkId, { params: { user_email: userEmail } });
+        await axios.delete("/api/phrases/bookmarks/" + bkId, { ...authHeaders(), params: { user_email: userEmail } });
         setBookmarkedIds(prev => { const n = new Set(prev); n.delete(phraseId); return n; });
         setBookmarkMap(prev => { const n = { ...prev }; delete n[phraseId]; return n; });
       } else {
-        const res = await axios.post("/api/phrases/bookmarks", { phrase_id: phraseId, user_email: userEmail });
+        const res = await axios.post("/api/phrases/bookmarks", { phrase_id: phraseId, user_email: userEmail }, authHeaders());
         const newId = res.data.bookmark_id || res.data._id || phraseId;
         setBookmarkedIds(prev => new Set([...prev, phraseId]));
         setBookmarkMap(prev => ({ ...prev, [phraseId]: newId }));
@@ -406,7 +478,7 @@ const Reservations = () => {
     if (!userEmail) return;
     setSavedLoading(true);
     try {
-      const res = await axios.get("/api/phrases/bookmarks", { params: { user_email: userEmail } });
+      const res = await axios.get("/api/phrases/bookmarks", { ...authHeaders(), params: { user_email: userEmail } });
       setSavedPhrases(res.data.bookmarks || []);
     } catch { setSavedPhrases([]); }
     finally { setSavedLoading(false); }
@@ -418,7 +490,7 @@ const Reservations = () => {
 
   const removeSavedPhrase = async (bookmarkId, phraseId) => {
     try {
-      await axios.delete("/api/phrases/bookmarks/" + bookmarkId, { params: { user_email: userEmail } });
+      await axios.delete("/api/phrases/bookmarks/" + bookmarkId, { ...authHeaders(), params: { user_email: userEmail } });
       setSavedPhrases(prev => prev.filter(b => b._id !== bookmarkId));
       if (phraseId) {
         setBookmarkedIds(prev => { const n = new Set(prev); n.delete(phraseId); return n; });
@@ -521,6 +593,92 @@ return (
       {celebrationMsg && (
         <div style={S.toast}>{celebrationMsg}</div>
       )}
+
+      {/* ─── LOGGED-OUT GATE ──────────────────────── */}
+      {!isLoggedIn() ? (
+        <div style={S.body}>
+          {/* Hero section — frosted glass card */}
+          <section style={{
+            background:"linear-gradient(135deg, #0021A5 0%, #003087 50%, #001a6e 100%)",
+            borderRadius:"1.25rem", padding:"2.5rem 2rem 2rem", position:"relative", overflow:"hidden",
+            boxShadow:"0 16px 48px rgba(0,33,165,0.2), 0 4px 12px rgba(0,0,0,0.06)",
+            marginBottom:"1.25rem",
+          }}>
+            {/* Decorative orbs */}
+            <div style={{position:"absolute",top:"-30%",right:"-8%",width:220,height:220,borderRadius:"50%",background:"radial-gradient(circle,rgba(250,70,22,0.15) 0%,transparent 70%)",pointerEvents:"none"}}/>
+            <div style={{position:"absolute",bottom:"-40%",left:"-5%",width:180,height:180,borderRadius:"50%",background:"radial-gradient(circle,rgba(255,255,255,0.05) 0%,transparent 70%)",pointerEvents:"none"}}/>
+            
+            <div style={{position:"relative",zIndex:1,textAlign:"center",maxWidth:460,margin:"0 auto"}}>
+              {/* Icon cluster */}
+              <div style={{display:"flex",justifyContent:"center",gap:"0.5rem",marginBottom:"1rem"}}>
+                <div style={{width:44,height:44,borderRadius:"12px",background:"rgba(255,255,255,0.1)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem",border:"1px solid rgba(255,255,255,0.1)"}}>📚</div>
+                <div style={{width:44,height:44,borderRadius:"12px",background:"rgba(250,70,22,0.15)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem",border:"1px solid rgba(250,70,22,0.2)"}}>🧠</div>
+                <div style={{width:44,height:44,borderRadius:"12px",background:"rgba(255,255,255,0.1)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:"1.3rem",border:"1px solid rgba(255,255,255,0.1)"}}>🎯</div>
+              </div>
+              
+              <h1 style={{fontSize:"1.5rem",fontWeight:800,color:"#fff",margin:"0 0 0.5rem",lineHeight:1.25,letterSpacing:"-0.02em"}}>
+                Your personal{" "}
+                <span style={{background:"linear-gradient(90deg,#FA4616,#FFB347)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>Study Hub</span>
+              </h1>
+              <p style={{fontSize:"0.88rem",color:"rgba(255,255,255,0.6)",margin:"0 0 1.25rem",lineHeight:1.6}}>
+                Sign in to start learning with flashcards, quizzes, and more.
+              </p>
+              <div style={{display:"flex",gap:"0.75rem",justifyContent:"center",flexWrap:"wrap"}}>
+                <button onClick={() => navigate("/login")} style={{
+                  display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.75rem",
+                  borderRadius:"0.65rem",border:"none",
+                  background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",
+                  cursor:"pointer",fontSize:"0.9rem",fontWeight:700,
+                  boxShadow:"0 6px 20px rgba(250,70,22,0.35)",transition:"all 0.2s",
+                }}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 10px 28px rgba(250,70,22,0.4)";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 6px 20px rgba(250,70,22,0.35)";}}>
+                  Sign In
+                </button>
+                <button onClick={() => navigate("/register")} style={{
+                  display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.75rem",
+                  borderRadius:"0.65rem",border:"1.5px solid rgba(255,255,255,0.25)",
+                  background:"rgba(255,255,255,0.08)",color:"#fff",
+                  cursor:"pointer",fontSize:"0.9rem",fontWeight:600,transition:"all 0.2s",backdropFilter:"blur(4px)",
+                }}
+                onMouseEnter={e=>{e.currentTarget.style.background="rgba(255,255,255,0.15)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
+                onMouseLeave={e=>{e.currentTarget.style.background="rgba(255,255,255,0.08)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}>
+                  Create Account
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* What's inside — feature cards */}
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"0.85rem"}}>
+              <div style={{width:3,height:18,borderRadius:2,background:"linear-gradient(180deg,#0021A5,#FA4616)"}}/>
+              <span style={{fontSize:"0.72rem",fontWeight:700,color:"#64748B",textTransform:"uppercase",letterSpacing:"0.06em"}}>What's inside</span>
+            </div>
+            <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:"0.85rem"}}>
+              {[
+                { icon:<RotateCcw size={22} color="#7C3AED"/>, title:"Flashcards", desc:"Spaced repetition with mastery tracking", bg:"linear-gradient(135deg,#F5F3FF,#EDE9FE)", border:"#DDD6FE" },
+                { icon:<Zap size={22} color="#059669"/>, title:"Vocabulary Quiz", desc:"Multiple choice and timed challenges", bg:"linear-gradient(135deg,#ECFDF5,#D1FAE5)", border:"#A7F3D0" },
+                { icon:<Languages size={22} color="#0021A5"/>, title:"Phrase Library", desc:"295+ phrases from 23 DACH cities", bg:"linear-gradient(135deg,#EFF6FF,#DBEAFE)", border:"#BFDBFE" },
+                { icon:<Target size={22} color="#DC2626"/>, title:"Study Plans", desc:"Set goals by city and track progress", bg:"linear-gradient(135deg,#FEF2F2,#FEE2E2)", border:"#FECACA" },
+              ].map(f => (
+                <div key={f.title} style={{
+                  padding:"1.25rem",backgroundColor:"#fff",borderRadius:"1rem",
+                  border:`1px solid ${f.border}`,
+                  boxShadow:"0 2px 12px rgba(0,0,0,0.04)",transition:"all 0.2s",cursor:"default",
+                }}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 28px rgba(0,0,0,0.08)";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 12px rgba(0,0,0,0.04)";}}>
+                  <div style={{width:42,height:42,borderRadius:"0.7rem",background:f.bg,display:"flex",alignItems:"center",justifyContent:"center",marginBottom:"0.65rem"}}>{f.icon}</div>
+                  <div style={{fontSize:"0.88rem",fontWeight:700,color:"#0F172A",marginBottom:"0.2rem"}}>{f.title}</div>
+                  <div style={{fontSize:"0.75rem",color:"#64748B",lineHeight:1.5}}>{f.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+      /* ─── LOGGED-IN CONTENT ───────────────────── */
 
       <div style={S.body}>
 
@@ -808,6 +966,9 @@ return (
               <>
                 <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"0.75rem"}}>
                   <h3 style={S.cardHeading}>Your cards ({vocabCards.length})</h3>
+                  <button onClick={handleExportCSV} style={{display:"flex",alignItems:"center",gap:"4px",padding:"6px 12px",borderRadius:"8px",border:"1px solid #D1D5DB",background:"#fff",cursor:"pointer",fontSize:"12px",fontWeight:600,color:"#374151"}} title="Export as CSV">
+                    <Download size={14}/> Export CSV
+                  </button>
                 </div>
                 <div style={S.vocabGrid}>
                   {vocabCards.map(card => (
@@ -1321,9 +1482,40 @@ return (
             <p style={S.sectionHint}>Phrases you've bookmarked from the library and city guides.</p>
 
             {!userEmail ? (
-              <div style={S.emptyState}>
-                <p style={S.emptyTitle}>Please log in to see your saved phrases</p>
-                <button onClick={() => navigate("/login")} style={{...S.primaryBtn,marginTop:"0.5rem"}}>Log In</button>
+              <div style={{textAlign:"center",padding:"2.5rem 1.5rem"}}>
+                <div style={{
+                  width:64,height:64,borderRadius:"1rem",
+                  background:"linear-gradient(135deg,#0021A5,#003087)",
+                  display:"flex",alignItems:"center",justifyContent:"center",
+                  margin:"0 auto 1rem",boxShadow:"0 8px 24px rgba(0,33,165,0.2)",
+                }}>
+                  <Bookmark size={28} color="#fff"/>
+                </div>
+                <h3 style={{fontSize:"1.15rem",fontWeight:700,color:"#0F172A",margin:"0 0 0.4rem"}}>Your saved phrases will appear here</h3>
+                <p style={{fontSize:"0.85rem",color:"#64748B",margin:"0 0 1.25rem",lineHeight:1.6,maxWidth:360,marginLeft:"auto",marginRight:"auto"}}>
+                  Sign in to bookmark phrases from the library, city guides, and events — then review them all in one place.
+                </p>
+                <div style={{display:"flex",gap:"0.6rem",justifyContent:"center",flexWrap:"wrap"}}>
+                  <button onClick={() => navigate("/login")} style={{
+                    display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.65rem 1.5rem",
+                    borderRadius:"0.6rem",border:"none",
+                    background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",
+                    cursor:"pointer",fontSize:"0.88rem",fontWeight:700,
+                    boxShadow:"0 4px 14px rgba(0,33,165,0.25)",transition:"all 0.2s",
+                  }}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="none";}}>
+                    Sign In
+                  </button>
+                  <button onClick={() => navigate("/register")} style={{
+                    display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.65rem 1.5rem",
+                    borderRadius:"0.6rem",border:"1.5px solid #D1D5DB",
+                    background:"#fff",color:"#374151",
+                    cursor:"pointer",fontSize:"0.88rem",fontWeight:600,transition:"all 0.2s",
+                  }}>
+                    Create Account
+                  </button>
+                </div>
               </div>
             ) : savedLoading ? (
               <div style={S.emptyState}><p style={{color:"#6B7280"}}>Loading your saved phrases…</p></div>
@@ -1455,6 +1647,7 @@ return (
           </section>
         )}
       </div>
+      )}
     </div>
   );
 };

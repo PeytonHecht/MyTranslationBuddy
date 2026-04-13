@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/MTBLogo.png";
+import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 import {
   User, MapPin, LogOut, Trash2, Key, Save, Globe, Calendar,
   Bookmark, Clock, Compass, ClipboardList, Home, GraduationCap,
@@ -89,7 +90,7 @@ const Profile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get("/api/user/profile", { params: { email: userEmail }, timeout: 8000 });
+      const res = await axios.get("/api/user/profile", { params: { email: userEmail }, timeout: 8000, ...authHeaders() });
       if (!mounted.current) return;
       const data = res.data;
       setProfile(data);
@@ -101,14 +102,14 @@ const Profile = () => {
         localStorage.setItem("myCities", JSON.stringify(data.saved_cities));
       } else {
         const stored = localStorage.getItem("myCities");
-        if (stored) { try { const p = JSON.parse(stored); if (Array.isArray(p) && p.length) { setMyCities(p); axios.put("/api/user/profile", { email: userEmail, saved_cities: p }).catch(()=>{}); } } catch {} }
+        if (stored) { try { const p = JSON.parse(stored); if (Array.isArray(p) && p.length) { setMyCities(p); axios.put("/api/user/profile", { email: userEmail, saved_cities: p }, authHeaders()).catch(()=>{}); } } catch {} }
       }
       if (Array.isArray(data.saved_events) && data.saved_events.length > 0) {
         setSavedEvents(data.saved_events);
         localStorage.setItem("savedEvents", JSON.stringify(data.saved_events));
       } else {
         const stored = localStorage.getItem("savedEvents");
-        if (stored) { try { const p = JSON.parse(stored); if (Array.isArray(p) && p.length) { setSavedEvents(p); axios.put("/api/user/profile", { email: userEmail, saved_events: p }).catch(()=>{}); } } catch {} }
+        if (stored) { try { const p = JSON.parse(stored); if (Array.isArray(p) && p.length) { setSavedEvents(p); axios.put("/api/user/profile", { email: userEmail, saved_events: p }, authHeaders()).catch(()=>{}); } } catch {} }
       }
     } catch {
       if (!mounted.current) return;
@@ -120,7 +121,7 @@ const Profile = () => {
 
   const fetchBookmarks = async () => {
     try {
-      const res = await axios.get("/api/phrases/bookmarks", { params: { user_email: userEmail }, timeout: 6000 });
+      const res = await axios.get("/api/phrases/bookmarks", { ...authHeaders(), params: { user_email: userEmail }, timeout: 6000 });
       if (!mounted.current) return;
       const bms = res.data.bookmarks || [];
       setBookmarks(bms);
@@ -131,7 +132,7 @@ const Profile = () => {
   const persistCities = (next, wasAdded) => {
     setMyCities(next);
     localStorage.setItem("myCities", JSON.stringify(next));
-    if (userEmail) axios.put("/api/user/profile", { email: userEmail, saved_cities: next }).catch(()=>{});
+    if (userEmail) axios.put("/api/user/profile", { email: userEmail, saved_cities: next }, authHeaders()).catch(()=>{});
     if (wasAdded) {
       setCityToast("New city added!");
       setTimeout(() => setCityToast(""), 2500);
@@ -140,7 +141,7 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      await axios.put("/api/user/profile", { email: userEmail, full_name: fullName, study_abroad_city: studyCity, major });
+      await axios.put("/api/user/profile", { email: userEmail, full_name: fullName, study_abroad_city: studyCity, major }, authHeaders());
       setProfile(prev => ({ ...prev, full_name: fullName, study_abroad_city: studyCity, major }));
       localStorage.setItem("full_name", fullName);
       localStorage.setItem("study_abroad_city", studyCity);
@@ -151,13 +152,17 @@ const Profile = () => {
   };
 
   const handleLogout = async () => {
-    try { await axios.post("/api/logout", { email: userEmail }); } catch {}
-    localStorage.removeItem("email"); localStorage.removeItem("full_name"); localStorage.removeItem("study_abroad_city");
-    navigate("/login");
+    try {
+      await sharedLogout(navigate);
+    } catch (err) {
+      console.error("Logout failed:", err);
+      // Still clear and navigate even if endpoint fails
+      navigate("/");
+    }
   };
 
   const handleDelete = async () => {
-    try { await axios.post("/api/delete", { email: userEmail }); localStorage.clear(); navigate("/"); }
+    try { await axios.post("/api/delete", { email: userEmail }, authHeaders()); localStorage.clear(); navigate("/"); }
     catch { setStatusMsg("Failed to delete account."); }
     setShowDeletePopup(false);
   };
@@ -249,6 +254,24 @@ const Profile = () => {
     </header>
 
       <main style={S.main}>
+        {/* -------- SETUP BANNER — for new Google OAuth users who need to finish setup -------- */}
+        {(!profile.study_abroad_city && !profile.major && myCities.length === 0) && (
+          <div style={{background:"linear-gradient(135deg,#FFF7ED,#FFFBEB)",border:"1.5px solid #FED7AA",borderRadius:"1rem",padding:"1.25rem 1.5rem",marginBottom:"1.25rem",display:"flex",alignItems:"center",gap:"1rem",boxShadow:"0 4px 16px rgba(250,70,22,0.08)"}}>
+            <div style={{width:44,height:44,borderRadius:"0.75rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+              <Sparkles size={22} color="#fff"/>
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <h3 style={{fontSize:"1rem",fontWeight:700,color:"#92400E",margin:"0 0 0.2rem"}}>Welcome to MyTranslationBuddy! 🎉</h3>
+              <p style={{fontSize:"0.82rem",color:"#78350F",margin:0,lineHeight:1.45}}>
+                Let's finish setting up your profile — pick your study abroad city and save the cities you want to explore. This helps us personalize your experience.
+              </p>
+            </div>
+            <button onClick={() => { setEditing(true); setActiveTab("cities"); }} style={{padding:"0.55rem 1.1rem",border:"none",borderRadius:"0.6rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.82rem",fontWeight:700,boxShadow:"0 3px 12px rgba(250,70,22,0.25)",whiteSpace:"nowrap",flexShrink:0}}>
+              Get Started
+            </button>
+          </div>
+        )}
+
         {/* -------- HERO BANNER -------- */}
         <div style={S.hero}>
           <div style={S.heroGrad}/>

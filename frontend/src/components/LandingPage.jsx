@@ -9,6 +9,7 @@ import {
   DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen, LogOut
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
+import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND = "/api";
 
@@ -307,12 +308,15 @@ const LandingPage = () => {
   const [showRouteFinder, setShowRouteFinder] = useState(false);
   const [foundRoute, setFoundRoute] = useState(null); 
 
-  const readUserData = () => ({
-    email: localStorage.getItem("email") || "",
-    name: localStorage.getItem("full_name") || "",
-    city: localStorage.getItem("study_abroad_city") || "",
-    cities: (() => { try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; } })(),
-  });
+  const readUserData = () => {
+    const email = localStorage.getItem("email") || "";
+    return {
+      email,
+      name: localStorage.getItem("full_name") || "",
+      city: localStorage.getItem("study_abroad_city") || "",
+      cities: email ? (() => { try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; } })() : [],
+    };
+  };
   const [userData, setUserData] = useState(readUserData);
   const userEmail = userData.email;
   const userName = userData.name;
@@ -331,7 +335,7 @@ const LandingPage = () => {
   // Sync user profile from server on mount (ensures myCities & study_abroad_city are fresh)
   useEffect(() => {
     if (!userEmail) return;
-    axios.get(`${BACKEND}/user/profile?email=${encodeURIComponent(userEmail)}`)
+    axios.get(`${BACKEND}/user/profile?email=${encodeURIComponent(userEmail)}`, authHeaders())
       .then(res => {
         const d = res.data;
         if (d.study_abroad_city) localStorage.setItem("study_abroad_city", d.study_abroad_city);
@@ -497,7 +501,7 @@ const LandingPage = () => {
     if (!userEmail) { navigate("/login"); return; }
     if (!phraseOfDay?._id || flashcardSaved) return;
     try {
-      await axios.post(`${BACKEND}/phrases/bookmarks`, { phrase_id: phraseOfDay._id, user_email: userEmail });
+      await axios.post(`${BACKEND}/phrases/bookmarks`, { phrase_id: phraseOfDay._id, user_email: userEmail }, authHeaders());
       setFlashcardSaved(true);
     } catch (err) {
       if (err?.response?.status === 400) setFlashcardSaved(true); // already bookmarked
@@ -645,19 +649,9 @@ const LandingPage = () => {
   const atCities = CITY_COORDS.filter(c=>c.country==="AT").length;
   const chCities = CITY_COORDS.filter(c=>c.country==="CH").length;
 
-  const handleLogout = async () => {
-    try { 
-      if (userEmail) {
-        await axios.post("/api/logout", { email: userEmail });
-      }
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("full_name"); 
-    localStorage.removeItem("study_abroad_city");
-    navigate("/login");
-  };
+  const handleLogout = () => sharedLogout(navigate);
+
+  const isSignedIn = !!userEmail;
 
   return (
     <div style={S.page}>
@@ -735,12 +729,20 @@ const LandingPage = () => {
             <button onClick={()=>{ const el=document.getElementById("mtb-map"); if(el) el.scrollIntoView({behavior:"smooth"}); }} style={S.heroP}
               onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(250,70,22,0.5)";}}
               onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 4px 20px rgba(250,70,22,0.4)";}}><Navigation size={18}/> Explore the Map</button>
-            <button onClick={()=>navigate("/reservations")} style={S.heroO}
-              onMouseEnter={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.14)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
-              onMouseLeave={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}><Languages size={18}/> Practice Phrases</button>
-            <button onClick={()=>navigate("/events")} style={S.heroO}
-              onMouseEnter={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.14)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
-              onMouseLeave={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}><Calendar size={18}/> Find Events</button>
+            {isSignedIn ? (
+              <>
+                <button onClick={()=>navigate("/reservations")} style={S.heroO}
+                  onMouseEnter={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.14)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}><Languages size={18}/> Practice Phrases</button>
+                <button onClick={()=>navigate("/events")} style={S.heroO}
+                  onMouseEnter={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.14)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}><Calendar size={18}/> Find Events</button>
+              </>
+            ) : (
+              <button onClick={()=>navigate("/login")} style={S.heroO}
+                onMouseEnter={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.14)";e.currentTarget.style.borderColor="rgba(255,255,255,0.4)";}}
+                onMouseLeave={e=>{e.currentTarget.style.backgroundColor="rgba(255,255,255,0.06)";e.currentTarget.style.borderColor="rgba(255,255,255,0.25)";}}><User size={18}/> Sign in to get started</button>
+            )}
           </div>
           {/* Quick stats badge removed — cleaner hero */}
         </div>
@@ -748,23 +750,92 @@ const LandingPage = () => {
         <div style={{position:"absolute",bottom:"-30%",left:"-15%",width:500,height:500,borderRadius:"50%",background:"radial-gradient(circle,rgba(0,33,165,0.2),transparent 70%)",pointerEvents:"none"}}/>
       </section>
 
-      {/* QUICK PICKS */}
-      <section style={S.picksWrap}>
-        <div style={S.picksScroll}>
-          {buildQuickPicks(userCities).map((p,i) => (
-            <div key={i} onClick={()=>flyToCity(p.slug)} style={S.pickCard}
-              onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(0,0,0,0.12)";e.currentTarget.style.borderColor="#FED7AA";}}
-              onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";e.currentTarget.style.borderColor="#E5E7EB";}}>
-              <span style={{fontSize:"1.8rem"}}>{p.emoji}</span>
-              <div>
-                <div style={{fontSize:"0.68rem",fontWeight:700,color:"#FA4616",textTransform:"uppercase",letterSpacing:"0.06em"}}>{p.label}</div>
-                <div style={{fontSize:"0.88rem",fontWeight:600,color:"#111827"}}>{p.city}</div>
-                <div style={{fontSize:"0.72rem",color:"#6B7280"}}>{p.detail}</div>
+      {/* QUICK PICKS — only for signed-in users */}
+      {isSignedIn ? (
+        <section style={S.picksWrap}>
+          <div style={S.picksScroll}>
+            {buildQuickPicks(userCities).map((p,i) => (
+              <div key={i} onClick={()=>flyToCity(p.slug)} style={S.pickCard}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(0,0,0,0.12)";e.currentTarget.style.borderColor="#FED7AA";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";e.currentTarget.style.borderColor="#E5E7EB";}}>
+                <span style={{fontSize:"1.8rem"}}>{p.emoji}</span>
+                <div>
+                  <div style={{fontSize:"0.68rem",fontWeight:700,color:"#FA4616",textTransform:"uppercase",letterSpacing:"0.06em"}}>{p.label}</div>
+                  <div style={{fontSize:"0.88rem",fontWeight:600,color:"#111827"}}>{p.city}</div>
+                  <div style={{fontSize:"0.72rem",color:"#6B7280"}}>{p.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section style={{maxWidth:800,margin:"-4.5rem auto 0",padding:"0 2rem",position:"relative",zIndex:2}}>
+          {/* Clear glass frosted fill with subtle border */}
+          <div style={{
+            borderRadius:"1.4rem",
+            background:"rgba(255,255,255,0.3)",
+            backdropFilter:"blur(16px)",
+            WebkitBackdropFilter:"blur(16px)",
+            border:"1px solid rgba(255,255,255,0.4)",
+            boxShadow:"0 4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5)",
+            padding:"2rem 2.5rem",
+          }}>
+            <div style={{display:"flex",alignItems:"center",gap:"2rem",flexWrap:"wrap"}}>
+              {/* Left: Content */}
+              <div style={{flex:1,minWidth:280}}>
+                <div style={{display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.3rem 0.8rem",borderRadius:9999,background:"#FFF7ED",border:"1px solid #FED7AA",marginBottom:"0.75rem"}}>
+                  <GraduationCap size={13} color="#FA4616"/>
+                  <span style={{fontSize:"0.7rem",fontWeight:600,color:"#EA580C",letterSpacing:"0.04em",textTransform:"uppercase"}}>For UF Students</span>
+                </div>
+                <h3 style={{fontSize:"1.3rem",fontWeight:800,color:"#111827",margin:"0 0 0.5rem",lineHeight:1.3,letterSpacing:"-0.02em"}}>
+                  Your study abroad toolkit,{" "}
+                  <span style={{background:"linear-gradient(90deg,#FA4616,#FF6B35)",WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>personalized</span>
+                </h3>
+                <p style={{fontSize:"0.85rem",color:"#6B7280",margin:"0 0 1.25rem",lineHeight:1.6}}>
+                  Sign in with your UF email to get started.
+                </p>
+                <div style={{display:"flex",gap:"0.6rem",flexWrap:"wrap"}}>
+                  <button onClick={()=>navigate("/login")} style={{
+                    display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.5rem",
+                    borderRadius:"0.65rem",border:"none",
+                    background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",
+                    cursor:"pointer",fontSize:"0.88rem",fontWeight:700,
+                    boxShadow:"0 4px 16px rgba(0,33,165,0.25)",transition:"all 0.2s",
+                  }}
+                  onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(0,33,165,0.35)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 4px 16px rgba(0,33,165,0.25)";}}>
+                    Sign In <ArrowRight size={14}/>
+                  </button>
+                  <button onClick={()=>navigate("/register")} style={{
+                    display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.5rem",
+                    borderRadius:"0.65rem",border:"1.5px solid #D1D5DB",
+                    background:"#fff",color:"#374151",
+                    cursor:"pointer",fontSize:"0.88rem",fontWeight:600,transition:"all 0.2s",
+                  }}
+                  onMouseEnter={e=>{e.currentTarget.style.background="#F9FAFB";e.currentTarget.style.borderColor="#9CA3AF";}}
+                  onMouseLeave={e=>{e.currentTarget.style.background="#fff";e.currentTarget.style.borderColor="#D1D5DB";}}>
+                    Create Account
+                  </button>
+                </div>
+              </div>
+              {/* Right: Feature chips */}
+              <div style={{display:"flex",flexDirection:"column",gap:"0.5rem",minWidth:180}}>
+                {[
+                  {icon:"🗺️",text:"23 cities · 3 countries"},
+                  {icon:"💬",text:"295+ dialect phrases"},
+                  {icon:"📅",text:"Local events & culture"},
+                  {icon:"📚",text:"Flashcards & quizzes"},
+                ].map((f,i) => (
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:"0.6rem",padding:"0.5rem 0.75rem",borderRadius:"0.6rem",background:"#F9FAFB",border:"1px solid #F3F4F6"}}>
+                    <span style={{fontSize:"0.9rem"}}>{f.icon}</span>
+                    <span style={{fontSize:"0.78rem",fontWeight:500,color:"#374151"}}>{f.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* MAP — full-bleed, no robotic header */}
       <section id="mtb-map" style={S.mapSection}>
@@ -1113,7 +1184,21 @@ const LandingPage = () => {
 
             return (
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"1.25rem"}}>
-                {sortedCities.map((slug, cardIdx) => {
+                {loading ? (
+                  /* ── Shimmer skeleton while loading ── */
+                  Array.from({length: 3}).map((_, i) => (
+                    <div key={i} style={{borderRadius:"1.25rem",overflow:"hidden",border:"1px solid #E5E7EB",background:"#fff"}}>
+                      <div style={{height:"60px",background:"linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>
+                      <div style={{padding:"1rem",display:"flex",flexDirection:"column",gap:"0.75rem"}}>
+                        <div style={{height:"16px",width:"60%",borderRadius:"8px",background:"linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>
+                        <div style={{height:"12px",width:"90%",borderRadius:"6px",background:"linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>
+                        <div style={{height:"12px",width:"75%",borderRadius:"6px",background:"linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite"}}/>
+                        <div style={{height:"32px",width:"40%",borderRadius:"10px",background:"linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%)",backgroundSize:"200% 100%",animation:"shimmer 1.5s infinite",marginTop:"0.5rem"}}/>
+                      </div>
+                      <style>{`@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }`}</style>
+                    </div>
+                  ))
+                ) : sortedCities.map((slug, cardIdx) => {
                   const pin = CITY_COORDS.find(c => c.slug === slug);
                   if (!pin) return null;
 

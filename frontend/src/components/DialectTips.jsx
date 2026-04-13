@@ -9,6 +9,7 @@ import {
   Heart, Zap, Languages, ExternalLink, X, LogOut
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
+import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND_URL = "/api";
 
@@ -231,7 +232,10 @@ const DialectTips = () => {
   const [heroVisible, setHeroVisible] = useState(false);
   const [countryFilter, setCountryFilter] = useState(new Set());
   const [cityDetailLoading, setCityDetailLoading] = useState(false);
-  const [myCitySlugs, setMyCitySlugs] = useState(() => { try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; } });
+  const [myCitySlugs, setMyCitySlugs] = useState(() => {
+    if (!localStorage.getItem("email")) return [];
+    try { return JSON.parse(localStorage.getItem("myCities") || "[]"); } catch { return []; }
+  });
 
   const userEmail = localStorage.getItem("email") || "";
   const userName = localStorage.getItem("full_name") || "";
@@ -248,19 +252,7 @@ const DialectTips = () => {
     window.speechSynthesis.speak(u);
   };
 
-  const handleLogout = async () => {
-    try { 
-      if (userEmail) {
-        await axios.post(`${BACKEND_URL}/logout`, { email: userEmail });
-      }
-    } catch(err) {
-      console.error("Logout error:", err);
-    }
-    localStorage.removeItem("email"); 
-    localStorage.removeItem("full_name"); 
-    localStorage.removeItem("study_abroad_city");
-    navigate("/login");
-  };
+  const handleLogout = () => sharedLogout(navigate);
 
   useEffect(() => { fetchCities(); fetchPhraseCategories(); if (userEmail) fetchBookmarks(); const p = searchParams.get("city"); if (p) setSelectedCity(p); }, []);
   useEffect(() => { window.scrollTo(0, 0); setTimeout(() => setHeroVisible(true), 100); }, []);
@@ -268,7 +260,7 @@ const DialectTips = () => {
   // Sync user profile from server on mount (ensures myCities are fresh)
   useEffect(() => {
     if (!userEmail) return;
-    axios.get(`${BACKEND_URL}/user/profile?email=${encodeURIComponent(userEmail)}`)
+    axios.get(`${BACKEND_URL}/user/profile?email=${encodeURIComponent(userEmail)}`, authHeaders())
       .then(res => {
         const d = res.data;
         if (d.study_abroad_city) localStorage.setItem("study_abroad_city", d.study_abroad_city);
@@ -361,7 +353,7 @@ const DialectTips = () => {
   const fetchBookmarks = async () => {
     if (!userEmail) return;
     try {
-      const res = await axios.get(`${BACKEND_URL}/phrases/bookmarks`, { params: { user_email: userEmail } });
+      const res = await axios.get(`${BACKEND_URL}/phrases/bookmarks`, { ...authHeaders(), params: { user_email: userEmail } });
       const bks = res.data.bookmarks || [];
       setBookmarkedIds(new Set(bks.map(b => b.phrase_id)));
       const map = {}; bks.forEach(b => { map[b.phrase_id] = b._id; }); setBookmarkMap(map);
@@ -372,11 +364,11 @@ const DialectTips = () => {
     try {
       if (bookmarkedIds.has(phraseId)) {
         const bmId = bookmarkMap[phraseId] || phraseId;
-        await axios.delete(`${BACKEND_URL}/phrases/bookmarks/${bmId}`, { params: { user_email: userEmail } });
+        await axios.delete(`${BACKEND_URL}/phrases/bookmarks/${bmId}`, { ...authHeaders(), params: { user_email: userEmail } });
         setBookmarkedIds(prev => { const s = new Set(prev); s.delete(phraseId); return s; });
         setBookmarkMap(prev => { const m = {...prev}; delete m[phraseId]; return m; });
       } else {
-        const res = await axios.post(`${BACKEND_URL}/phrases/bookmarks`, { phrase_id: phraseId, user_email: userEmail });
+        const res = await axios.post(`${BACKEND_URL}/phrases/bookmarks`, { phrase_id: phraseId, user_email: userEmail }, authHeaders());
         setBookmarkedIds(prev => new Set(prev).add(phraseId));
         setBookmarkMap(prev => ({ ...prev, [phraseId]: res.data.bookmark_id }));
       }

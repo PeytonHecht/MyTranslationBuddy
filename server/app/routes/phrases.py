@@ -380,17 +380,20 @@ async def search_phrases(
         # Build search filter
         search_filter = {}
 
-        # Search in specified fields based on search_type
-        search_query = re.escape(request.query.strip().lower())
+        # Build a fuzzy regex: insert .* between each character for fuzzy matching
+        # e.g. "hlp" matches "help", "hello please", etc.
+        raw_query = request.query.strip().lower()
+        # Escape each character, then join with .*  for fuzzy tolerance
+        fuzzy_pattern = ".*".join(re.escape(ch) for ch in raw_query)
 
         if request.search_type == "english":
-            search_filter["english_translation"] = {"$regex": search_query, "$options": "i"}
+            search_filter["english_translation"] = {"$regex": fuzzy_pattern, "$options": "i"}
         elif request.search_type == "german":
-            search_filter["german_phrase"] = {"$regex": search_query, "$options": "i"}
+            search_filter["german_phrase"] = {"$regex": fuzzy_pattern, "$options": "i"}
         else:  # "all" - search in both
             search_filter["$or"] = [
-                {"english_translation": {"$regex": search_query, "$options": "i"}},
-                {"german_phrase": {"$regex": search_query, "$options": "i"}},
+                {"english_translation": {"$regex": fuzzy_pattern, "$options": "i"}},
+                {"german_phrase": {"$regex": fuzzy_pattern, "$options": "i"}},
             ]
 
         # Apply optional filters
@@ -776,3 +779,103 @@ async def get_phrase(phrase_id: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error retrieving phrase: {str(e)}",
         )
+
+
+# ============================================================================
+# QUICK-SAVE TRANSLATION AS PHRASE + BOOKMARK
+# ============================================================================
+
+from pydantic import BaseModel as _BM, EmailStr as _ES
+from datetime import datetime, timezone
+
+
+class QuickSaveRequest(_BM):
+    german_phrase: str
+    english_translation: str
+    user_email: _ES
+    city_slug: Optional[str] = None
+
+
+@router.post("/quick-save", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def quick_save_translation(req: QuickSaveRequest):
+    """
+    Save a translation from the TranslateWidget as a phrase and auto-bookmark it.
+    If the phrase already exists, just bookmark it. If already bookmarked, return success.
+    """
+    try:
+        phrases_db = db.phrases_vocabulary
+        german = req.german_phrase.strip()
+        english = req.english_translation.strip()
+        if not german or not english:
+            raise HTTPException(status_code=400, detail="Both German and English text are required.")
+
+        # Check if this phrase already exists
+        existing = await phrases_db.phrases.find_one({
+            "german_phrase": german,
+            "english_translation": english,
+        })
+
+        if existing:
+            phrase_id = str(existing["_id"])
+        else:
+            # Create a new phrase with sensible defaults
+            now = datetime.now(timezone.utc)
+            city_slugs = [req.city_slug.lower()] if req.city_slug else []
+            phrase_doc = {
+                "german_phrase": german,
+                "english_translation": english,
+                "pronunciation": None,
+                "category": "daily_life",
+                "register": "neutral",
+                "phrase_type": "standard",
+                "country_codes": [],
+                "regions": [],
+                "city_slugs": city_slugs,
+                "dialect_name": None,
+                "usage_context": "Saved from translator",
+                "contextual_note": None,
+                "cultural_note": None,
+                "example_sentence": None,
+                "audio_url": None,
+                "tags": ["user-saved", "translated"],
+                "difficulty_level": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+            result = await phrases_db.phrases.insert_one(phrase_doc)
+            phrase_id = str(result.inserted_id)
+
+        # Check if already bookmarked
+        existing_bm = await phrases_db.phrase_bookmarks.find_one({
+            "phrase_id": phrase_id,
+            "user_email": req.user_email,
+        })
+        if existing_bm:
+            return {
+                "message": "Already saved to your phrases",
+                "phrase_id": phrase_id,
+                "bookmark_id": str(existing_bm["_id"]),
+                "already_saved": True,
+            }
+
+        # Create bookmark
+        bm_doc = {
+            "phrase_id": phrase_id,
+            "user_email": req.user_email,
+            "personal_notes": None,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": None,
+        }
+        bm_result = await phrases_db.phrase_bookmarks.insert_one(bm_doc)
+
+        return {
+            "message": "Saved to your phrases!",
+            "phrase_id": phrase_id,
+            "bookmark_id": str(bm_result.inserted_id),
+            "already_saved": False,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Quick-save failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Could not save phrase: {str(e)}")

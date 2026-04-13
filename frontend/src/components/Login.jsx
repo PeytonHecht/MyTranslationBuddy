@@ -14,17 +14,39 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const googleBtnRef = useRef(null);
+  const googleCallbackRef = useRef(null);
+
+  // Keep the callback ref current so the Google script always calls the latest version
+  googleCallbackRef.current = async (response) => {
+    try {
+      const res = await axios.post("/api/auth/google", { credential: response.credential });
+      if (res.status === 200) {
+        localStorage.setItem("email", res.data.email);
+        localStorage.setItem("full_name", res.data.full_name || "");
+        localStorage.setItem("study_abroad_city", res.data.study_abroad_city || "");
+        if (res.data.token) localStorage.setItem("token", res.data.token);
+        if (res.data.saved_cities) localStorage.setItem("myCities", JSON.stringify(res.data.saved_cities));
+        if (res.data.vocab_cards) localStorage.setItem("vocabCards", JSON.stringify(res.data.vocab_cards));
+        if (res.data.saved_events) localStorage.setItem("savedEvents", JSON.stringify(res.data.saved_events));
+        if (res.data.study_stats) localStorage.setItem("studyStats", JSON.stringify(res.data.study_stats));
+        if (res.data.needs_setup) {
+          navigate("/profile");
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (err) {
+      setErrorMsg(err.response?.data?.detail || "Google sign-in failed.");
+    }
+  };
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+    // If the Google SDK is already loaded, just initialize
+    const initGoogle = () => {
       if (window.google && googleBtnRef.current) {
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleResponse,
+          callback: (resp) => googleCallbackRef.current(resp),
         });
         window.google.accounts.id.renderButton(googleBtnRef.current, {
           theme: "outline", size: "large", width: 360,
@@ -32,24 +54,15 @@ const Login = () => {
         });
       }
     };
+    if (window.google) { initGoogle(); return; }
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = initGoogle;
     document.head.appendChild(script);
     return () => { try { document.head.removeChild(script); } catch {} };
   }, []);
-
-  const handleGoogleResponse = async (response) => {
-    try {
-      const res = await axios.post("/api/auth/google", { credential: response.credential });
-      if (res.status === 200) {
-        localStorage.setItem("email", res.data.email);
-        localStorage.setItem("full_name", res.data.full_name || "");
-        localStorage.setItem("study_abroad_city", res.data.study_abroad_city || "");
-        if (res.data.saved_cities) localStorage.setItem("myCities", JSON.stringify(res.data.saved_cities));
-        navigate("/");
-      }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.detail || "Google sign-in failed.");
-    }
-  };
 
   const handleLogin = async () => {
     if (!email || !password) { setErrorMsg("Please fill in all fields."); return; }
@@ -61,11 +74,27 @@ const Login = () => {
         localStorage.setItem("email", response.data.email);
         localStorage.setItem("full_name", response.data.full_name || "");
         localStorage.setItem("study_abroad_city", response.data.study_abroad_city || "");
+        if (response.data.token) localStorage.setItem("token", response.data.token);
         if (response.data.saved_cities) localStorage.setItem("myCities", JSON.stringify(response.data.saved_cities));
+        if (response.data.vocab_cards) localStorage.setItem("vocabCards", JSON.stringify(response.data.vocab_cards));
+        if (response.data.saved_events) localStorage.setItem("savedEvents", JSON.stringify(response.data.saved_events));
+        if (response.data.study_stats) localStorage.setItem("studyStats", JSON.stringify(response.data.study_stats));
         navigate("/");
       }
     } catch (error) {
-      setErrorMsg(error.response?.data?.detail || "Invalid login credentials.");
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail || "";
+      if (status === 404) {
+        setErrorMsg("No account found with this email. Did you mean to register?");
+      } else if (status === 401) {
+        setErrorMsg("Incorrect password. Please try again or reset your password.");
+      } else if (status === 429) {
+        setErrorMsg("Too many login attempts. Please wait a moment and try again.");
+      } else if (detail) {
+        setErrorMsg(detail);
+      } else {
+        setErrorMsg("Something went wrong. Please check your connection and try again.");
+      }
     } finally { setIsSubmitting(false); }
   };
 

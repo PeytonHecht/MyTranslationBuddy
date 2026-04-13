@@ -1,20 +1,65 @@
 """
 Authentication routes for MyTranslationBuddy
-Handles user registration, login, logout, and account deletion.
+Handles user registration, login, logout, JWT tokens, and account deletion.
 Enforces UFL email requirement (@ufl.edu).
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 import bcrypt
 import re
+import jwt
 import httpx
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.database import db
+from app.config import settings
 
 router = APIRouter(prefix="/api", tags=["auth"])
+
+# Rate limiter instance (shared with main.py)
+limiter = Limiter(key_func=get_remote_address)
+
+# Optional bearer — won't 403 if missing, just returns None
+_bearer = HTTPBearer(auto_error=False)
+
+
+# ── JWT Helpers ────────────────────────────────────────────────────
+
+def _create_token(email: str) -> str:
+    """Create a JWT with 72-hour expiry."""
+    payload = {
+        "sub": email,
+        "iat": datetime.now(timezone.utc),
+        "exp": datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expire_hours),
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+
+
+def _decode_token(token: str) -> str:
+    """Decode and return the email from a JWT. Raises HTTPException on failure."""
+    try:
+        payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+        email = payload.get("sub")
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token.")
+        return email
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired. Please sign in again.")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token.")
+
+
+async def get_current_user(creds: HTTPAuthorizationCredentials = Depends(_bearer)):
+    """Dependency: extract the current user email from the Authorization header.
+    Falls back to X-User-Email header for backward compatibility."""
+    if creds and creds.credentials:
+        return _decode_token(creds.credentials)
+    return None
 
 
 # ── Request / Response Models ──────────────────────────────────────
@@ -47,6 +92,8 @@ class UpdatePreferencesRequest(BaseModel):
     interests: Optional[List[str]] = None
     saved_cities: Optional[List[str]] = None
     saved_events: Optional[List[dict]] = None
+    vocab_cards: Optional[List[dict]] = None
+    study_stats: Optional[dict] = None
 
 class ChangePasswordRequest(BaseModel):
     email: EmailStr
@@ -84,7 +131,8 @@ def _validate_password(password: str):
 # ── Routes ─────────────────────────────────────────────────────────
 
 @router.post("/register")
-async def register(req: RegisterRequest):
+@limiter.limit("5/minute")
+async def register(req: RegisterRequest, request: Request):
     """Register a new user. Only @ufl.edu emails are allowed."""
 
     # Enforce UFL email
@@ -108,10 +156,12 @@ async def register(req: RegisterRequest):
         "interests": req.interests or [],
         "saved_cities": [],
         "saved_events": [],
+        "vocab_cards": [],
+        "study_stats": {},
         "is_active": True,
         "role": "user",
-        "created_at": datetime.utcnow(),
-        "updated_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
     }
 
     result = await db.users_auth.users.insert_one(user_doc)
@@ -123,7 +173,8 @@ async def register(req: RegisterRequest):
 
 
 @router.post("/login")
-async def login(req: LoginRequest):
+@limiter.limit("10/minute")
+async def login(req: LoginRequest, request: Request):
     """Authenticate a user. Only @ufl.edu emails are allowed."""
 
     if not UFL_REGEX.match(req.email):
@@ -133,15 +184,23 @@ async def login(req: LoginRequest):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
+    # Block password login for Google-authenticated users
+    if user.get("auth_provider") == "google":
+        raise HTTPException(
+            status_code=400,
+            detail="This account uses Google Sign-In. Please log in with Google instead."
+        )
+
     if not _verify_password(req.password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Invalid email or password.")
 
     if not user.get("is_active", True):
         raise HTTPException(status_code=403, detail="Account is deactivated.")
 
-    # Return user profile data
+    # Return user profile data + JWT
     return {
         "message": "Login successful",
+        "token": _create_token(user["email"]),
         "email": user["email"],
         "full_name": user.get("full_name", ""),
         "study_abroad_city": user.get("study_abroad_city", ""),
@@ -150,18 +209,35 @@ async def login(req: LoginRequest):
         "interests": user.get("interests", []),
         "saved_cities": user.get("saved_cities", []),
         "saved_events": user.get("saved_events", []),
+        "vocab_cards": user.get("vocab_cards", []),
+        "study_stats": user.get("study_stats", {}),
     }
 
 
 @router.post("/logout")
 async def logout(req: LogoutRequest):
-    """Log out a user (clears server-side session marker if any)."""
-    return {"message": "Logged out successfully"}
+    """Log out a user. Records logout timestamp and instructs client to clear local state."""
+    # Record the logout event on the user document
+    user = await db.users_auth.users.find_one({"email": req.email})
+    if user:
+        await db.users_auth.users.update_one(
+            {"email": req.email},
+            {"$set": {"last_logout": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)}}
+        )
+    return {
+        "message": "Logged out successfully",
+        "clear": ["email", "full_name", "study_abroad_city", "myCities"],
+    }
 
 
 @router.post("/delete")
-async def delete_account(req: DeleteRequest):
-    """Delete a user account and all associated data."""
+async def delete_account(req: DeleteRequest, request: Request):
+    """Delete a user account and all associated data. Requires X-User-Email header to match."""
+
+    # Simple auth check: the requesting user must match
+    caller_email = request.headers.get("X-User-Email", "")
+    if caller_email != req.email:
+        raise HTTPException(status_code=403, detail="You can only delete your own account.")
 
     user = await db.users_auth.users.find_one({"email": req.email})
     if not user:
@@ -177,8 +253,12 @@ async def delete_account(req: DeleteRequest):
 
 
 @router.get("/user/profile")
-async def get_profile(email: str):
-    """Get user profile by email."""
+async def get_profile(email: str, request: Request):
+    """Get user profile by email. Requires X-User-Email header to match."""
+    caller_email = request.headers.get("X-User-Email", "")
+    if caller_email != email:
+        raise HTTPException(status_code=403, detail="You can only view your own profile.")
+
     user = await db.users_auth.users.find_one({"email": email})
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
@@ -192,19 +272,25 @@ async def get_profile(email: str):
         "interests": user.get("interests", []),
         "saved_cities": user.get("saved_cities", []),
         "saved_events": user.get("saved_events", []),
+        "vocab_cards": user.get("vocab_cards", []),
+        "study_stats": user.get("study_stats", {}),
         "created_at": user.get("created_at"),
     }
 
 
 @router.put("/user/profile")
-async def update_profile(req: UpdatePreferencesRequest):
-    """Update user preferences / profile info."""
+async def update_profile(req: UpdatePreferencesRequest, request: Request):
+    """Update user preferences / profile info. Requires X-User-Email header to match."""
+
+    caller_email = request.headers.get("X-User-Email", "")
+    if caller_email != req.email:
+        raise HTTPException(status_code=403, detail="You can only update your own profile.")
 
     user = await db.users_auth.users.find_one({"email": req.email})
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
-    update_fields = {"updated_at": datetime.utcnow()}
+    update_fields = {"updated_at": datetime.now(timezone.utc)}
     if req.full_name is not None:
         update_fields["full_name"] = req.full_name
     if req.study_abroad_city is not None:
@@ -219,6 +305,10 @@ async def update_profile(req: UpdatePreferencesRequest):
         update_fields["saved_cities"] = req.saved_cities
     if req.saved_events is not None:
         update_fields["saved_events"] = req.saved_events
+    if req.vocab_cards is not None:
+        update_fields["vocab_cards"] = req.vocab_cards
+    if req.study_stats is not None:
+        update_fields["study_stats"] = req.study_stats
 
     await db.users_auth.users.update_one(
         {"email": req.email},
@@ -236,6 +326,13 @@ async def change_password(req: ChangePasswordRequest):
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
 
+    # Block password changes for Google-authenticated users
+    if user.get("auth_provider") == "google":
+        raise HTTPException(
+            status_code=400,
+            detail="Google accounts cannot change passwords. Manage your password through Google."
+        )
+
     if not _verify_password(req.current_password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Current password is incorrect.")
 
@@ -245,7 +342,7 @@ async def change_password(req: ChangePasswordRequest):
         {"email": req.email},
         {"$set": {
             "hashed_password": _hash_password(req.new_password),
-            "updated_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
         }}
     )
 
@@ -284,7 +381,9 @@ async def google_auth(req: GoogleAuthRequest):
 
     # Find or create user
     user = await db.users_auth.users.find_one({"email": email})
+    is_new_user = False
     if not user:
+        is_new_user = True
         user_doc = {
             "email": email,
             "hashed_password": "",  # Google users don't need a password
@@ -295,17 +394,23 @@ async def google_auth(req: GoogleAuthRequest):
             "interests": [],
             "saved_cities": [],
             "saved_events": [],
+            "vocab_cards": [],
+            "study_stats": {},
             "is_active": True,
             "role": "user",
             "auth_provider": "google",
-            "created_at": datetime.utcnow(),
-            "updated_at": datetime.utcnow(),
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
         }
         await db.users_auth.users.insert_one(user_doc)
         user = user_doc
 
+    # If user has no study_abroad_city set, flag them for setup
+    needs_setup = not user.get("study_abroad_city", "")
+
     return {
         "message": "Google login successful",
+        "token": _create_token(email),
         "email": user["email"],
         "full_name": user.get("full_name", full_name),
         "study_abroad_city": user.get("study_abroad_city", ""),
@@ -314,4 +419,38 @@ async def google_auth(req: GoogleAuthRequest):
         "interests": user.get("interests", []),
         "saved_cities": user.get("saved_cities", []),
         "saved_events": user.get("saved_events", []),
+        "vocab_cards": user.get("vocab_cards", []),
+        "study_stats": user.get("study_stats", {}),
+        "needs_setup": needs_setup,
+        "is_new_user": is_new_user,
+    }
+
+
+# ── Session restore via JWT ─────────────────────────────────────
+
+@router.get("/me")
+async def me(email: str = Depends(get_current_user)):
+    """Return the current user's full profile from a JWT.
+    Used by the frontend to restore sessions on page reload."""
+
+    if not email:
+        raise HTTPException(status_code=401, detail="Not authenticated.")
+
+    user = await db.users_auth.users.find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    return {
+        "email": user["email"],
+        "full_name": user.get("full_name", ""),
+        "study_abroad_city": user.get("study_abroad_city", ""),
+        "major": user.get("major", ""),
+        "graduation_year": user.get("graduation_year"),
+        "interests": user.get("interests", []),
+        "saved_cities": user.get("saved_cities", []),
+        "saved_events": user.get("saved_events", []),
+        "vocab_cards": user.get("vocab_cards", []),
+        "study_stats": user.get("study_stats", {}),
+        "auth_provider": user.get("auth_provider", "local"),
+        "token": _create_token(email),  # refresh the token
     }
