@@ -67,7 +67,7 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) { setErrorMsg("Please fill in all required fields."); return; }
+    if (!email || !password || !confirmPassword || !fullName || !studyCity) { setErrorMsg("Please fill in all required fields."); return; }
     if (!email.toLowerCase().endsWith("@ufl.edu")) { setErrorMsg("Only @ufl.edu email addresses are allowed."); return; }
     const pwErr = validatePassword(password);
     if (pwErr) { setErrorMsg(pwErr); return; }
@@ -115,7 +115,7 @@ const Register = () => {
 
           <div style={S.form}>
             <div style={S.field}>
-              <label style={S.label}>Full Name</label>
+              <label style={S.label}>Full Name <span style={{color:"#DC2626"}}>*</span></label>
               <input type="text" placeholder="Your full name" value={fullName}
                 onChange={e => { setFullName(e.target.value); if (errorMsg) setErrorMsg(""); }}
                 onKeyDown={handleKeyDown} style={S.input} />
@@ -135,7 +135,7 @@ const Register = () => {
                   onChange={e => setMajor(e.target.value)} style={S.input} />
               </div>
               <div style={{...S.field, flex:1}}>
-                <label style={S.label}>Study City</label>
+                <label style={S.label}>Study City <span style={{color:"#DC2626"}}>*</span></label>
                 <input type="text" placeholder="e.g. Berlin" value={studyCity}
                   onChange={e => setStudyCity(e.target.value)} style={S.input} />
               </div>

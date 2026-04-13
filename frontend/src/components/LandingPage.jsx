@@ -97,6 +97,64 @@ const TRAVEL_ROUTES = [
   { from:"wurzburg", to:"berlin", time:"3.5h", price:"€35", type:"🚄 ICE" },
 ];
 
+// Weather hook — fetches real data from Open-Meteo (free, no API key)
+const useWeather = (slugs) => {
+  const [weatherMap, setWeatherMap] = useState({});
+
+  useEffect(() => {
+    if (!slugs || slugs.length === 0) return;
+
+    const fetchAll = async () => {
+      const results = {};
+      await Promise.all(
+        slugs.map(async (slug) => {
+          const city = CITY_COORDS.find(c => c.slug === slug);
+          if (!city) return;
+          try {
+            const res = await fetch(
+              `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lng}&current=temperature_2m,weathercode,windspeed_10m&daily=temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=auto&forecast_days=1`
+            );
+            const data = await res.json();
+            const code = data.current?.weathercode ?? 0;
+            results[slug] = {
+              hi: Math.round(data.daily?.temperature_2m_max?.[0] ?? data.current?.temperature_2m ?? 0),
+              lo: Math.round(data.daily?.temperature_2m_min?.[0] ?? 0),
+              temp: Math.round(data.current?.temperature_2m ?? 0),
+              wind: Math.round(data.current?.windspeed_10m ?? 0),
+              icon: wmoCond(code).icon,
+              cond: wmoCond(code).cond,
+              sunrise: data.daily?.sunrise?.[0]?.slice(11) ?? "—",
+              sunset: data.daily?.sunset?.[0]?.slice(11) ?? "—",
+            };
+          } catch {
+            results[slug] = null;
+          }
+        })
+      );
+      setWeatherMap(results);
+    };
+
+    fetchAll();
+  }, [slugs.join(",")]);
+
+  return weatherMap;
+};
+
+// WMO weather code → icon + label
+const wmoCond = (code) => {
+  if (code === 0) return { icon: "☀️", cond: "Clear & sunny" };
+  if (code <= 2) return { icon: "⛅", cond: "Partly cloudy" };
+  if (code === 3) return { icon: "☁️", cond: "Overcast" };
+  if (code <= 49) return { icon: "🌫️", cond: "Foggy" };
+  if (code <= 55) return { icon: "🌦️", cond: "Light drizzle" };
+  if (code <= 65) return { icon: "🌧️", cond: "Rainy" };
+  if (code <= 77) return { icon: "❄️", cond: "Snowy" };
+  if (code <= 82) return { icon: "🌧️", cond: "Rain showers" };
+  if (code <= 86) return { icon: "🌨️", cond: "Snow showers" };
+  if (code <= 99) return { icon: "⛈️", cond: "Thunderstorms" };
+  return { icon: "🌡️", cond: "Unknown" };
+};
+
 /* Helper: returns true if a route is free with Deutschland Semesterticket.
    The €49 Deutschland-Semesterticket covers ALL regional trains (RE, RB,
    S-Bahn, local buses, trams) anywhere in Germany — no city restriction.
@@ -261,6 +319,7 @@ const LandingPage = () => {
   const userCity = userData.city;
   const userCities = userData.cities;
   const userCityData = CITY_COORDS.find(c => c.slug === userCity || c.name.toLowerCase() === userCity.toLowerCase());
+  const weatherMap = useWeather(userCities);
 
   // Re-read localStorage whenever it changes (e.g. after profile update or city picker save)
   useEffect(() => {
@@ -1058,8 +1117,10 @@ const LandingPage = () => {
                   const pin = CITY_COORDS.find(c => c.slug === slug);
                   if (!pin) return null;
 
-                  const seed = (dayIdx * 7 + pin.name.length * 3 + cardIdx) % WEATHER_POOL.length;
-                  const weather = WEATHER_POOL[seed];
+                  const weather = weatherMap[slug] ?? {
+                    icon: "⏳", cond: "Loading...", hi: "—", lo: "—",
+                    sunrise: "—", sunset: "—",
+                  };
                   const phrase = DAILY_PHRASES[(dayIdx + pin.name.charCodeAt(0)) % DAILY_PHRASES.length];
                   const tips = LOCAL_TIPS[slug] || LOCAL_TIPS.default;
                   const tip = tips[(dayIdx + cardIdx) % tips.length];
@@ -1145,12 +1206,14 @@ const LandingPage = () => {
                             const mo = now.getMonth();
                             return (
                               <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
-                                <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#F59E0B,#D97706)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🌅</div>
-                                <div style={{flex:1,minWidth:0}}>
-                                  <p style={{fontSize:"0.58rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Daylight</p>
-                                  <p style={{fontSize:"0.75rem",color:"#78350F",margin:0,lineHeight:1.4,fontWeight:500}}>☀️ Sunrise ~{sunriseHours[mo]}:{String((dayIdx*17)%60).padStart(2,"0")}am &nbsp;·&nbsp; 🌇 Sunset ~{sunsetHours[mo]}:{String((dayIdx*23)%60).padStart(2,"0")}pm</p>
-                                </div>
+                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#F59E0B,#D97706)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🌅</div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Daylight</p>
+                                <p style={{fontSize:"0.75rem",color:"#78350F",margin:0,lineHeight:1.4,fontWeight:500}}>
+                                  ☀️ Sunrise {weather.sunrise ?? "—"} &nbsp;·&nbsp; 🌇 Sunset {weather.sunset ?? "—"}
+                                </p>
                               </div>
+                            </div>
                             );
                           })()}
 
