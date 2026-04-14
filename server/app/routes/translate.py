@@ -1,67 +1,80 @@
 from fastapi import APIRouter, HTTPException
 import httpx
 import logging
+import urllib.parse
 from app.schemas.translation import TranslationCreate
+from app.config import settings
 
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter(prefix="/api", tags=["translate"])
 
-LIBRETRANSLATE_URL = "http://localhost:5000"
+
+async def _translate_via_libretranslate(text: str, source: str, target: str) -> str:
+    """Try LibreTranslate (local Docker). Returns translated text or raises."""
+    libretranslate_url = settings.libretranslate_url.rstrip("/")
+    payload = {
+        "q": text,
+        "source": source,
+        "target": target,
+        "format": "text",
+    }
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        response = await client.post(
+            f"{libretranslate_url}/translate",
+            json=payload,
+            headers={"Content-Type": "application/json"},
+        )
+    if response.status_code < 200 or response.status_code >= 300:
+        raise Exception(f"LibreTranslate {response.status_code}: {response.text}")
+    data = response.json()
+    translated = data.get("translatedText")
+    if not translated:
+        raise Exception(f"Unexpected LibreTranslate response: {data}")
+    return translated
+
+
+async def _translate_via_google(text: str, source: str, target: str) -> str:
+    """Fallback: Google Translate (free, no API key, no rate limits for normal usage)."""
+    url = "https://translate.googleapis.com/translate_a/single"
+    params = {
+        "client": "gtx",
+        "sl": source,
+        "tl": target,
+        "dt": "t",
+        "q": text,
+    }
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        response = await client.get(url, params=params)
+    if response.status_code != 200:
+        raise Exception(f"Google Translate {response.status_code}: {response.text}")
+    data = response.json()
+    # Response format: [[["translated text","source text",...],...],...] 
+    translated = "".join(part[0] for part in data[0] if part[0])
+    if not translated:
+        raise Exception(f"Unexpected Google Translate response: {data}")
+    return translated
+
 
 @router.post("/translate")
 async def translate(req: TranslationCreate):
-    """
-    Proxy translation requests to the public LibreTranslate instance.
+    source = req.source_language.value
+    target = req.target_language.value
+    text = req.source_text
 
-    Keeps the existing API contract for the frontend:
-      Request:  { source_text, source_language, target_language }
-      Response: { translation: "<translated text>" }
-    """
-    # Your schema currently uses enums (req.source_language.value, req.target_language.value).
-    # Those values MUST be LibreTranslate language codes like "en", "de", "es", or "auto".
-    source = (req.source_language.value or "auto").strip().lower()
-    target = (req.target_language.value or "").strip().lower()
-    text = (req.source_text or "").strip()
-
-    if not text:
-        raise HTTPException(status_code=400, detail="source_text is required")
-    if not target:
-        raise HTTPException(status_code=400, detail="target_language is required")
-
-    payload = {
-        "q": text,
-        "source": source,   # "auto" allowed
-        "target": target,   # e.g. "en"
-        "format": "text",
-        # "alternatives": 3,  # optional: enable if you want multiple options
-        # api_key omitted for public instance
-    }
-
+    # Try LibreTranslate first (works locally with Docker)
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{LIBRETRANSLATE_URL}/translate",
-                json=payload,
-                headers={"Content-Type": "application/json"},
-            )
+        translated = await _translate_via_libretranslate(text, source, target)
+        return {"translation": translated}
+    except Exception as e:
+        logger.info("LibreTranslate unavailable (%s), trying Google Translate fallback", e)
 
-        if response.status_code < 200 or response.status_code >= 300:
-            # LibreTranslate often returns useful JSON errors; include body for debugging
-            raise HTTPException(
-                status_code=502,
-                detail=f"LibreTranslate error {response.status_code}: {response.text}",
-            )
-
-        data = response.json()
-        translation = data.get("translatedText")
-
-        if not translation:
-            raise HTTPException(status_code=502, detail=f"Unexpected LibreTranslate response: {data}")
-
-        return {"translation": translation}
-
-    except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="LibreTranslate API timed out")
-    except httpx.RequestError as e:
-        # network errors, DNS, connection reset, etc.
-        raise HTTPException(status_code=502, detail=f"LibreTranslate request failed: {e}")
+    # Fallback: Google Translate (reliable, no key needed)
+    try:
+        translated = await _translate_via_google(text, source, target)
+        return {"translation": translated}
+    except Exception as e:
+        logger.error("All translation services failed: %s", e)
+        raise HTTPException(
+            status_code=503,
+            detail="Translation service temporarily unavailable. Please try again later.",
+        )

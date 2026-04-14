@@ -213,9 +213,29 @@ async def init_indexes() -> None:
             [("user_email", ASCENDING), ("created_at", DESCENDING)],
         )
 
-        # Users indexes (auth routes currently exist, even if auth is not a focus)
+        # Phrase bookmark helper: standalone phrase_id for cascade deletes
+        await db.phrases_vocabulary.phrase_bookmarks.create_index("phrase_id")
+
+        # Users indexes
         await db.users_auth.users.create_index("email", unique=True)
-        
+
+        # User sessions indexes (future-proof for session management)
+        await db.users_auth.user_sessions.create_index("user_email")
+        await db.users_auth.user_sessions.create_index("email")
+        await db.users_auth.user_sessions.create_index(
+            "expires_at", expireAfterSeconds=0
+        )
+
+        # Translation history indexes
+        await db.translation_history.translations.create_index("user_email")
+        await db.translation_history.translations.create_index(
+            [("user_email", ASCENDING), ("created_at", DESCENDING)]
+        )
+        await db.translation_history.saved_translations.create_index("user_email")
+        await db.translation_history.saved_translations.create_index(
+            [("user_email", ASCENDING), ("created_at", DESCENDING)]
+        )
+
         print("✓ Database indexes initialized successfully")
     except Exception as e:
         print(f"⚠ Error initializing indexes: {e}")

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // Ensure this path matches your logo file
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import logo from "../assets/MTBLogo.png";
+import { API_BASE } from "../config.js";
 
 const UpdatePassword = () => {
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const UpdatePassword = () => {
 
     try {
       // Using the Vite proxy to route to your FastAPI backend
-      const response = await fetch("/api/user/change-password", {
+      const response = await fetch(`${API_BASE}/api/user/change-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

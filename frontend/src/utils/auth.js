@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_BASE } from "../config.js";
 
 /**
  * Shared logout utility — call from any component.
@@ -8,7 +9,7 @@ export async function handleLogout(navigate) {
   try {
     const userEmail = localStorage.getItem("email");
     if (userEmail) {
-      await axios.post("/api/logout", { email: userEmail });
+      await axios.post(`${API_BASE}/api/logout`, { email: userEmail });
     }
   } catch (err) {
     console.error("Logout error:", err);
@@ -36,8 +37,15 @@ export async function handleLogout(navigate) {
   localStorage.removeItem("eventPhraseBookmarks");
   localStorage.removeItem("eventbrite_token");
   
-  // Reload the page to reset all component state
-  window.location.href = "/";
+  // Notify all components that auth state changed so they re-read from localStorage
+  window.dispatchEvent(new Event("mtb-auth-change"));
+
+  // Navigate via router instead of hard reload (works with HashRouter)
+  if (navigate) {
+    navigate("/");
+  } else {
+    window.location.href = window.location.pathname + "#/";
+  }
 }
 
 /**
@@ -83,6 +91,9 @@ export function saveUserSession(data) {
     if (Array.isArray(data.study_stats.translation_history)) localStorage.setItem("twHistory", JSON.stringify(data.study_stats.translation_history));
   }
   if (Array.isArray(data.reservations)) localStorage.setItem("reservations", JSON.stringify(data.reservations));
+
+  // Notify all components that auth state changed so they re-read from localStorage
+  window.dispatchEvent(new Event("mtb-auth-change"));
 }
 
 /**
@@ -104,7 +115,7 @@ export async function restoreSession() {
   const token = localStorage.getItem("token");
   if (!token) return null;
   try {
-    const res = await axios.get("/api/me", {
+    const res = await axios.get(`${API_BASE}/api/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.status === 200 && res.data.email) {

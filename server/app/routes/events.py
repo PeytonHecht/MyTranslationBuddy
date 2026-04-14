@@ -26,6 +26,8 @@ async def proxy_ticketmaster_events(
     page: int = Query(0, description="Page number"),
     startDateTime: Optional[str] = Query(None, description="Start date/time in ISO 8601 format"),
     endDateTime: Optional[str] = Query(None, description="End date/time in ISO 8601 format"),
+    segmentId: Optional[str] = Query(None, description="Ticketmaster segment ID(s) for category filtering"),
+    sort: Optional[str] = Query("date,asc", description="Sort order (date,asc | date,desc | relevance,desc | name,asc)"),
 ):
     """
     Proxy endpoint for Ticketmaster Discovery API.
@@ -36,7 +38,7 @@ async def proxy_ticketmaster_events(
         "countryCode": countryCode,
         "size": size,
         "page": page,
-        "sort": "date,asc",
+        "sort": sort or "date,asc",
     }
 
     if keyword:
@@ -47,6 +49,8 @@ async def proxy_ticketmaster_events(
         params["startDateTime"] = startDateTime
     if endDateTime:
         params["endDateTime"] = endDateTime
+    if segmentId:
+        params["segmentId"] = segmentId
 
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:

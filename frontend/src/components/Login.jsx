@@ -4,7 +4,8 @@ import axios from "axios";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { saveUserSession } from "../utils/auth.js";
 import { GOOGLE_CLIENT_ID } from "../constants/cities.js";
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import { API_BASE } from "../config.js";
+import logo from "../assets/MTBLogo.png";
 
 /* ── Keyframes (injected once) ────────────────────── */
 if (!document.getElementById("auth-kf")) {
@@ -45,7 +46,7 @@ const Login = () => {
 
   googleCallbackRef.current = async (response) => {
     try {
-      const res = await axios.post("/api/auth/google", { credential: response.credential });
+      const res = await axios.post(`${API_BASE}/api/auth/google`, { credential: response.credential });
       if (res.status === 200) { saveUserSession(res.data); navigate(res.data.needs_setup ? "/profile" : "/"); }
     } catch (err) { setErrorMsg(err.response?.data?.detail || "Google sign-in failed."); }
   };
@@ -69,7 +70,7 @@ const Login = () => {
     if (!email.toLowerCase().endsWith("@ufl.edu")) { setErrorMsg("Only @ufl.edu emails allowed."); return; }
     setIsSubmitting(true);
     try {
-      const r = await axios.post("/api/login", { email, password });
+      const r = await axios.post(`${API_BASE}/api/login`, { email, password });
       if (r.status === 200) { saveUserSession(r.data); navigate("/"); }
     } catch (error) {
       const s = error.response?.status, d = error.response?.data?.detail || "";

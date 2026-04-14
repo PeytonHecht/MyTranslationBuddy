@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
@@ -8,10 +8,11 @@ import {
   Search, ChevronDown, Train, ExternalLink, Plane, Clock,
   DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen, LogOut
 } from "lucide-react";
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import logo from "../assets/MTBLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
+import { API_BASE } from "../config.js";
 
-const BACKEND = "/api";
+const BACKEND = API_BASE + "/api";
 
 const CITY_COORDS = [
   { slug:"berlin", name:"Berlin", lat:52.52, lng:13.405, country:"DE", desc:"Capital city — world-class museums, vibrant nightlife, street art & startup culture. Great public transit, tons of student life.", uni:"FU Berlin, HU Berlin, TU Berlin", cost:"€800–1100/mo", beer:"€3.50", transit:"Semester ticket included", vibe:"Creative & edgy", mustDo:"Free museum Sundays, Mauerpark flea market" },
@@ -156,6 +157,323 @@ const wmoCond = (code) => {
   return { icon: "🌡️", cond: "Unknown" };
 };
 
+// Exchange rate hook — fetches live EUR↔CHF↔USD rates (free, no key)
+const useExchangeRates = () => {
+  const [rates, setRates] = useState(null);
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const data = await res.json();
+        if (data.result === "success" && data.rates) {
+          const usd_eur = data.rates.EUR;
+          const usd_chf = data.rates.CHF;
+          setRates({
+            usd_eur: usd_eur?.toFixed(2),
+            usd_chf: usd_chf?.toFixed(2),
+            eur_chf: (usd_chf / usd_eur)?.toFixed(2),
+            eur_usd: (1 / usd_eur)?.toFixed(2),
+          });
+        }
+      } catch { /* silent fail — rates are a nice-to-have */ }
+    };
+    fetchRates();
+  }, []);
+  return rates;
+};
+
+// Holidays hook — fetches REAL public holidays from Nager.Date API (free, no key)
+const useHolidays = (countryCodes = ["DE", "AT", "CH"]) => {
+  const [holidays, setHolidays] = useState([]);
+  useEffect(() => {
+    const fetchHolidays = async () => {
+      try {
+        const year = new Date().getFullYear();
+        const allHolidays = [];
+        await Promise.all(
+          countryCodes.map(async (cc) => {
+            try {
+              const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${cc}`);
+              if (!res.ok) return;
+              const data = await res.json();
+              data.forEach(h => {
+                allHolidays.push({
+                  name: h.localName || h.name,
+                  nameEn: h.name,
+                  date: h.date,
+                  country: cc,
+                  counties: h.counties,
+                });
+              });
+              // Also fetch next year's first few months for wrap-around
+              const res2 = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year + 1}/${cc}`);
+              if (res2.ok) {
+                const data2 = await res2.json();
+                data2.slice(0, 5).forEach(h => {
+                  allHolidays.push({
+                    name: h.localName || h.name,
+                    nameEn: h.name,
+                    date: h.date,
+                    country: cc,
+                    counties: h.counties,
+                  });
+                });
+              }
+            } catch { /* skip this country */ }
+          })
+        );
+        // Sort by date and deduplicate by name+date
+        const seen = new Set();
+        const unique = allHolidays
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .filter(h => {
+            const key = `${h.date}-${h.nameEn}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        setHolidays(unique);
+      } catch { /* silent fail */ }
+    };
+    fetchHolidays();
+  }, [countryCodes.join(",")]);
+
+  // Helper: get next upcoming holiday from today
+  const getNextHoliday = (countryCode) => {
+    const today = new Date().toISOString().split("T")[0];
+    return holidays.find(h =>
+      h.date >= today && (!countryCode || h.country === countryCode)
+    );
+  };
+
+  return { holidays, getNextHoliday };
+};
+
+// Air Quality hook — fetches AQI from Open-Meteo Air Quality API (free, no key)
+const useAirQuality = (slugs) => {
+  const [aqiMap, setAqiMap] = useState({});
+  useEffect(() => {
+    if (!slugs || slugs.length === 0) return;
+    const fetchAll = async () => {
+      const results = {};
+      await Promise.all(
+        slugs.map(async (slug) => {
+          const city = CITY_COORDS.find(c => c.slug === slug);
+          if (!city) return;
+          try {
+            const res = await fetch(
+              `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${city.lat}&longitude=${city.lng}&current=european_aqi,pm2_5,pm10`
+            );
+            const data = await res.json();
+            const aqi = data.current?.european_aqi ?? null;
+            const pm25 = data.current?.pm2_5 ?? null;
+            let label = "—", color = "#9CA3AF", emoji = "🌫️";
+            if (aqi !== null) {
+              if (aqi <= 20) { label = "Excellent"; color = "#059669"; emoji = "🟢"; }
+              else if (aqi <= 40) { label = "Good"; color = "#10B981"; emoji = "🟢"; }
+              else if (aqi <= 60) { label = "Moderate"; color = "#F59E0B"; emoji = "🟡"; }
+              else if (aqi <= 80) { label = "Poor"; color = "#EF4444"; emoji = "🟠"; }
+              else if (aqi <= 100) { label = "Very Poor"; color = "#DC2626"; emoji = "🔴"; }
+              else { label = "Hazardous"; color = "#7F1D1D"; emoji = "🔴"; }
+            }
+            results[slug] = { aqi, pm25, label, color, emoji };
+          } catch { results[slug] = null; }
+        })
+      );
+      setAqiMap(results);
+    };
+    fetchAll();
+  }, [slugs.join(",")]);
+  return aqiMap;
+};
+
+/**
+ * Location-based fun facts — keyed by city slug.
+ * Falls back to country-level facts, then generic DACH facts.
+ * Randomizes on each render (different on every refresh).
+ */
+const CITY_FUN_FACTS = {
+  berlin: [
+    { fact: "Berlin has more bridges than Venice — roughly 960 compared to Venice's 400.", emoji: "🌉" },
+    { fact: "Tempelhof Airport was converted into one of the world's largest urban parks in 2010.", emoji: "✈️" },
+    { fact: "Berlin's U-Bahn system has 175 stations — some still have original 1902 Art Nouveau tiles.", emoji: "🚇" },
+    { fact: "Kreuzberg's Turkish market on Maybachufer is the biggest in Europe outside Turkey.", emoji: "🛒" },
+    { fact: "Berlin has more museums than rainy days — over 170 museums in total.", emoji: "🏛️" },
+    { fact: "The Berlin Wall stood for 10,316 days. It's been down longer than it was up since Feb 2018.", emoji: "🧱" },
+    { fact: "Berghain was a power plant before it became the world's most famous nightclub.", emoji: "🎵" },
+    { fact: "Berlin is 9× the size of Paris but has less than half its population density.", emoji: "🏙️" },
+    { fact: "Currywurst was invented in Berlin in 1949 — there's even a museum dedicated to it.", emoji: "🌭" },
+    { fact: "Berlin has more döner kebab shops than Istanbul.", emoji: "🥙" },
+  ],
+  munich: [
+    { fact: "The Eisbach river wave in Munich's English Garden has been illegally surfed since the 1970s.", emoji: "🏄" },
+    { fact: "Munich's Hofbräuhaus serves about 10,000 liters of beer per day.", emoji: "🍺" },
+    { fact: "Oktoberfest was originally a wedding celebration for Crown Prince Ludwig in 1810.", emoji: "🎪" },
+    { fact: "The English Garden is larger than Central Park — 375 hectares of urban green.", emoji: "🌳" },
+    { fact: "Munich's Marienplatz Glockenspiel plays at 11am and 12pm — it has 43 bells and 32 figures.", emoji: "⛪" },
+    { fact: "Bavaria has more breweries than any other German state — over 600.", emoji: "🍻" },
+    { fact: "BMW stands for Bayerische Motoren Werke — the HQ in Munich is shaped like a 4-cylinder engine.", emoji: "🚗" },
+    { fact: "Munich's Viktualienmarkt has been an outdoor food market since 1807.", emoji: "🍽️" },
+    { fact: "The word 'Lederhosen' means 'leather trousers' and they were originally Alpine workwear.", emoji: "👖" },
+    { fact: "Biergartens in Munich let you bring your own food — just buy the beer there. It's the law.", emoji: "🍺" },
+  ],
+  hamburg: [
+    { fact: "Hamburg has more bridges than any city in Europe — about 2,500 total.", emoji: "🌉" },
+    { fact: "The Beatles played 281 shows in Hamburg before they became famous.", emoji: "🎤" },
+    { fact: "Hamburg's Speicherstadt is the world's largest warehouse district built on timber-pile foundations.", emoji: "🏛️" },
+    { fact: "Hamburgers aren't from Hamburg, but the Hamburg steak — minced beef — was.", emoji: "🍔" },
+    { fact: "The Elbphilharmonie took 10 years to build and cost €866 million (10× over budget).", emoji: "🎵" },
+    { fact: "Hamburg's Fischmarkt has been running every Sunday since 1703.", emoji: "🐟" },
+    { fact: "The city has its own miniature country — the Speicherstadt was a free port zone until 2003.", emoji: "🏗️" },
+    { fact: "Hamburg is Germany's media capital — more magazines are published here than in any other city.", emoji: "📰" },
+  ],
+  vienna: [
+    { fact: "Vienna's coffee house culture is a UNESCO Intangible Cultural Heritage since 2011.", emoji: "☕" },
+    { fact: "You can get standing-room tickets at the Vienna State Opera for just €13.", emoji: "🎵" },
+    { fact: "The Wiener Prater Ferris wheel has been spinning since 1897.", emoji: "🎡" },
+    { fact: "The Naschmarkt has been Vienna's most popular market since the 16th century.", emoji: "🛒" },
+    { fact: "Vienna was voted the world's most liveable city 10 times in a row by Mercer.", emoji: "🏙️" },
+    { fact: "Wiener Schnitzel must be veal to be authentic — anything else is 'Schnitzel Wiener Art'.", emoji: "🍽️" },
+    { fact: "Sigmund Freud lived in Vienna for 79 years — his apartment is now a museum.", emoji: "🧠" },
+    { fact: "Vienna's public transit annual pass costs just €365 — exactly €1 per day.", emoji: "🚇" },
+    { fact: "The Vienna Philharmonic's New Year's Concert is broadcast to over 90 countries.", emoji: "🎻" },
+    { fact: "Sachertorte was invented at Hotel Sacher in 1832 — they still use the original recipe.", emoji: "🍫" },
+  ],
+  zurich: [
+    { fact: "You can swim in the Limmat river right in Zurich's city center — it's clean enough!", emoji: "🏊" },
+    { fact: "Zurich's Bahnhofstrasse is one of the most expensive shopping streets in the world.", emoji: "🛍️" },
+    { fact: "Einstein developed his theory of relativity while studying at ETH Zurich.", emoji: "�" },
+    { fact: "Zurich has over 1,200 fountains — all flowing with drinkable water.", emoji: "⛲" },
+    { fact: "The Swiss National Museum in Zurich looks like a fairy-tale castle but opened in 1898.", emoji: "🏰" },
+    { fact: "Zurich's Lake promenade offers free swimming spots called 'Badis' all summer long.", emoji: "☀️" },
+  ],
+  bern: [
+    { fact: "Bern's old town is a UNESCO World Heritage Site with 6 km of covered arcades.", emoji: "🏛️" },
+    { fact: "The Bear Park houses real bears — Bern's heraldic animal since at least 1224.", emoji: "�" },
+    { fact: "Einstein wrote his theory of special relativity while working at the Bern patent office.", emoji: "🔬" },
+    { fact: "Locals swim the Aare river through the city center every summer — it's a Bern tradition.", emoji: "🏊" },
+    { fact: "The Zytglogge clock tower has been running since 1530 — its figures animate every hour.", emoji: "🕰️" },
+    { fact: "Bern is the de facto capital of Switzerland, but officially it's called the 'Federal City'.", emoji: "�️" },
+  ],
+  salzburg: [
+    { fact: "Salzburg is Mozart's birthplace AND where 'The Sound of Music' was filmed.", emoji: "🎵" },
+    { fact: "The Hohensalzburg Fortress is one of the largest medieval castles in Europe.", emoji: "🏰" },
+    { fact: "Salzburg literally means 'Salt Castle' — the city grew rich from salt mining.", emoji: "🧂" },
+    { fact: "The Salzburg Festival is one of the most prestigious arts festivals in the world since 1920.", emoji: "🎭" },
+    { fact: "Salzburg's old town is so well-preserved it's a UNESCO World Heritage Site.", emoji: "🏛️" },
+    { fact: "Stiegl brewery in Salzburg is Austria's largest private brewery, founded in 1492.", emoji: "🍺" },
+  ],
+  graz: [
+    { fact: "Graz is Austria's second-largest city and a UNESCO City of Design.", emoji: "🎨" },
+    { fact: "The Kunsthaus Graz is nicknamed the 'Friendly Alien' for its blob-like shape.", emoji: "👽" },
+    { fact: "Graz's old town is a UNESCO World Heritage Site with the best-preserved city center in Central Europe.", emoji: "🏛️" },
+    { fact: "The Schlossberg hill in the center of Graz has a free lift to the top for panoramic views.", emoji: "🏔️" },
+    { fact: "Arnold Schwarzenegger grew up near Graz — there's a stadium named after him.", emoji: "💪" },
+    { fact: "Graz has more students per capita than almost any other Austrian city.", emoji: "🎓" },
+  ],
+  stuttgart: [
+    { fact: "Both Mercedes-Benz and Porsche were founded in Stuttgart.", emoji: "🚗" },
+    { fact: "Stuttgart's Stäffele (outdoor staircases) total over 600 flights — great for urban hiking.", emoji: "🥾" },
+    { fact: "The Mercedes-Benz Museum in Stuttgart is €5 after 4pm — great budget culture fix.", emoji: "�️" },
+    { fact: "Stuttgart sits in a valley surrounded by vineyards — one of few German cities with urban wineries.", emoji: "🍷" },
+    { fact: "The Cannstatter Volksfest is Stuttgart's version of Oktoberfest — and it's actually older.", emoji: "🎪" },
+    { fact: "Stuttgart's TV Tower was the world's first telecommunications tower built of reinforced concrete.", emoji: "📡" },
+  ],
+  leipzig: [
+    { fact: "Bach was cantor at St. Thomas Church in Leipzig for 27 years — free organ concerts on Fridays.", emoji: "🎵" },
+    { fact: "Leipzig's Spinnerei is a former cotton mill turned into Europe's largest art gallery complex.", emoji: "🎨" },
+    { fact: "The Peaceful Revolution of 1989 that led to German reunification started in Leipzig.", emoji: "✌️" },
+    { fact: "Karl-Liebknecht-Straße (KarLi) is Leipzig's student bar strip — €2.50 beers all night.", emoji: "�" },
+    { fact: "Leipzig has been called 'Hypezig' — it's one of Germany's fastest-growing creative hubs.", emoji: "🎭" },
+    { fact: "Goethe set his play 'Faust' in Auerbachs Keller — you can still drink there today.", emoji: "🍷" },
+  ],
+  mannheim: [
+    { fact: "The University of Mannheim is literally inside a Baroque palace — the Schloss.", emoji: "🏰" },
+    { fact: "Mannheim's grid layout earned it the nickname 'Quadratestadt' — addresses are block numbers.", emoji: "🗺️" },
+    { fact: "Karl Benz built the first automobile in Mannheim in 1886.", emoji: "🚗" },
+    { fact: "Heidelberg Castle is only 20 minutes from Mannheim by S-Bahn.", emoji: "🏰" },
+    { fact: "Mannheim's Luisenpark was voted Germany's most beautiful park.", emoji: "🌳" },
+    { fact: "The SAP Arena in Mannheim hosts Germany's best ice hockey team, the Adler.", emoji: "🏒" },
+  ],
+  bonn: [
+    { fact: "Beethoven was born in Bonn in 1770 — his birth house is now a museum.", emoji: "🎵" },
+    { fact: "Bonn was West Germany's capital from 1949 to 1990 — many federal buildings remain.", emoji: "🏛️" },
+    { fact: "The Haribo headquarters are in Bonn — gummy bears were invented nearby.", emoji: "🐻" },
+    { fact: "Bonn's cherry blossom season on Heerstraße is world-famous every April.", emoji: "🌸" },
+    { fact: "The Museum Mile in Bonn has 5 major museums within walking distance.", emoji: "🎨" },
+  ],
+  osnabruck: [
+    { fact: "The Peace of Westphalia was signed in Osnabrück in 1648, ending the Thirty Years' War.", emoji: "🕊️" },
+    { fact: "Osnabrück alternates between Catholic and Protestant mayors — a tradition since 1648.", emoji: "⛪" },
+    { fact: "Erich Maria Remarque, author of 'All Quiet on the Western Front', was born in Osnabrück.", emoji: "📚" },
+    { fact: "Osnabrück Zoo is one of the few zoos built entirely on a hillside.", emoji: "🦁" },
+  ],
+  wurzburg: [
+    { fact: "The Würzburg Residence has the world's largest ceiling fresco — painted by Tiepolo.", emoji: "🎨" },
+    { fact: "Alte Mainbrücke is THE student hangout — buy €3 wine and watch the sunset.", emoji: "�" },
+    { fact: "Würzburg is the start of the Romantic Road — Germany's most famous tourist route.", emoji: "🛤️" },
+    { fact: "Franconian wine from Würzburg comes in unique round bottles called 'Bocksbeutel'.", emoji: "🍶" },
+  ],
+  aachen: [
+    { fact: "Aachen Cathedral was the first German UNESCO World Heritage Site (1978).", emoji: "⛪" },
+    { fact: "Charlemagne made Aachen the capital of his empire in the 8th century.", emoji: "👑" },
+    { fact: "Aachen is famous for its Printen — a type of gingerbread made here since the 15th century.", emoji: "�" },
+    { fact: "RWTH Aachen is one of Europe's top technical universities — the MIT of Germany.", emoji: "🎓" },
+    { fact: "Aachen's thermal springs have been used since Roman times — the city name comes from 'Aah' (water).", emoji: "♨️" },
+  ],
+};
+
+/** Country-level fallback facts */
+const COUNTRY_FUN_FACTS = {
+  DE: [
+    { fact: "Germany has over 1,500 types of beer, many brewed under the 1516 Reinheitsgebot purity law.", emoji: "🍺" },
+    { fact: "The autobahn has no universal speed limit — but 30% of it does have restrictions.", emoji: "🚗" },
+    { fact: "Germans invented the gummy bear (Haribo = Hans Riegel Bonn) in 1922.", emoji: "🐻" },
+    { fact: "Germany recycles ~67% of its waste — one of the highest rates in the world.", emoji: "♻️" },
+    { fact: "The Semesterticket gives students unlimited regional transit across the country.", emoji: "🚆" },
+    { fact: "'Kindergarten' literally means 'children's garden' — invented in Germany in 1837.", emoji: "👶" },
+    { fact: "Germany has a word for grief-eating weight gain: 'Kummerspeck' (grief bacon).", emoji: "🥓" },
+    { fact: "'Feierabend' is the German concept of after-work relaxation — literally 'celebration evening'.", emoji: "🎉" },
+    { fact: "In Germany, you can drink beer on the street — there's no open container law.", emoji: "🍻" },
+    { fact: "Germany's Black Forest inspired many Brothers Grimm fairy tales.", emoji: "🌲" },
+    { fact: "'Fernweh' means the opposite of homesickness — a longing for far-off places.", emoji: "✈️" },
+    { fact: "The first printed book (Gutenberg Bible) was made in Mainz, Germany in 1455.", emoji: "📖" },
+  ],
+  AT: [
+    { fact: "In Austria, you greet people with 'Grüß Gott' (God greet you) instead of 'Hallo'.", emoji: "👋" },
+    { fact: "Austrian composer Johann Strauss II wrote 'The Blue Danube' — Austria's unofficial anthem.", emoji: "🎻" },
+    { fact: "The 'Jause' is an Austrian mid-afternoon snack tradition — bread, cheese, and cold cuts.", emoji: "🧀" },
+    { fact: "Austria has 62 cable cars and funiculars — one of the densest networks in the world.", emoji: "🚡" },
+    { fact: "The croissant ('Kipferl') was actually invented in Vienna, not Paris.", emoji: "🥐" },
+    { fact: "Austria's national library has over 12 million items — including handwritten scores by Mozart.", emoji: "📚" },
+  ],
+  CH: [
+    { fact: "Switzerland has 4 official languages: German (63%), French (23%), Italian (8%), Romansh (0.5%).", emoji: "�️" },
+    { fact: "Switzerland has enough nuclear bunkers to shelter 114% of its entire population.", emoji: "🏔️" },
+    { fact: "The Swiss consume more chocolate per capita than any nation — about 10 kg per person/year.", emoji: "🍫" },
+    { fact: "Switzerland's flag is square — the only other square national flag is Vatican City's.", emoji: "🇨🇭" },
+    { fact: "Swiss trains run so punctually that the SBB clock became a design icon.", emoji: "⏰" },
+    { fact: "It's technically illegal to flush the toilet after 10pm in Swiss apartments — noise pollution.", emoji: "🚽" },
+    { fact: "Switzerland has the world's longest tunnel — the Gotthard Base Tunnel at 57.1 km.", emoji: "🚄" },
+    { fact: "Swiss citizens can challenge any federal law by collecting 50,000 signatures.", emoji: "📝" },
+  ],
+};
+
+/** Get a deterministic fun fact for a specific city/country.
+ *  Uses day-of-year as seed so fact rotates daily but stays stable across re-renders. */
+function getRandomFunFact(citySlug, countryCode, seed = 0) {
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const stableSeed = dayOfYear + seed;
+  // Try city-specific first
+  const cityFacts = CITY_FUN_FACTS[citySlug];
+  if (cityFacts && cityFacts.length > 0) {
+    return cityFacts[stableSeed % cityFacts.length];
+  }
+  // Fall back to country
+  const countryFacts = COUNTRY_FUN_FACTS[countryCode] || COUNTRY_FUN_FACTS.DE;
+  return countryFacts[stableSeed % countryFacts.length];
+}
+
 /* Helper: returns true if a route is free with Deutschland Semesterticket.
    The €49 Deutschland-Semesterticket covers ALL regional trains (RE, RB,
    S-Bahn, local buses, trams) anywhere in Germany — no city restriction.
@@ -172,29 +490,6 @@ const isStudentFree = (r) => {
   const fromCity = CITY_COORDS.find(c => c.slug === r.from);
   const toCity = CITY_COORDS.find(c => c.slug === r.to);
   return (fromCity?.country === "DE") && (toCity?.country === "DE");
-};
-
-const fmtDate = (d) => {
-  if(!d) return "TBD";
-  try {
-    return new Date(d + "T00:00:00").toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric"
-    });
-  } catch {
-    return d;
-  }
-};
-
-const fmtTime = (t) => {
-  if(!t) return "";
-  try {
-    const [h,m] = t.split(":");
-    const hr = parseInt(h);
-    return `${hr > 12 ? hr-12 : hr}:${m} ${hr >= 12 ? "PM" : "AM"}`;
-  } catch {
-    return t;
-  }
 };
 
 const LANDMARKS = [
@@ -243,7 +538,18 @@ const LANDMARKS = [
   { lat:49.4872, lng:8.4619, name:"Mannheim Palace", type:"landmark", city:"Mannheim", icon:"🏰", tip:"You literally go to class here — the uni IS the palace. Flex on your Instagram.", cat:"culture", url:"https://maps.google.com/?q=Mannheim+Palace" },
   { lat:49.4062, lng:8.6760, name:"Heidelberg Castle (Day Trip)", type:"landmark", city:"Mannheim", icon:"🏰", tip:"20 min by S-Bahn. Most romantic ruin in Germany. €4 student ticket. Free views from Philosophenweg.", cat:"culture", url:"https://maps.google.com/?q=Heidelberg+Castle" },
   { lat:50.7351, lng:7.0997, name:"Beethoven House", type:"museum", city:"Bonn", icon:"🎵", tip:"Where Beethoven was born. €6 student entry. The original instruments are incredible.", cat:"culture", url:"https://maps.google.com/?q=Beethoven+Haus+Bonn" },
+  { lat:50.7336, lng:7.0990, name:"Bonn Museum Mile", type:"museum", city:"Bonn", icon:"🎨", tip:"5 major museums within walking distance. Bundeskunsthalle has rotating world-class exhibits.", cat:"culture", url:"https://maps.google.com/?q=Museumsmeile+Bonn" },
+  { lat:50.7326, lng:7.0980, name:"Heerstraße Cherry Blossoms", type:"park", city:"Bonn", icon:"🌸", tip:"Every April this street turns into a pink tunnel. Most Instagrammed spot in Bonn.", cat:"nature", url:"https://maps.google.com/?q=Heerstrasse+Bonn+Cherry+Blossoms" },
   { lat:52.2761, lng:8.0440, name:"Peace Hall (Rathaus)", type:"landmark", city:"Osnabrück", icon:"🕊️", tip:"Where the Peace of Westphalia was signed in 1648. Free entry. History nerds will love it.", cat:"culture", url:"https://maps.google.com/?q=Rathaus+Osnabruck" },
+  { lat:52.2782, lng:8.0450, name:"Felix Nussbaum Haus", type:"museum", city:"Osnabrück", icon:"🎨", tip:"Daniel Libeskind-designed museum. Haunting art collection. €5 student entry.", cat:"culture", url:"https://maps.google.com/?q=Felix+Nussbaum+Haus+Osnabruck" },
+  { lat:52.2724, lng:8.0510, name:"Osnabrück Zoo", type:"park", city:"Osnabrück", icon:"🦁", tip:"Built on a hillside — one of the most unique zoo layouts in Germany. €11 student ticket.", cat:"nature", url:"https://maps.google.com/?q=Zoo+Osnabruck" },
+  { lat:50.7760, lng:6.0850, name:"Aachen Thermal Baths", type:"spa", city:"Aachen", icon:"♨️", tip:"Carolus Thermen — thermal springs used since Roman times. €14 for 2.5 hrs. Pure relaxation.", cat:"nature", url:"https://maps.google.com/?q=Carolus+Thermen+Aachen" },
+  { lat:48.7810, lng:9.1770, name:"Stuttgart TV Tower", type:"landmark", city:"Stuttgart", icon:"📡", tip:"World's first reinforced concrete TV tower (1956). €9 for panoramic views over the Kessel.", cat:"culture", url:"https://maps.google.com/?q=Fernsehturm+Stuttgart" },
+  { lat:48.7830, lng:9.1850, name:"Killesbergpark", type:"park", city:"Stuttgart", icon:"🌳", tip:"Free park with a miniature railway, tower, and summer light shows. Perfect study break.", cat:"nature", url:"https://maps.google.com/?q=Killesbergpark+Stuttgart" },
+  { lat:46.9505, lng:7.4385, name:"Bern Einstein House", type:"museum", city:"Bern", icon:"🔬", tip:"Where Einstein lived when he wrote his theory of relativity. €6 entry, tiny but mind-blowing.", cat:"culture", url:"https://maps.google.com/?q=Einstein+Haus+Bern" },
+  { lat:47.3750, lng:8.5430, name:"Zurich Kunsthaus", type:"museum", city:"Zurich", icon:"🎨", tip:"One of Switzerland's most important art museums. CHF 10 student. Free on Wednesdays.", cat:"culture", url:"https://maps.google.com/?q=Kunsthaus+Zurich" },
+  { lat:47.8010, lng:13.0380, name:"Mirabell Gardens", type:"park", city:"Salzburg", icon:"🌹", tip:"Sound of Music filming location. Free entry. The fountain and rose garden are stunning.", cat:"nature", url:"https://maps.google.com/?q=Mirabell+Gardens+Salzburg" },
+  { lat:47.0680, lng:15.4400, name:"Murinsel Island", type:"landmark", city:"Graz", icon:"🌉", tip:"Floating island in the Mur river — part café, part amphitheatre. Free to walk through.", cat:"culture", url:"https://maps.google.com/?q=Murinsel+Graz" },
 ];
 
 const diffLabel = l => { if(l===1) return "Beginner"; if(l===2) return "Elementary"; if(l===3) return "Intermediate"; if(l===4) return "Advanced"; if(l===5) return "Expert"; return "Level "+l; };
@@ -252,175 +558,85 @@ const costColor = t => { if(!t) return {bg:"#F3F4F6",text:"#6B7280"}; const l=t.
 const friendlyLabel = v => v ? v.replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase()) : "";
 
 /* Editorial quick-pick cards */
-/* Editorial quick-pick pool — curated local tips */
+/* Editorial quick-pick pool — curated local tips, expanded */
 const QUICK_PICKS_POOL = [
-  { emoji:"🍺", label:"Cheapest beer", city:"Leipzig", detail:"€2.50 on KarLi", slug:"leipzig" },
-  { emoji:"🏰", label:"Fairy-tale castle", city:"Heidelberg", detail:"20 min from Mannheim", slug:"mannheim" },
-  { emoji:"🎵", label:"€13 opera", city:"Vienna", detail:"Standing room, Staatsoper", slug:"vienna" },
-  { emoji:"🏄", label:"River surfing", city:"Munich", detail:"Eisbach wave, English Garden", slug:"munich" },
+  // Berlin
   { emoji:"🎨", label:"Free street art", city:"Berlin", detail:"East Side Gallery, 24/7", slug:"berlin" },
-  { emoji:"🏊", label:"River float", city:"Bern", detail:"Swim the Aare all summer", slug:"bern" },
+  { emoji:"🌭", label:"Currywurst capital", city:"Berlin", detail:"Invented here in 1949", slug:"berlin" },
+  { emoji:"🛍️", label:"Sunday flea market", city:"Berlin", detail:"Mauerpark, free karaoke at 3pm", slug:"berlin" },
+  { emoji:"🧱", label:"Wall Memorial", city:"Berlin", detail:"Free outdoor museum, Bernauer Str.", slug:"berlin" },
+  { emoji:"🍽️", label:"Street Food Thursday", city:"Berlin", detail:"Markthalle Neun, €3–8 plates", slug:"berlin" },
+  // Munich
+  { emoji:"🏄", label:"River surfing", city:"Munich", detail:"Eisbach wave, English Garden", slug:"munich" },
+  { emoji:"🍺", label:"Augustiner Keller", city:"Munich", detail:"€4 Maß, BYO food allowed", slug:"munich" },
+  { emoji:"🪴", label:"English Garden", city:"Munich", detail:"Bigger than Central Park", slug:"munich" },
+  { emoji:"🍽️", label:"Weißwurst before noon", city:"Munich", detail:"Viktualienmarkt tradition", slug:"munich" },
+  // Hamburg
   { emoji:"🎤", label:"Beatles stage", city:"Hamburg", detail:"Reeperbahn history walk", slug:"hamburg" },
+  { emoji:"🎵", label:"Elbphilharmonie", city:"Hamburg", detail:"Free plaza + €10 student concerts", slug:"hamburg" },
+  { emoji:"🐟", label:"Sunday Fischmarkt", city:"Hamburg", detail:"5am start, legendary vibes", slug:"hamburg" },
+  { emoji:"🏗️", label:"Speicherstadt", city:"Hamburg", detail:"UNESCO warehouse district", slug:"hamburg" },
+  // Vienna
+  { emoji:"🎵", label:"€13 opera", city:"Vienna", detail:"Standing room, Staatsoper", slug:"vienna" },
+  { emoji:"☕", label:"Coffeehouse culture", city:"Vienna", detail:"UNESCO heritage since 2011", slug:"vienna" },
+  { emoji:"🧀", label:"Naschmarkt brunch", city:"Vienna", detail:"€5 falafel at Neni", slug:"vienna" },
+  { emoji:"🎡", label:"Prater Ferris wheel", city:"Vienna", detail:"Spinning since 1897", slug:"vienna" },
+  { emoji:"🍹", label:"Beach bars", city:"Vienna", detail:"Donaukanal, €3 spritzers", slug:"vienna" },
+  // Salzburg
+  { emoji:"🏔️", label:"Alpine views", city:"Salzburg", detail:"Hohensalzburg fortress", slug:"salzburg" },
+  { emoji:"🎵", label:"Mozart's birthplace", city:"Salzburg", detail:"€7 student, Getreidegasse", slug:"salzburg" },
+  { emoji:"🍺", label:"Oldest brewery", city:"Salzburg", detail:"Stiegl since 1492, 2 tastings", slug:"salzburg" },
+  // Zurich
+  { emoji:"🏊‍♀️", label:"Lake swimming", city:"Zurich", detail:"Free Badis all summer", slug:"zurich" },
+  { emoji:"⛲", label:"1,200 fountains", city:"Zurich", detail:"All drinkable water", slug:"zurich" },
+  { emoji:"🌊", label:"Paddleboarding", city:"Zurich", detail:"Rent at Mythenquai, sunset views", slug:"zurich" },
+  // Bern
+  { emoji:"🏊", label:"River float", city:"Bern", detail:"Swim the Aare all summer", slug:"bern" },
+  { emoji:"🐻", label:"Bear Park", city:"Bern", detail:"Real bears since 1224", slug:"bern" },
+  { emoji:"🕰️", label:"Clock tower show", city:"Bern", detail:"Zytglogge, every hour since 1530", slug:"bern" },
+  // Stuttgart
   { emoji:"🚗", label:"€5 after 4pm", city:"Stuttgart", detail:"Mercedes-Benz Museum", slug:"stuttgart" },
+  { emoji:"🚗", label:"Porsche Museum", city:"Stuttgart", detail:"€4 student, hands-on exhibits", slug:"stuttgart" },
+  { emoji:"🍷", label:"Urban vineyards", city:"Stuttgart", detail:"Wine tasting in the city", slug:"stuttgart" },
+  // Leipzig
+  { emoji:"🍺", label:"Cheapest beer", city:"Leipzig", detail:"€2.50 on KarLi", slug:"leipzig" },
+  { emoji:"🎭", label:"Free galleries", city:"Leipzig", detail:"Spinnerei open nights", slug:"leipzig" },
+  { emoji:"🎵", label:"Free organ concerts", city:"Leipzig", detail:"St. Thomas Church, Fridays", slug:"leipzig" },
+  // Mannheim
+  { emoji:"🎓", label:"Palace campus", city:"Mannheim", detail:"Class in a Baroque palace", slug:"mannheim" },
+  { emoji:"🏰", label:"Fairy-tale castle", city:"Heidelberg", detail:"20 min from Mannheim", slug:"mannheim" },
+  // Graz
+  { emoji:"🌅", label:"Free sunset", city:"Graz", detail:"Schlossberg hilltop + Puntigamer", slug:"graz" },
+  { emoji:"👽", label:"Friendly Alien", city:"Graz", detail:"Kunsthaus blob, €7 student", slug:"graz" },
+  { emoji:"🍽️", label:"Best kebab in Austria", city:"Graz", detail:"Lendplatz, €4", slug:"graz" },
+  // Others
   { emoji:"🕊️", label:"Peace treaty", city:"Osnabrück", detail:"1648 Westphalian Peace Hall", slug:"osnabruck" },
   { emoji:"🍷", label:"Bridge wine", city:"Würzburg", detail:"Sunset on Alte Mainbrücke", slug:"wurzburg" },
-  { emoji:"🏔️", label:"Alpine views", city:"Salzburg", detail:"Hohensalzburg fortress", slug:"salzburg" },
-  { emoji:"☕", label:"Coffeehouse culture", city:"Vienna", detail:"Café Central since 1876", slug:"vienna" },
-  { emoji:"🎭", label:"Free galleries", city:"Leipzig", detail:"Spinnerei open nights", slug:"leipzig" },
-  { emoji:"🧀", label:"Naschmarkt brunch", city:"Vienna", detail:"€5 falafel at Neni", slug:"vienna" },
-  { emoji:"🌹", label:"Rose town", city:"Rapperswil", detail:"Castle garden on Lake Zurich", slug:"rapperswil" },
-  { emoji:"🔬", label:"Hands-on science", city:"Winterthur", detail:"Technorama museum", slug:"winterthur" },
-  { emoji:"🎓", label:"Palace campus", city:"Mannheim", detail:"Class in a Baroque palace", slug:"mannheim" },
-  { emoji:"🌅", label:"Free sunset", city:"Graz", detail:"Schlossberg hilltop + Puntigamer", slug:"graz" },
+  { emoji:"⛪", label:"UNESCO Cathedral", city:"Aachen", detail:"Germany's first World Heritage Site", slug:"aachen" },
+  { emoji:"🎵", label:"Beethoven's birthplace", city:"Bonn", detail:"€6 student museum entry", slug:"bonn" },
+  { emoji:"🌸", label:"Cherry blossoms", city:"Bonn", detail:"Heerstraße every April", slug:"bonn" },
 ];
 
-/* Build dynamic quick picks: prioritize user's pinned cities, fill rest from pool, no city repeats */
-function buildQuickPicks(myCitySlugs, primaryCitySlug) {
+/* Build dynamic quick picks: prioritize user's pinned cities, random each page refresh */
+function buildQuickPicks(myCitySlugs) {
   const pool = [...QUICK_PICKS_POOL];
-  
-  // Create a map of city-specific quick picks (using consistent slug format)
-  const CITY_SPECIFIC_PICKS = {
-    berlin: [
-      { emoji:"🎨", label:"Free street art", city:"Berlin", detail:"East Side Gallery, 24/7", slug:"berlin" },
-      { emoji:"🛍️", label:"Mauerpark flea market", city:"Berlin", detail:"Sundays, free karaoke at 3pm", slug:"berlin" },
-      { emoji:"🎭", label:"Berlin nightlife", city:"Berlin", detail:"Berghain, techno scene, clubs all weekend", slug:"berlin" },
-      { emoji:"🏛️", label:"Free museum Sundays", city:"Berlin", detail:"Many state museums free first Sunday", slug:"berlin" },
-      { emoji:"🍺", label:"Beer gardens", city:"Berlin", detail:"Prater Biergarten since 1837", slug:"berlin" },
-    ],
-    munich: [
-      { emoji:"🍺", label:"Oktoberfest", city:"Munich", detail:"World's largest Volksfest, Sept-Oct", slug:"munich" },
-      { emoji:"🏄", label:"River surfing", city:"Munich", detail:"Eisbach wave, English Garden", slug:"munich" },
-      { emoji:"🏰", label:"Nymphenburg Palace", city:"Munich", detail:"Baroque palace with free gardens", slug:"munich" },
-      { emoji:"🍽️", label:"Viktualienmarkt", city:"Munich", detail:"Outdoor food market since 1807", slug:"munich" },
-    ],
-    hamburg: [
-      { emoji:"🎤", label:"Beatles stage", city:"Hamburg", detail:"Reeperbahn history walk", slug:"hamburg" },
-      { emoji:"🐟", label:"Sunday Fischmarkt", city:"Hamburg", detail:"5-9:30am, legendary atmosphere", slug:"hamburg" },
-      { emoji:"🎵", label:"Elbphilharmonie", city:"Hamburg", detail:"Free plaza with harbor views", slug:"hamburg" },
-    ],
-    vienna: [
-      { emoji:"🎵", label:"€13 opera", city:"Vienna", detail:"Standing room, Staatsoper", slug:"vienna" },
-      { emoji:"☕", label:"Coffeehouse culture", city:"Vienna", detail:"Café Central since 1876", slug:"vienna" },
-      { emoji:"🧀", label:"Naschmarkt brunch", city:"Vienna", detail:"€5 falafel at Neni", slug:"vienna" },
-      { emoji:"🏰", label:"Schönbrunn Palace", city:"Vienna", detail:"Imperial summer residence", slug:"vienna" },
-    ],
-    salzburg: [
-      { emoji:"🏔️", label:"Alpine views", city:"Salzburg", detail:"Hohensalzburg fortress", slug:"salzburg" },
-      { emoji:"🍺", label:"Augustinerbräu", city:"Salzburg", detail:"Monastery brewery since 1621", slug:"salzburg" },
-      { emoji:"🎵", label:"Mozart's birthplace", city:"Salzburg", detail:"Iconic composer's childhood home", slug:"salzburg" },
-    ],
-    zurich: [
-      { emoji:"🍫", label:"Swiss chocolate", city:"Zurich", detail:"Sprüngli hot chocolate", slug:"zurich" },
-      { emoji:"🌊", label:"Lake Zurich", city:"Zurich", detail:"Paddleboarding & sunset views", slug:"zurich" },
-      { emoji:"🎨", label:"Kunsthaus Zurich", city:"Zurich", detail:"Free first Wednesday of month", slug:"zurich" },
-    ],
-    bern: [
-      { emoji:"🏊", label:"River float", city:"Bern", detail:"Swim the Aare all summer", slug:"bern" },
-      { emoji:"🕰️", label:"Zytglogge tower", city:"Bern", detail:"Medieval clock with moving figures", slug:"bern" },
-      { emoji:"🌹", label:"Rose garden", city:"Bern", detail:"Best city panorama for free", slug:"bern" },
-    ],
-    stuttgart: [
-      { emoji:"🚗", label:"€5 after 4pm", city:"Stuttgart", detail:"Mercedes-Benz Museum", slug:"stuttgart" },
-      { emoji:"🏎️", label:"Porsche Museum", city:"Stuttgart", detail:"€4 student price", slug:"stuttgart" },
-      { emoji:"🍷", label:"Weindorf festival", city:"Stuttgart", detail:"Late summer wine village", slug:"stuttgart" },
-    ],
-    leipzig: [
-      { emoji:"🎭", label:"Free galleries", city:"Leipzig", detail:"Spinnerei open nights", slug:"leipzig" },
-      { emoji:"🍻", label:"Cheapest beer", city:"Leipzig", detail:"€2.50 on KarLi", slug:"leipzig" },
-      { emoji:"🎵", label:"Bach's Thomaskirche", city:"Leipzig", detail:"Free organ concerts Fridays", slug:"leipzig" },
-    ],
-    aachen: [
-      { emoji:"🚂", label:"Day trip to Maastricht", city:"Aachen", detail:"30 min by RE train", slug:"aachen" },
-      { emoji:"⛪", label:"Aachen Cathedral", city:"Aachen", detail:"UNESCO #1 in Germany", slug:"aachen" },
-      { emoji:"🍪", label:"Printen cookies", city:"Aachen", detail:"Traditional honey-spice cookies", slug:"aachen" },
-    ],
-    bonn: [
-      { emoji:"🎵", label:"Beethoven's city", city:"Bonn", detail:"Beethoven-Haus museum", slug:"bonn" },
-      { emoji:"🌊", label:"Rhine promenade", city:"Bonn", detail:"Sunset walks along the river", slug:"bonn" },
-    ],
-    graz: [
-      { emoji:"🌅", label:"Free sunset", city:"Graz", detail:"Schlossberg hilltop + Puntigamer", slug:"graz" },
-      { emoji:"🎨", label:"Kunsthaus Graz", city:"Graz", detail:"Alien-shaped art museum", slug:"graz" },
-    ],
-  };
-
-  // Start with city-specific picks if available
-  const result = [];
-  const usedSlugs = new Set();
-  
-  // DEBUG: Log what we're getting
-  console.log("Primary city slug:", primaryCitySlug);
-  console.log("Available city picks:", Object.keys(CITY_SPECIFIC_PICKS));
-  
-  // Add primary city picks FIRST - ensure it shows at the beginning
-  if (primaryCitySlug) {
-    // Try exact match first
-    let primaryPicks = CITY_SPECIFIC_PICKS[primaryCitySlug];
-    // If not found, try lowercase version
-    if (!primaryPicks) {
-      const lowerSlug = primaryCitySlug.toLowerCase();
-      primaryPicks = CITY_SPECIFIC_PICKS[lowerSlug];
-    }
-    
-    if (primaryPicks && primaryPicks.length > 0) {
-      // Add up to 2 picks from primary city at the beginning
-      primaryPicks.slice(0, 2).forEach(pick => {
-        if (result.length < 6 && !usedSlugs.has(pick.slug)) {
-          result.push(pick);
-          usedSlugs.add(pick.slug);
-        }
-      });
-    } else {
-      // If no specific picks, add a default for the primary city
-      const cityObj = CITY_COORDS.find(c => c.slug === primaryCitySlug || c.name.toLowerCase() === primaryCitySlug?.toLowerCase());
-      if (cityObj) {
-        result.push({
-          emoji: PIN_EMOJI[cityObj.country] || "📍",
-          label: "Your city",
-          city: cityObj.name,
-          detail: cityObj.mustDo || "Explore local culture",
-          slug: cityObj.slug
-        });
-        usedSlugs.add(cityObj.slug);
-      }
-    }
-  }
-  
-  // Add picks from other saved cities
-  if (myCitySlugs && myCitySlugs.length > 0) {
-    for (const slug of myCitySlugs) {
-      // Skip if it's the primary city (already added)
-      if (slug === primaryCitySlug) continue;
-      
-      const cityPicks = CITY_SPECIFIC_PICKS[slug];
-      if (cityPicks && result.length < 6) {
-        for (const pick of cityPicks) {
-          if (result.length < 6 && !usedSlugs.has(pick.slug)) {
-            result.push(pick);
-            usedSlugs.add(pick.slug);
-            break; // Only take one pick per saved city
-          }
-        }
-      }
-    }
-  }
-  
-  // Fill remaining slots with general pool (shuffled daily)
-  const day = Math.floor(Date.now() / 86400000);
+  // True random shuffle — different every page refresh
   for (let i = pool.length - 1; i > 0; i--) {
-    const j = (day * (i + 1) * 7) % (i + 1);
+    const j = Math.floor(Math.random() * (i + 1));
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-  
-  for (const pick of pool) {
-    if (result.length >= 6) break;
-    if (!usedSlugs.has(pick.slug)) {
-      result.push(pick);
-      usedSlugs.add(pick.slug);
-    }
+  const result = [];
+  const usedCities = new Set();
+  const addUnique = (item) => {
+    if (!usedCities.has(item.slug)) { result.push(item); usedCities.add(item.slug); }
+  };
+  if (myCitySlugs && myCitySlugs.length > 0) {
+    const mySet = new Set(myCitySlugs);
+    pool.filter(p => mySet.has(p.slug)).forEach(p => { if (result.length < 3) addUnique(p); });
+    pool.filter(p => !mySet.has(p.slug)).forEach(p => { if (result.length < 6) addUnique(p); });
+  } else {
+    pool.forEach(p => { if (result.length < 6) addUnique(p); });
   }
-  
-  console.log("Final quick picks:", result.map(r => r.city));
   return result;
 }
 
@@ -473,20 +689,31 @@ const LandingPage = () => {
   const userCities = userData.cities;
   const userCityData = CITY_COORDS.find(c => c.slug === userCity || c.name.toLowerCase() === userCity.toLowerCase());
   const weatherMap = useWeather(userCities);
+  const exchangeRates = useExchangeRates();
+  const { holidays, getNextHoliday } = useHolidays(["DE", "AT", "CH"]);
+  const aqiMap = useAirQuality(userCities);
 
-  const [savedEvents, setSavedEvents] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem("savedEvents") || "[]");
-    } catch {
-      return [];
-    }
-  });
-
-  // Re-read localStorage whenever it changes (e.g. after profile update or city picker save)
+  // Compute quick picks once on mount — random each page refresh, but stable across re-renders (no glitch)
+  const [stableQuickPicks, setStableQuickPicks] = useState(() => buildQuickPicks(userCities));
+  // Update quick picks if the user changes their saved cities
+  const prevCitiesRef = useRef(userCities.join(","));
   useEffect(() => {
-    const onStorage = () => setUserData(readUserData());
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    const key = userCities.join(",");
+    if (key !== prevCitiesRef.current) {
+      prevCitiesRef.current = key;
+      setStableQuickPicks(buildQuickPicks(userCities));
+    }
+  }, [userCities.join(",")]);
+
+  // Re-read localStorage whenever it changes (e.g. after profile update, city picker save, login, or logout)
+  useEffect(() => {
+    const onAuthChange = () => setUserData(readUserData());
+    window.addEventListener("storage", onAuthChange);
+    window.addEventListener("mtb-auth-change", onAuthChange);
+    return () => {
+      window.removeEventListener("storage", onAuthChange);
+      window.removeEventListener("mtb-auth-change", onAuthChange);
+    };
   }, []);
 
   // Sync user profile from server on mount (ensures myCities & study_abroad_city are fresh)
@@ -682,21 +909,6 @@ const LandingPage = () => {
     }
   }, [showRoutes]);
 
-  // Load saved events from server when user is logged in
-  useEffect(() => {
-    if (userEmail) {
-      axios.get("/api/user/profile", { params: { email: userEmail } })
-        .then(res => {
-          const serverSaved = res.data.saved_events || [];
-          if (serverSaved.length > 0) {
-            setSavedEvents(serverSaved);
-            localStorage.setItem("savedEvents", JSON.stringify(serverSaved));
-          }
-        })
-        .catch(() => {});
-    }
-  }, [userEmail]);
-
   const flyToCity = useCallback((slug) => {
     const map = mapInstanceRef.current;
     const city = CITY_COORDS.find(c => c.slug === slug);
@@ -705,14 +917,11 @@ const LandingPage = () => {
     setMapSearch("");
     const el = document.getElementById("mtb-map");
     if (el) {
-      const header = document.querySelector('header');
-      const commandBar = document.querySelector('[data-events-bar]');
-      let headerHeight = 0;
-      if (header) headerHeight += header.offsetHeight;
-      if (commandBar) headerHeight += commandBar.offsetHeight;
+      const headerOffset = 50; 
       const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 50;
-    window.scrollTo({
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
         top: offsetPosition,
         behavior: "smooth"
       }); 
@@ -728,11 +937,6 @@ const LandingPage = () => {
   const findRoute = () => {
     if (!routeFrom || !routeTo) return;
     
-    if (routeFrom === routeTo) {
-      setFoundRoute(null);
-      return;
-    }
-
     // Try direct route
     let route = TRAVEL_ROUTES.find(r => 
       (r.from === routeFrom && r.to === routeTo)
@@ -810,7 +1014,7 @@ const LandingPage = () => {
       }
     } else {
       setFoundRoute(null);
-      //alert("No direct route found between these cities. Try a different combination!");
+      alert("No direct route found between these cities. Try a different combination!");
     }
   };
 
@@ -934,7 +1138,7 @@ const LandingPage = () => {
       {isSignedIn ? (
         <section style={S.picksWrap}>
           <div style={S.picksScroll}>
-           {buildQuickPicks(userCities, userCityData?.slug).map((p,i) => (
+            {stableQuickPicks.map((p,i) => (
               <div key={i} onClick={()=>flyToCity(p.slug)} style={S.pickCard}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(0,0,0,0.12)";e.currentTarget.style.borderColor="#FED7AA";}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";e.currentTarget.style.borderColor="#E5E7EB";}}>
@@ -1382,19 +1586,6 @@ const LandingPage = () => {
                   const pin = CITY_COORDS.find(c => c.slug === slug);
                   if (!pin) return null;
 
-                  const citySavedEvents = savedEvents.filter(event => 
-                    event.city && event.city.toLowerCase() === pin.name.toLowerCase()
-                  );
-                  const upcomingEvents = citySavedEvents.filter(event => {
-                    if (!event.date) return true;
-                    const eventDate = new Date(event.date);
-                    return eventDate >= now;
-                  }).sort((a, b) => {
-                    if (!a.date) return 1;
-                    if (!b.date) return -1;
-                    return new Date(a.date) - new Date(b.date);
-                  }).slice(0, 3);
-
                   const weather = weatherMap[slug] ?? {
                     icon: "⏳", cond: "Loading...", hi: "—", lo: "—",
                     sunrise: "—", sunset: "—",
@@ -1410,24 +1601,25 @@ const LandingPage = () => {
                     : "linear-gradient(135deg,#0021A5 0%,#003087 100%)";
 
                   return (
-                    <div key={slug} style={{borderRadius:"1.25rem",overflow:"hidden",boxShadow:isPrimary?"0 6px 28px rgba(250,70,22,0.12)":"0 4px 20px rgba(0,0,0,0.07)",border:isPrimary?"1.5px solid #FDBA74":"1px solid #E5E7EB",background:"#fff",transition:"all 0.3s cubic-bezier(0.16,1,0.3,1)",gridColumn:isPrimary&&userCities.length>1?"1 / -1":"auto"}}
-                      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=isPrimary?"0 16px 48px rgba(250,70,22,0.15)":"0 16px 48px rgba(0,33,165,0.13)";}}
-                      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=isPrimary?"0 6px 28px rgba(250,70,22,0.12)":"0 4px 20px rgba(0,0,0,0.07)";}}>
+                    <div key={slug} style={{borderRadius:"1rem",overflow:"hidden",boxShadow:isPrimary?"0 8px 32px rgba(250,70,22,0.13)":"0 4px 24px rgba(0,0,0,0.06)",border:isPrimary?"1.5px solid #FDBA74":"1px solid #E2E8F0",background:"#fff",transition:"all 0.3s cubic-bezier(0.16,1,0.3,1)",gridColumn:isPrimary&&userCities.length>1?"1 / -1":"auto"}}
+                      onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-5px)";e.currentTarget.style.boxShadow=isPrimary?"0 20px 56px rgba(250,70,22,0.16)":"0 20px 56px rgba(0,33,165,0.12)";}}
+                      onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow=isPrimary?"0 8px 32px rgba(250,70,22,0.13)":"0 4px 24px rgba(0,0,0,0.06)";}}>
 
-                      {/* Header — compact */}
-                      <div style={{background:hdrGradient,padding:isPrimary?"1.1rem 1.35rem":"0.85rem 1.15rem",position:"relative",overflow:"hidden"}}>
-                        <div style={{position:"absolute",top:"-40%",right:"-15%",width:140,height:140,borderRadius:"50%",background:"rgba(255,255,255,0.06)",pointerEvents:"none"}}/>
+                      {/* Header */}
+                      <div style={{background:hdrGradient,padding:isPrimary?"0.75rem 1rem":"0.6rem 0.85rem",position:"relative",overflow:"hidden"}}>
+                        <div style={{position:"absolute",top:"-40%",right:"-15%",width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,0.05)",pointerEvents:"none"}}/>
+                        <div style={{position:"absolute",bottom:"-30%",left:"-10%",width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,0.03)",pointerEvents:"none"}}/>
                         <div style={{position:"relative",zIndex:1,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                          <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
-                            {isPrimary && <span style={{fontSize:"0.5rem",fontWeight:800,background:"rgba(255,255,255,0.25)",color:"#fff",padding:"0.12rem 0.5rem",borderRadius:9999,letterSpacing:"0.08em",border:"1px solid rgba(255,255,255,0.35)"}}>❖ YOUR CITY</span>}
-                            <span style={{fontSize:isPrimary?"1.7rem":"1.3rem",lineHeight:1}}>{PIN_EMOJI[pin.country]}</span>
-                            <h3 style={{fontSize:isPrimary?"1.45rem":"0.95rem",fontWeight:800,color:"#fff",margin:0,letterSpacing:"-0.02em"}}>{pin.name}</h3>
+                          <div style={{display:"flex",alignItems:"center",gap:"0.4rem"}}>
+                            {isPrimary && <span style={{fontSize:"0.45rem",fontWeight:800,background:"rgba(255,255,255,0.2)",color:"#fff",padding:"0.12rem 0.45rem",borderRadius:9999,letterSpacing:"0.1em",border:"1px solid rgba(255,255,255,0.3)",backdropFilter:"blur(4px)"}}>❖ YOUR CITY</span>}
+                            <span style={{fontSize:isPrimary?"1.4rem":"1.1rem",lineHeight:1,filter:"drop-shadow(0 1px 2px rgba(0,0,0,0.15))"}}>{PIN_EMOJI[pin.country]}</span>
+                            <h3 style={{fontSize:isPrimary?"1.25rem":"0.92rem",fontWeight:800,color:"#fff",margin:0,letterSpacing:"-0.02em",textShadow:"0 1px 3px rgba(0,0,0,0.1)"}}>{pin.name}</h3>
                           </div>
-                          <div style={{display:"flex",alignItems:"center",gap:"0.5rem",background:"rgba(255,255,255,0.1)",borderRadius:"0.55rem",padding:isPrimary?"0.4rem 0.75rem":"0.3rem 0.6rem",border:"1px solid rgba(255,255,255,0.08)"}}>
-                            <span style={{fontSize:isPrimary?"1.2rem":"0.95rem"}}>{weather.icon}</span>
+                          <div style={{display:"flex",alignItems:"center",gap:"0.35rem",background:"rgba(255,255,255,0.12)",borderRadius:"0.5rem",padding:isPrimary?"0.3rem 0.6rem":"0.25rem 0.5rem",border:"1px solid rgba(255,255,255,0.1)",backdropFilter:"blur(8px)"}}>
+                            <span style={{fontSize:isPrimary?"1rem":"0.85rem"}}>{weather.icon}</span>
                             <div style={{textAlign:"right"}}>
-                              <p style={{fontSize:isPrimary?"0.95rem":"0.78rem",fontWeight:800,color:"#fff",margin:0,lineHeight:1}}>{weather.hi}°</p>
-                              <p style={{fontSize:isPrimary?"0.6rem":"0.5rem",color:"rgba(255,255,255,0.5)",margin:0}}>{weather.cond}</p>
+                              <p style={{fontSize:isPrimary?"0.82rem":"0.72rem",fontWeight:800,color:"#fff",margin:0,lineHeight:1}}>{weather.lo}° / {weather.hi}°C</p>
+                              <p style={{fontSize:isPrimary?"0.52rem":"0.45rem",color:"rgba(255,255,255,0.55)",margin:"0.05rem 0 0",fontWeight:500}}>{weather.cond}</p>
                             </div>
                           </div>
                         </div>
@@ -1435,194 +1627,230 @@ const LandingPage = () => {
 
                       {/* Body */}
                       {isPrimary ? (
-                        <div style={{padding:"1rem 1.25rem"}}>
-                          {/* ===== PRIMARY CITY — full detail with bookmark ===== */}
-                          <div style={{display:"grid",gridTemplateColumns:userCities.length>1 ? "1fr 1fr" : "1fr",gap:"0.75rem"}}>                            
-                            {/* Phrase of the day with bookmark + listen */}
-                            <div style={{background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",borderRadius:"0.85rem",padding:"0.85rem 1rem",border:"1px solid #BFDBFE",transition:"all 0.2s"}}
-                              onMouseEnter={e=>{e.currentTarget.style.borderColor="#93C5FD";}}
-                              onMouseLeave={e=>{e.currentTarget.style.borderColor="#BFDBFE";}}>
-                              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.4rem"}}>
-                                <span style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em"}}>💬 Street-Ready German</span>
-                                <div style={{display:"flex",alignItems:"center",gap:"0.3rem"}}>
-                                  <button onClick={(e)=>{e.stopPropagation();toggleDailyBookmark(phrase);}} title={isDailyBookmarked(phrase.de)?"Remove bookmark":"Bookmark"} style={{background:isDailyBookmarked(phrase.de)?"#FFF7ED":"#fff",border:isDailyBookmarked(phrase.de)?"1px solid #FA4616":"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
-                                    <Bookmark size={11} fill={isDailyBookmarked(phrase.de)?"#FA4616":"none"} color={isDailyBookmarked(phrase.de)?"#FA4616":"#0021A5"}/>
-                                  </button>
-                                  <button onClick={()=>{if(typeof speechSynthesis!=="undefined"){const u=new SpeechSynthesisUtterance(phrase.de);u.lang="de-DE";u.rate=0.85;speechSynthesis.speak(u);}}} style={{background:"#fff",border:"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
-                                    <Volume2 size={11} color="#0021A5"/>
-                                  </button>
+                        /* ===== PRIMARY CITY — organized sections ===== */
+                        <div style={{padding:"0.75rem 1rem",display:"flex",flexDirection:"column",gap:"0.65rem"}}>
+                          {/* Time context bar */}
+                          <div style={{display:"flex",alignItems:"center",gap:"0.4rem",padding:"0.3rem 0.6rem",background:"#F8FAFC",borderRadius:"0.5rem",border:"1px solid #F1F5F9"}}>
+                            <span style={{fontSize:"0.75rem"}}>{timeEmoji}</span>
+                            <span style={{fontSize:"0.65rem",fontWeight:600,color:"#64748B"}}>{timeLabel} in {pin.name} · {dayName}</span>
+                          </div>
+
+                          {/* ── Section: Language & Culture ── */}
+                          <div>
+                            <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.35rem"}}>
+                              <div style={{width:3,height:12,borderRadius:2,background:"linear-gradient(180deg,#0021A5,#3B82F6)"}}/>
+                              <span style={{fontSize:"0.56rem",fontWeight:700,color:"#6B7280",textTransform:"uppercase",letterSpacing:"0.1em"}}>Language & Culture</span>
+                            </div>
+                            <div style={{display:"grid",gridTemplateColumns:userCities.length>1?"1fr 1fr":"1fr",gap:"0.5rem"}}>
+                              {/* Phrase of the day */}
+                              <div style={{background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",borderRadius:"0.65rem",padding:"0.55rem 0.7rem",border:"1px solid #BFDBFE",transition:"all 0.2s"}}
+                                onMouseEnter={e=>{e.currentTarget.style.borderColor="#93C5FD";}}
+                                onMouseLeave={e=>{e.currentTarget.style.borderColor="#BFDBFE";}}>
+                                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.25rem"}}>
+                                  <span style={{fontSize:"0.55rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em"}}>💬 Street-Ready German</span>
+                                  <div style={{display:"flex",alignItems:"center",gap:"0.25rem"}}>
+                                    <button onClick={(e)=>{e.stopPropagation();toggleDailyBookmark(phrase);}} title={isDailyBookmarked(phrase.de)?"Remove bookmark":"Bookmark"} style={{background:isDailyBookmarked(phrase.de)?"#FFF7ED":"#fff",border:isDailyBookmarked(phrase.de)?"1px solid #FA4616":"1px solid #BFDBFE",borderRadius:"0.3rem",width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
+                                      <Bookmark size={10} fill={isDailyBookmarked(phrase.de)?"#FA4616":"none"} color={isDailyBookmarked(phrase.de)?"#FA4616":"#0021A5"}/>
+                                    </button>
+                                    <button onClick={()=>{if(typeof speechSynthesis!=="undefined"){const u=new SpeechSynthesisUtterance(phrase.de);u.lang="de-DE";u.rate=0.85;speechSynthesis.speak(u);}}} style={{background:"#fff",border:"1px solid #BFDBFE",borderRadius:"0.3rem",width:22,height:22,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
+                                      <Volume2 size={10} color="#0021A5"/>
+                                    </button>
+                                  </div>
+                                </div>
+                                <p style={{fontSize:"0.88rem",fontWeight:800,color:"#0021A5",margin:"0 0 0.15rem",lineHeight:1.25}}>{phrase.de}</p>
+                                <p style={{fontSize:"0.7rem",color:"#374151",margin:"0 0 0.2rem"}}>{phrase.en}</p>
+                                <span style={{fontSize:"0.55rem",fontWeight:600,color:"#003087",background:"rgba(0,33,165,0.08)",padding:"0.08rem 0.4rem",borderRadius:9999}}>{phrase.ctx}</span>
+                              </div>
+                              {/* Local tip */}
+                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.45rem",background:"#F5F8FF",borderRadius:"0.65rem",padding:"0.55rem 0.7rem",border:"1px solid #C7D7F8"}}>
+                                <div style={{width:24,height:24,borderRadius:"0.35rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.72rem"}}>💡</div>
+                                <div style={{flex:1,minWidth:0}}>
+                                  <p style={{fontSize:"0.55rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.1rem"}}>Local tip</p>
+                                  <p style={{fontSize:"0.72rem",color:"#1e3a8a",margin:0,lineHeight:1.35,fontWeight:500}}>{tip}</p>
                                 </div>
                               </div>
-                              <p style={{fontSize:"0.92rem",fontWeight:800,color:"#0021A5",margin:"0 0 0.2rem",lineHeight:1.3}}>{phrase.de}</p>
-                              <p style={{fontSize:"0.73rem",color:"#374151",margin:"0 0 0.3rem"}}>{phrase.en}</p>
-                              <span style={{fontSize:"0.58rem",fontWeight:600,color:"#003087",background:"rgba(0,33,165,0.08)",padding:"0.1rem 0.45rem",borderRadius:9999}}>{phrase.ctx}</span>
                             </div>
+                          </div>
 
-                            {/* Tonight */}
-                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#FFF7F5",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FECDC2"}}>                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>
+                          {/* ── Section: What's On Tonight ── */}
+                          <div>
+                            <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.35rem"}}>
+                              <div style={{width:3,height:12,borderRadius:2,background:"linear-gradient(180deg,#FA4616,#FF8C42)"}}/>
+                              <span style={{fontSize:"0.56rem",fontWeight:700,color:"#6B7280",textTransform:"uppercase",letterSpacing:"0.1em"}}>What's On</span>
+                            </div>
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.45rem",background:"#FFF7F5",borderRadius:"0.65rem",padding:"0.55rem 0.7rem",border:"1px solid #FECDC2"}}>
+                              <div style={{width:24,height:24,borderRadius:"0.35rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.72rem"}}>
                                 {isWeekend ? "🎉" : "🌆"}
                               </div>
                               <div style={{flex:1,minWidth:0}}>
-                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Tonight · {dayName}</p>
-                                <p style={{fontSize:"0.75rem",color:"#7C2D12",margin:0,lineHeight:1.4,fontWeight:500}}>{tonightTip}</p>
+                                <p style={{fontSize:"0.55rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.1rem"}}>Tonight · {dayName}</p>
+                                <p style={{fontSize:"0.72rem",color:"#7C2D12",margin:0,lineHeight:1.35,fontWeight:500}}>{tonightTip}</p>
                               </div>
                             </div>
+                          </div>
 
-                            {/* Local tip */}
-                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#F5F8FF",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #C7D7F8"}}>                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>💡</div>
-                              <div style={{flex:1,minWidth:0}}>
-                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Local tip</p>
-                                <p style={{fontSize:"0.75rem",color:"#1e3a8a",margin:0,lineHeight:1.4,fontWeight:500}}>{tip}</p>
-                              </div>
+                          {/* ── Section: Live Info Grid ── */}
+                          <div>
+                            <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.35rem"}}>
+                              <div style={{width:3,height:12,borderRadius:2,background:"linear-gradient(180deg,#059669,#34D399)"}}/>
+                              <span style={{fontSize:"0.56rem",fontWeight:700,color:"#6B7280",textTransform:"uppercase",letterSpacing:"0.1em"}}>Live Info</span>
                             </div>
-
-                            
-                            {/* SAVED EVENTS SECTION */}
-                            {upcomingEvents.length > 0 && (
-                              <div style={{background:"#FFFBF5",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDE68A"}}>
-                                <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.4rem"}}>
-                                  <Heart size={10} color="#FA4616" fill="#FA4616"/>
-                                  <p style={{fontSize:"0.55rem",fontWeight:700,color:"#D97706",textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>Saved Events</p>
+                            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.4rem"}}>
+                              {/* Daylight */}
+                              <div style={{background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.55rem",padding:"0.4rem 0.55rem",border:"1px solid #FDEAB8"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.15rem"}}>
+                                  <span style={{fontSize:"0.65rem"}}>🌅</span>
+                                  <span style={{fontSize:"0.5rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.06em"}}>Daylight</span>
                                 </div>
-                                <div style={{display:"flex",flexDirection:"column",gap:"0.4rem"}}>
-                                  {upcomingEvents.slice(0, 2).map((event, idx) => (
-                                    <div key={event.id || idx} style={{display:"flex",alignItems:"center",gap:"0.4rem",paddingBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "0.4rem" : "0",borderBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "1px solid #FEF3C7" : "none"}}>
-                                      {event.image && (
-                                        <div style={{width:32,height:32,borderRadius:"0.4rem",backgroundImage:`url(${event.image})`,backgroundSize:"cover",backgroundPosition:"center",flexShrink:0}}/>
-                                      )}
-                                      <div style={{flex:1,minWidth:0}}>
-                                        <p style={{fontSize:"0.68rem",fontWeight:600,color:"#78350F",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{event.name}</p>
-                                        <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginTop:"0.1rem",flexWrap:"wrap"}}>
-                                          {event.date && <span style={{fontSize:"0.52rem",color:"#B45309"}}>📅 {fmtDate(event.date)}</span>}
-                                          {event.time && <span style={{fontSize:"0.52rem",color:"#B45309"}}>🕐 {fmtTime(event.time)}</span>}
-                                        </div>
-                                      </div>
-                                      {event.url && (
-                                        <a href={event.url} target="_blank" rel="noopener noreferrer" style={{fontSize:"0.55rem",color:"#FA4616",fontWeight:600,textDecoration:"none",flexShrink:0}}>
-                                          Tickets →
-                                        </a>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                                {citySavedEvents.length > 2 && (
-                                  <button onClick={() => navigate(`/events?city=${encodeURIComponent(pin.name)}`)} style={{fontSize:"0.55rem",color:"#D97706",fontWeight:600,marginTop:"0.4rem",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:"0.2rem"}}>
-                                    + {citySavedEvents.length - 2} more saved events →
-                                  </button>
-                                )}
+                                <p style={{fontSize:"0.68rem",color:"#78350F",margin:0,lineHeight:1.3,fontWeight:600}}>
+                                  ☀️ {weather.sunrise ?? "—"} · 🌇 {weather.sunset ?? "—"}
+                                </p>
                               </div>
-                            )}
-
-                            {/* Sunset / Sunrise */}
-                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
-                                {(() => {
-                                  const sunsetHours = [16,16,17,18,20,21,21,20,19,18,16,16];
-                                  const sunriseHours = [8,7,7,6,5,5,5,6,7,7,7,8];
-                                  const mo = now.getMonth();
-                                  return (
-                                    <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
-                                    <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#F59E0B,#D97706)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🌅</div>
-                                    <div style={{flex:1,minWidth:0}}>
-                                      <p style={{fontSize:"0.58rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Daylight</p>
-                                      <p style={{fontSize:"0.75rem",color:"#78350F",margin:0,lineHeight:1.4,fontWeight:500}}>
-                                        ☀️ Sunrise {weather.sunrise ?? "—"} &nbsp;·&nbsp; 🌇 Sunset {weather.sunset ?? "—"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  );
-                                })()}
-                            </div>
-
-                            {/* Days until next German holiday */}
-                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #A7F3D0"}}>
+                              {/* Next Holiday */}
                               {(() => {
-                                const holidays = [
-                                  {name:"New Year's Day",m:0,d:1},{name:"Epiphany",m:0,d:6},{name:"May Day",m:4,d:1},{name:"German Unity Day",m:9,d:3},{name:"All Saints' Day",m:10,d:1},{name:"Christmas Eve",m:11,d:24},{name:"Christmas Day",m:11,d:25},{name:"New Year's Eve",m:11,d:31}
-                                ];
-                                let next=null;let daysUntil=999;
-                                holidays.forEach(h=>{
-                                  let hDate=new Date(now.getFullYear(),h.m,h.d);
-                                  if(hDate<now) hDate=new Date(now.getFullYear()+1,h.m,h.d);
-                                  const diff=Math.ceil((hDate-now)/(1000*60*60*24));
-                                  if(diff<daysUntil){daysUntil=diff;next=h;}
-                                });
+                                const countryCode = pin.country || "DE";
+                                const nextH = getNextHoliday(countryCode);
+                                if (!nextH) return null;
+                                const daysUntil = Math.ceil((new Date(nextH.date) - now) / (1000*60*60*24));
+                                const countryFlag = {DE:"🇩🇪",AT:"🇦🇹",CH:"🇨🇭"}[countryCode] || "🌍";
                                 return (
-                                  <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #A7F3D0"}}>
-                                    <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#10B981,#059669)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🗓️</div>
-                                    <div style={{flex:1,minWidth:0}}>
-                                      <p style={{fontSize:"0.58rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Next Holiday</p>
-                                      <p style={{fontSize:"0.75rem",color:"#064E3B",margin:0,lineHeight:1.4,fontWeight:500}}>🎉 {next?.name} in <strong>{daysUntil}</strong> day{daysUntil!==1?"s":""}</p>
+                                  <div style={{background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.55rem",padding:"0.4rem 0.55rem",border:"1px solid #A7F3D0"}}>
+                                    <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.15rem"}}>
+                                      <span style={{fontSize:"0.65rem"}}>🗓️</span>
+                                      <span style={{fontSize:"0.5rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.06em"}}>Holiday {countryFlag}</span>
                                     </div>
+                                    <p style={{fontSize:"0.68rem",color:"#064E3B",margin:0,lineHeight:1.3,fontWeight:600}}>
+                                      {nextH.name} {daysUntil === 0 ? "— today!" : <>· {daysUntil}d</>}
+                                    </p>
+                                    {nextH.name !== nextH.nameEn && <p style={{fontSize:"0.55rem",color:"#059669",margin:"0.05rem 0 0",fontStyle:"italic"}}>({nextH.nameEn})</p>}
                                   </div>
                                 );
                               })()}
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        /* ===== SECONDARY CITY — compact ===== */
-                        <div style={{padding:"0.85rem 1.1rem",display:"flex",flexDirection:"column",gap:"0.6rem"}}>
-                          {/* Tonight — main highlight */}
-                          <div style={{display:"flex",alignItems:"flex-start",gap:"0.55rem"}}>
-                            <div style={{width:26,height:26,borderRadius:"0.4rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.78rem"}}>{isWeekend?"🎉":"🌆"}</div>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{fontSize:"0.55rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 0.1rem"}}>Tonight</p>
-                              <p style={{fontSize:"0.72rem",color:"#7C2D12",margin:0,lineHeight:1.35,fontWeight:500}}>{tonightTip}</p>
-                            </div>
-                          </div>
-                          {/* Quick tip */}
-                          <div style={{display:"flex",alignItems:"flex-start",gap:"0.55rem"}}>
-                            <div style={{width:26,height:26,borderRadius:"0.4rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.78rem"}}>💡</div>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{fontSize:"0.55rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 0.1rem"}}>Quick tip</p>
-                              <p style={{fontSize:"0.72rem",color:"#1e3a8a",margin:0,lineHeight:1.35,fontWeight:500}}>{tip}</p>
-                            </div>
-                          </div>
-
-                          {/* Saved Events for secondary city - NEW! */}
-                          {upcomingEvents.length > 0 && (
-                            <div style={{background:"#FFFBF5",borderRadius:"0.85rem",padding:"0.6rem 0.7rem",border:"1px solid #FDE68A"}}>
-                              <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.4rem"}}>
-                                <Heart size={10} color="#FA4616" fill="#FA4616"/>
-                                <p style={{fontSize:"0.55rem",fontWeight:700,color:"#D97706",textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>Saved Events</p>
-                              </div>
-                              <div style={{display:"flex",flexDirection:"column",gap:"0.4rem"}}>
-                                {upcomingEvents.slice(0, 2).map((event, idx) => (
-                                  <div key={event.id || idx} style={{display:"flex",alignItems:"center",gap:"0.4rem",paddingBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "0.4rem" : "0",borderBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "1px solid #FEF3C7" : "none"}}>
-                                    {event.image && (
-                                      <div style={{width:32,height:32,borderRadius:"0.4rem",backgroundImage:`url(${event.image})`,backgroundSize:"cover",backgroundPosition:"center",flexShrink:0}}/>
-                                    )}
-                                    <div style={{flex:1,minWidth:0}}>
-                                      <p style={{fontSize:"0.68rem",fontWeight:600,color:"#78350F",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{event.name}</p>
-                                      <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginTop:"0.1rem",flexWrap:"wrap"}}>
-                                        {event.date && <span style={{fontSize:"0.52rem",color:"#B45309"}}>📅 {fmtDate(event.date)}</span>}
-                                        {event.time && <span style={{fontSize:"0.52rem",color:"#B45309"}}>🕐 {fmtTime(event.time)}</span>}
-                                      </div>
-                                    </div>
-                                    {event.url && (
-                                      <a href={event.url} target="_blank" rel="noopener noreferrer" style={{fontSize:"0.55rem",color:"#FA4616",fontWeight:600,textDecoration:"none",flexShrink:0}}>
-                                        Tickets →
-                                      </a>
-                                    )}
+                              {/* Air Quality */}
+                              {aqiMap[slug] && aqiMap[slug].aqi !== null && (
+                                <div style={{background:"linear-gradient(135deg,#F8FFFE,#ECFDF8)",borderRadius:"0.55rem",padding:"0.4rem 0.55rem",border:"1px solid #99F6E4"}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.15rem"}}>
+                                    <span style={{fontSize:"0.65rem"}}>{aqiMap[slug].emoji}</span>
+                                    <span style={{fontSize:"0.5rem",fontWeight:700,color:"#0D9488",textTransform:"uppercase",letterSpacing:"0.06em"}}>Air Quality</span>
                                   </div>
-                                ))}
-                              </div>
-                              {citySavedEvents.length > 2 && (
-                                <button onClick={() => navigate(`/events?city=${encodeURIComponent(pin.name)}`)} style={{fontSize:"0.55rem",color:"#D97706",fontWeight:600,marginTop:"0.4rem",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:"0.2rem"}}>
-                                  + {citySavedEvents.length - 2} more saved events →
-                                </button>
+                                  <p style={{fontSize:"0.68rem",color:"#134E4A",margin:0,lineHeight:1.3,fontWeight:600}}>
+                                    <span style={{color:aqiMap[slug].color}}>{aqiMap[slug].label}</span> · AQI {aqiMap[slug].aqi}
+                                  </p>
+                                </div>
+                              )}
+                              {/* Exchange Rates */}
+                              {exchangeRates && (
+                                <div style={{background:"linear-gradient(135deg,#FFF8F0,#FFF5EB)",borderRadius:"0.55rem",padding:"0.4rem 0.55rem",border:"1px solid #FED7AA"}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.15rem"}}>
+                                    <span style={{fontSize:"0.65rem"}}>💱</span>
+                                    <span style={{fontSize:"0.5rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.06em"}}>Rates</span>
+                                  </div>
+                                  <div style={{display:"flex",gap:"0.35rem",flexWrap:"wrap"}}>
+                                    <span style={{fontSize:"0.65rem",color:"#78350F",fontWeight:600}}>$→€{exchangeRates.usd_eur}</span>
+                                    <span style={{fontSize:"0.65rem",color:"#78350F",fontWeight:600}}>$→CHF{exchangeRates.usd_chf}</span>
+                                  </div>
+                                </div>
                               )}
                             </div>
-                          )}
+                          </div>
 
+                          {/* ── Fun Fact — full width accent ── */}
+                          {(() => {
+                            const cityFact = getRandomFunFact(slug, pin.country || "DE", cardIdx);
+                            return (
+                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.45rem",background:"linear-gradient(135deg,#FAF5FF,#F3E8FF)",borderRadius:"0.65rem",padding:"0.55rem 0.7rem",border:"1px solid #DDD6FE"}}>
+                                <span style={{fontSize:"0.75rem",flexShrink:0}}>{cityFact.emoji}</span>
+                                <div style={{flex:1,minWidth:0}}>
+                                  <p style={{fontSize:"0.55rem",fontWeight:700,color:"#6D28D9",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.1rem"}}>Did You Know? · {pin.name}</p>
+                                  <p style={{fontSize:"0.72rem",color:"#4C1D95",margin:0,lineHeight:1.35,fontWeight:500}}>{cityFact.fact}</p>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      ) : (
+                        /* ===== SECONDARY CITY — organized compact layout ===== */
+                        <div style={{padding:"0.6rem 0.85rem",display:"flex",flexDirection:"column",gap:"0.45rem"}}>
+                          {/* Time context */}
+                          <div style={{display:"flex",alignItems:"center",gap:"0.35rem",padding:"0.25rem 0.5rem",background:"#F8FAFC",borderRadius:"0.4rem",border:"1px solid #F1F5F9"}}>
+                            <span style={{fontSize:"0.65rem"}}>{timeEmoji}</span>
+                            <span style={{fontSize:"0.58rem",fontWeight:600,color:"#64748B"}}>{timeLabel} · {dayName}</span>
+                          </div>
 
-                          {/* Mensa budget tip */}
-                          <div style={{display:"flex",alignItems:"flex-start",gap:"0.55rem"}}>
-                            <div style={{width:26,height:26,borderRadius:"0.4rem",background:"linear-gradient(135deg,#10B981,#059669)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.78rem"}}>🍽️</div>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{fontSize:"0.55rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 0.1rem"}}>Budget bite</p>
-                              <p style={{fontSize:"0.72rem",color:"#064E3B",margin:0,lineHeight:1.35,fontWeight:500}}>{["Mensa lunch averages €3.50 — cheapest hot meal in town","Bakery Brötchen before 8am are usually €0.40–€0.80","Lidl/Aldi meal deals beat any takeout — check the weekly flyer","Döner kebab is the student staple — €4–6 for a filling meal","Cooking at home? Aldi has full meals under €2 per portion"][(dayIdx + pin.name.length) % 5]}</p>
+                          {/* Tonight + Quick tip — side by side highlights */}
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.4rem"}}>
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.35rem",background:"#FFF7F5",borderRadius:"0.5rem",padding:"0.4rem 0.5rem",border:"1px solid #FECDC2"}}>
+                              <div style={{width:20,height:20,borderRadius:"0.3rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.6rem"}}>{isWeekend?"🎉":"🌆"}</div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:"0.48rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 0.05rem"}}>Tonight</p>
+                                <p style={{fontSize:"0.65rem",color:"#7C2D12",margin:0,lineHeight:1.25,fontWeight:500}}>{tonightTip}</p>
+                              </div>
                             </div>
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.35rem",background:"#F5F8FF",borderRadius:"0.5rem",padding:"0.4rem 0.5rem",border:"1px solid #C7D7F8"}}>
+                              <div style={{width:20,height:20,borderRadius:"0.3rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.6rem"}}>💡</div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:"0.48rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.06em",margin:"0 0 0.05rem"}}>Quick tip</p>
+                                <p style={{fontSize:"0.65rem",color:"#1e3a8a",margin:0,lineHeight:1.25,fontWeight:500}}>{tip}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Live info mini-grid: Holiday + AQI */}
+                          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0.4rem"}}>
+                            {(() => {
+                              const cc = pin.country || "DE";
+                              const nextH = getNextHoliday(cc);
+                              if (!nextH) return null;
+                              const hDate = new Date(nextH.date);
+                              const daysUntil = Math.max(0, Math.ceil((hDate - new Date()) / 86400000));
+                              return (
+                                <div style={{background:"#F0FFF4",borderRadius:"0.45rem",padding:"0.35rem 0.45rem",border:"1px solid #A7F3D0"}}>
+                                  <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.1rem"}}>
+                                    <span style={{fontSize:"0.58rem"}}>🗓️</span>
+                                    <span style={{fontSize:"0.48rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.05em"}}>Holiday</span>
+                                  </div>
+                                  <p style={{fontSize:"0.65rem",color:"#064E3B",margin:0,lineHeight:1.25,fontWeight:600}}>
+                                    {nextH.localName || nextH.name} · <span style={{fontWeight:700}}>{daysUntil === 0 ? "Today!" : `${daysUntil}d`}</span>
+                                  </p>
+                                </div>
+                              );
+                            })()}
+                            {aqiMap[slug] && aqiMap[slug].aqi !== null && (
+                              <div style={{background:"#F8FFFE",borderRadius:"0.45rem",padding:"0.35rem 0.45rem",border:"1px solid #99F6E4"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:"0.25rem",marginBottom:"0.1rem"}}>
+                                  <span style={{fontSize:"0.58rem"}}>{aqiMap[slug].emoji}</span>
+                                  <span style={{fontSize:"0.48rem",fontWeight:700,color:"#0F766E",textTransform:"uppercase",letterSpacing:"0.05em"}}>Air</span>
+                                </div>
+                                <p style={{fontSize:"0.65rem",color:"#134E4A",margin:0,lineHeight:1.25,fontWeight:600}}>
+                                  <span style={{color:aqiMap[slug].color}}>{aqiMap[slug].label}</span> · {aqiMap[slug].aqi}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Fun Fact — compact */}
+                          {(() => {
+                            const cityFact = getRandomFunFact(slug, pin.country || "DE", cardIdx + 100);
+                            return (
+                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.35rem",background:"#FAF5FF",borderRadius:"0.5rem",padding:"0.4rem 0.5rem",border:"1px solid #DDD6FE"}}>
+                                <span style={{fontSize:"0.62rem",flexShrink:0}}>{cityFact.emoji}</span>
+                                <p style={{fontSize:"0.65rem",color:"#4C1D95",margin:0,lineHeight:1.3,fontWeight:500}}>{cityFact.fact}</p>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Quick actions footer */}
+                          <div style={{display:"flex",gap:"0.35rem",paddingTop:"0.25rem",borderTop:"1px solid #F1F5F9"}}>
+                            <button onClick={()=>navigate("/tips?city="+slug)} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"0.2rem",padding:"0.3rem",border:"1px solid #E2E8F0",borderRadius:"0.4rem",background:"#fff",cursor:"pointer",fontSize:"0.62rem",fontWeight:600,color:"#374151",transition:"all 0.15s"}}
+                              onMouseEnter={e=>{e.currentTarget.style.borderColor="#0021A5";e.currentTarget.style.color="#0021A5";e.currentTarget.style.background="#EFF6FF";}}
+                              onMouseLeave={e=>{e.currentTarget.style.borderColor="#E2E8F0";e.currentTarget.style.color="#374151";e.currentTarget.style.background="#fff";}}>
+                              <Compass size={10}/> Explore
+                            </button>
+                            <button onClick={()=>navigate("/events?city="+encodeURIComponent(pin.name))} style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",gap:"0.2rem",padding:"0.3rem",border:"1px solid #E2E8F0",borderRadius:"0.4rem",background:"#fff",cursor:"pointer",fontSize:"0.62rem",fontWeight:600,color:"#374151",transition:"all 0.15s"}}
+                              onMouseEnter={e=>{e.currentTarget.style.borderColor="#FA4616";e.currentTarget.style.color="#FA4616";e.currentTarget.style.background="#FFF7ED";}}
+                              onMouseLeave={e=>{e.currentTarget.style.borderColor="#E2E8F0";e.currentTarget.style.color="#374151";e.currentTarget.style.background="#fff";}}>
+                              <Calendar size={10}/> Events
+                            </button>
                           </div>
                         </div>
                       )}
@@ -1632,15 +1860,6 @@ const LandingPage = () => {
               </div>
             );
           })()}
-        </section>
-      ) : userName ? (
-        <section style={{maxWidth:1200,margin:"0 auto",padding:"2.5rem 2rem 1.5rem"}}>
-          <div style={{background:"#fff",borderRadius:"1rem",border:"1px solid #E5E7EB",padding:"2.5rem",textAlign:"center"}}>
-            <div style={{width:56,height:56,borderRadius:"50%",background:"#EFF6FF",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 1rem"}}><MapPin size={24} color="#0021A5"/></div>
-            <h3 style={{fontSize:"1.2rem",fontWeight:700,color:"#111827",margin:"0 0 0.4rem"}}>Save cities to personalize your experience</h3>
-            <p style={{fontSize:"0.88rem",color:"#6B7280",maxWidth:420,margin:"0 auto 1.25rem",lineHeight:1.55}}>Head to Explore, pick the cities you're studying in or want to visit, and they'll show up here as your personal hub.</p>
-            <button onClick={() => navigate("/tips")} style={{display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.5rem",border:"none",borderRadius:"0.6rem",background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",cursor:"pointer",fontSize:"0.88rem",fontWeight:700,boxShadow:"0 3px 12px rgba(0,33,165,0.2)"}}><Compass size={15}/> Browse Cities</button>
-          </div>
         </section>
       ) : null}
 

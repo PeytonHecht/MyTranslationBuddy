@@ -1,21 +1,25 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
 import { isLoggedIn, authHeaders } from "../utils/auth.js";
+import { API_BASE } from "../config.js";
 
 const MAX_CHARS = 5000;
 
 const actionBtnBase = {
-  flex: 1,
-  padding: "8px 4px",
-  borderRadius: "10px",
-  border: "1.5px solid #E5E7EB",
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "4px",
+  padding: "5px 10px",
+  borderRadius: "6px",
+  border: "none",
   cursor: "pointer",
   fontSize: "11px",
   fontWeight: 600,
-  transition: "all 0.2s",
+  transition: "all 0.15s",
   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
-  background: "#fff",
-  color: "#374151",
+  background: "none",
+  color: "#6B7280",
 };
 
 export default function TranslateWidget() {
@@ -25,11 +29,10 @@ export default function TranslateWidget() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [copied, setCopied] = useState(false);
-  const [savedToLib, setSavedToLib] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [direction, setDirection] = useState("de-en");
   const [speaking, setSpeaking] = useState(false);
   const [copiedSource, setCopiedSource] = useState(false);
-  const [savedPhrase, setSavedPhrase] = useState(false);
   const [history, setHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("twHistory") || "[]").slice(0, 10); } catch { return []; }
   });
@@ -47,7 +50,6 @@ export default function TranslateWidget() {
     : "How do you say this in German?";
 
   const canTranslate = useMemo(() => sourceText.trim().length > 0 && !loading, [sourceText, loading]);
-  const charPercent = Math.min((sourceText.length / MAX_CHARS) * 100, 100);
 
   /* Close on outside click */
   useEffect(() => {
@@ -68,10 +70,9 @@ export default function TranslateWidget() {
     setLoading(true);
     setErrorMsg("");
     setCopied(false);
-    setSavedToLib(false);
-    setSavedPhrase(false);
+    setSaved(false);
     try {
-      const resp = await axios.post("/api/translate", {
+      const resp = await axios.post(`${API_BASE}/api/translate`, {
         source_text: text,
         source_language: srcLang,
         target_language: tgtLang,
@@ -97,7 +98,7 @@ export default function TranslateWidget() {
                 study_history: studyHistory,
                 translation_history: next,
               };
-              axios.put("/api/user/profile", { email, study_stats: stats }, authHeaders()).catch(() => {});
+              axios.put(`${API_BASE}/api/user/profile`, { email, study_stats: stats }, authHeaders()).catch(() => {});
             }
           } catch {}
           return next;
@@ -108,11 +109,14 @@ export default function TranslateWidget() {
       const status = err?.response?.status;
       const detail = err?.response?.data?.detail || "";
       if (status === 429) setErrorMsg("Rate limit reached — wait a moment and try again.");
-      else if (status === 500) setErrorMsg("Translation service temporarily unavailable.");
+      else if (status === 503) setErrorMsg("Translation service is starting up. Please wait a moment and retry.");
+      else if (status === 504) setErrorMsg("Translation service timed out. Please try again.");
+      else if (status === 502) setErrorMsg("Translation service error. Please try again shortly.");
+      else if (status === 500) setErrorMsg("Server error — please try again.");
       else if (status === 422) setErrorMsg("Invalid input — please check your text.");
       else if (detail) setErrorMsg(detail);
       else if (!navigator.onLine) setErrorMsg("You appear to be offline.");
-      else setErrorMsg("Translation failed. Please try again.");
+      else setErrorMsg("Could not reach translation service. Is the backend running?");
     } finally {
       setLoading(false);
     }
@@ -127,8 +131,7 @@ export default function TranslateWidget() {
     setDirection(d => d === "de-en" ? "en-de" : "de-en");
     if (translatedText) { setSourceText(translatedText); setTranslatedText(sourceText); }
     setCopied(false);
-    setSavedToLib(false);
-    setSavedPhrase(false);
+    setSaved(false);
   };
 
   const handleCopy = async () => {
@@ -149,23 +152,39 @@ export default function TranslateWidget() {
     window.speechSynthesis.speak(utter);
   };
 
-  const handleAddToLibrary = () => {
+  /** Combined save — adds to vocab deck (localStorage) AND saves as phrase to backend */
+  const handleSave = async () => {
     if (!sourceText.trim() || !translatedText) return;
     const german = direction === "de-en" ? sourceText.trim() : translatedText;
     const english = direction === "de-en" ? translatedText : sourceText.trim();
+
+    // 1) Save to local vocab cards
     try {
       const existing = JSON.parse(localStorage.getItem("vocabCards") || "[]");
-      if (existing.some(c => c.german === german && c.english === english)) { setSavedToLib(true); return; }
-      const card = { id: Date.now(), german, english, context: "", mastery: 0, lastReviewed: null, created: new Date().toISOString().split("T")[0] };
-      const updated = [card, ...existing];
-      localStorage.setItem("vocabCards", JSON.stringify(updated));
-      // Sync to backend
-      if (isLoggedIn()) {
-        const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, vocab_cards: updated }, authHeaders()).catch(() => {});
+      if (!existing.some(c => c.german === german && c.english === english)) {
+        const card = { id: Date.now(), german, english, context: "", mastery: 0, lastReviewed: null, created: new Date().toISOString().split("T")[0] };
+        const updated = [card, ...existing];
+        localStorage.setItem("vocabCards", JSON.stringify(updated));
+        if (isLoggedIn()) {
+          const email = localStorage.getItem("email");
+          axios.put(`${API_BASE}/api/user/profile`, { email, vocab_cards: updated }, authHeaders()).catch(() => {});
+        }
       }
-      setSavedToLib(true);
     } catch { /* localStorage full */ }
+
+    // 2) Save as phrase to backend
+    const userEmail = localStorage.getItem("email");
+    if (userEmail) {
+      const citySlug = localStorage.getItem("study_abroad_city") || "";
+      try {
+        await axios.post(`${API_BASE}/api/phrases/quick-save`, {
+          german_phrase: german, english_translation: english,
+          user_email: userEmail, city_slug: citySlug,
+        });
+      } catch { /* already saved or error — silent */ }
+    }
+
+    setSaved(true);
   };
 
   const handleCopySource = async () => {
@@ -174,34 +193,14 @@ export default function TranslateWidget() {
     catch { /* clipboard not available */ }
   };
 
-  const handleSaveAsPhrase = async () => {
-    if (!sourceText.trim() || !translatedText) return;
-    const userEmail = localStorage.getItem("email");
-    if (!userEmail) { setErrorMsg("Sign in to save phrases."); return; }
-    const german = direction === "de-en" ? sourceText.trim() : translatedText;
-    const english = direction === "de-en" ? translatedText : sourceText.trim();
-    const citySlug = localStorage.getItem("study_abroad_city") || "";
-    try {
-      const resp = await axios.post("/api/phrases/quick-save", {
-        german_phrase: german, english_translation: english,
-        user_email: userEmail, city_slug: citySlug,
-      });
-      setSavedPhrase(true);
-    } catch (err) {
-      const detail = err?.response?.data?.detail || "";
-      if (detail.toLowerCase().includes("already")) setSavedPhrase(true);
-      else setErrorMsg(detail || "Could not save phrase.");
-    }
-  };
-
   const handleSourceChange = (e) => { if (e.target.value.length <= MAX_CHARS) setSourceText(e.target.value); };
 
-  const handleClear = () => { setSourceText(""); setTranslatedText(""); setErrorMsg(""); setCopied(false); setSavedToLib(false); setSavedPhrase(false); };
+  const handleClear = () => { setSourceText(""); setTranslatedText(""); setErrorMsg(""); setCopied(false); setSaved(false); };
 
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      if (text && text.length <= MAX_CHARS) { setSourceText(text); setCopied(false); setSavedToLib(false); setSavedPhrase(false); }
+      if (text && text.length <= MAX_CHARS) { setSourceText(text); setCopied(false); setSaved(false); }
     } catch { /* clipboard not available */ }
   };
 
@@ -258,7 +257,7 @@ export default function TranslateWidget() {
               }}>🌐</div>
               <div>
                 <div style={{ fontSize: "13px", fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>Quick Translate</div>
-                <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>Powered by Smartcat · Up to 5,000 chars</div>
+                <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.55)", fontWeight: 500 }}>Powered by LibreTranslate</div>
               </div>
             </div>
             <button onClick={() => setOpen(false)} style={{
@@ -334,8 +333,7 @@ export default function TranslateWidget() {
                     setTranslatedText(h.tgt);
                     setShowHistory(false);
                     setCopied(false);
-                    setSavedToLib(false);
-                    setSavedPhrase(false);
+                    setSaved(false);
                   }} style={{
                     padding: "8px 12px", cursor: "pointer",
                     borderBottom: i < history.length - 1 ? "1px solid #F3F4F6" : "none",
@@ -374,26 +372,11 @@ export default function TranslateWidget() {
                 onFocus={e => { e.target.style.borderColor = "#0021A5"; e.target.style.boxShadow = "0 0 0 3px rgba(0,33,165,0.08)"; }}
                 onBlur={e => { e.target.style.borderColor = "#E5E7EB"; e.target.style.boxShadow = "none"; }}
               />
-              {/* Char progress + clear */}
+              {/* Bottom actions */}
               <div style={{
                 position: "absolute", bottom: "8px", left: "14px", right: "14px",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
+                display: "flex", alignItems: "center", justifyContent: "flex-end",
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", flex: 1 }}>
-                  <div style={{ width: 60, height: 3, borderRadius: 2, background: "#F3F4F6", overflow: "hidden" }}>
-                    <div style={{
-                      width: `${charPercent}%`, height: "100%", borderRadius: 2,
-                      background: charPercent > 90 ? "#DC2626" : charPercent > 70 ? "#F59E0B" : "#0021A5",
-                      transition: "width 0.2s, background 0.3s",
-                    }}/>
-                  </div>
-                  <span style={{
-                    fontSize: "10px", fontWeight: 600, fontVariantNumeric: "tabular-nums",
-                    color: charPercent > 90 ? "#DC2626" : "#9CA3AF",
-                  }}>
-                    {sourceText.length.toLocaleString()}/{MAX_CHARS.toLocaleString()}
-                  </span>
-                </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                   {!sourceText && (
                     <button onClick={handlePaste} style={{
@@ -476,35 +459,31 @@ export default function TranslateWidget() {
               <div style={{ marginTop: "10px" }}>
                 <div style={{
                   padding: "12px 14px", borderRadius: "12px",
-                  background: "linear-gradient(135deg, #F0F4FF, #EFF6FF)",
-                  border: "1px solid #BFDBFE",
+                  background: "#fff",
+                  border: "1.5px solid #BFDBFE",
                   fontSize: "14px", lineHeight: 1.5, color: "#1E3A8A", fontWeight: 500,
                   fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   maxHeight: 150, overflowY: "auto", whiteSpace: "pre-wrap", wordBreak: "break-word",
+                  boxShadow: "0 0 0 3px rgba(0,33,165,0.04)",
                 }}>{translatedText}</div>
 
-                {/* Action buttons */}
-                <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
+                {/* Action buttons — minimal style, matching source area */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", gap: "2px", marginTop: "6px", paddingLeft: "2px" }}>
                   <button onClick={handleCopy} title="Copy to clipboard"
-                    style={{ ...actionBtnBase, background: copied ? "#D1FAE5" : "#fff", borderColor: copied ? "#6EE7B7" : "#E5E7EB", color: copied ? "#059669" : "#374151" }}
-                    onMouseEnter={e => { if (!copied) { e.currentTarget.style.borderColor = "#0021A5"; e.currentTarget.style.color = "#0021A5"; }}}
-                    onMouseLeave={e => { if (!copied) { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}}
-                  >{copied ? "✓ Copied" : "Copy"}</button>
+                    style={{ ...actionBtnBase, color: copied ? "#059669" : "#6B7280" }}
+                    onMouseEnter={e => { if (!copied) { e.currentTarget.style.color = "#0021A5"; e.currentTarget.style.background = "#EFF6FF"; }}}
+                    onMouseLeave={e => { if (!copied) { e.currentTarget.style.color = "#6B7280"; e.currentTarget.style.background = "none"; }}}
+                  >{copied ? "✓ Copied" : "📋 Copy"}</button>
                   <button onClick={handleSpeak} title="Listen to pronunciation"
-                    style={{ ...actionBtnBase, background: speaking ? "#DBEAFE" : "#fff", borderColor: speaking ? "#93C5FD" : "#E5E7EB", color: speaking ? "#2563EB" : "#374151" }}
-                    onMouseEnter={e => { if (!speaking) { e.currentTarget.style.borderColor = "#0021A5"; e.currentTarget.style.color = "#0021A5"; }}}
-                    onMouseLeave={e => { if (!speaking) { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}}
+                    style={{ ...actionBtnBase, color: speaking ? "#2563EB" : "#6B7280" }}
+                    onMouseEnter={e => { if (!speaking) { e.currentTarget.style.color = "#0021A5"; e.currentTarget.style.background = "#EFF6FF"; }}}
+                    onMouseLeave={e => { if (!speaking) { e.currentTarget.style.color = "#6B7280"; e.currentTarget.style.background = "none"; }}}
                   >{speaking ? "■ Stop" : "🔊 Listen"}</button>
-                  <button onClick={handleAddToLibrary} title="Save to your vocabulary"
-                    style={{ ...actionBtnBase, background: savedToLib ? "#FFF7ED" : "#fff", borderColor: savedToLib ? "#FDBA74" : "#E5E7EB", color: savedToLib ? "#EA580C" : "#374151" }}
-                    onMouseEnter={e => { if (!savedToLib) { e.currentTarget.style.borderColor = "#FA4616"; e.currentTarget.style.color = "#FA4616"; }}}
-                    onMouseLeave={e => { if (!savedToLib) { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}}
-                  >{savedToLib ? "✓ Saved" : "＋ Save"}</button>
-                  <button onClick={handleSaveAsPhrase} title="Save to your phrases"
-                    style={{ ...actionBtnBase, background: savedPhrase ? "#EFF6FF" : "#fff", borderColor: savedPhrase ? "#93C5FD" : "#E5E7EB", color: savedPhrase ? "#1D4ED8" : "#374151" }}
-                    onMouseEnter={e => { if (!savedPhrase) { e.currentTarget.style.borderColor = "#0021A5"; e.currentTarget.style.color = "#0021A5"; }}}
-                    onMouseLeave={e => { if (!savedPhrase) { e.currentTarget.style.borderColor = "#E5E7EB"; e.currentTarget.style.color = "#374151"; }}}
-                  >{savedPhrase ? "✓ Phrase" : "📌 Phrase"}</button>
+                  <button onClick={handleSave} title="Save to vocabulary & phrases"
+                    style={{ ...actionBtnBase, color: saved ? "#059669" : "#6B7280" }}
+                    onMouseEnter={e => { if (!saved) { e.currentTarget.style.color = "#0021A5"; e.currentTarget.style.background = "#EFF6FF"; }}}
+                    onMouseLeave={e => { if (!saved) { e.currentTarget.style.color = "#6B7280"; e.currentTarget.style.background = "none"; }}}
+                  >{saved ? "✓ Saved" : "📌 Save"}</button>
                 </div>
 
                 {/* Hint */}

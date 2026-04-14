@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import {
@@ -7,14 +7,16 @@ import {
   Ticket, PartyPopper, X, Info, Globe, MessageCircle,
   Home, Compass, ClipboardList, User, Volume2, BookmarkCheck,
   Filter, ChevronRight, ChevronLeft, Lightbulb, Coffee, Music,
-  Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap, LogOut
+  Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap, LogOut,
+  Star, AlertCircle, Eye
 } from "lucide-react";
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import logo from "../assets/MTBLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 import { CITIES_BY_COUNTRY, COUNTRY_FLAGS, COUNTRY_NAMES } from "../constants/cities.js";
 import { EventGridSkeleton, ErrorState } from "./ui/LoadingStates.jsx";
+import { API_BASE } from "../config.js";
 
-const BACKEND = "/api";
+const BACKEND = API_BASE + "/api";
 
 const COUNTRIES = [
   { code:"DE", label:COUNTRY_NAMES.DE, flag:COUNTRY_FLAGS.DE },
@@ -27,12 +29,21 @@ const CATS = [
   { id:"KZFzniwnSyZfZ7v7nJ", label:"Music", icon:"\uD83C\uDFB5" },
   { id:"KZFzniwnSyZfZ7v7nE", label:"Sports", icon:"\u26BD" },
   { id:"KZFzniwnSyZfZ7v7na", label:"Arts", icon:"\uD83C\uDFA8" },
+  { id:"KZFzniwnSyZfZ7v7nl", label:"Film", icon:"\uD83C\uDFAC" },
+  { id:"KZFzniwnSyZfZ7v7n1", label:"Family", icon:"\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67" },
 ];
 const DATE_PRESETS = [
   { label:"Any", icon:"\uD83D\uDCC5", start:"", end:"" },
+  { label:"Today", icon:"\u2B50", days:1 },
   { label:"Week", icon:"\uD83D\uDCC6", days:7 },
   { label:"Month", icon:"\uD83D\uDDD3\uFE0F", days:30 },
   { label:"3 mo", icon:"\uD83D\uDCC8", days:90 },
+];
+const SORT_OPTIONS = [
+  { value:"date,asc", label:"Date ↑", icon:"📅" },
+  { value:"date,desc", label:"Date ↓", icon:"📅" },
+  { value:"relevance,desc", label:"Relevant", icon:"🎯" },
+  { value:"name,asc", label:"A–Z", icon:"🔤" },
 ];
 const getSeasonLabel = () => {
   const m = new Date().getMonth();
@@ -116,8 +127,37 @@ const loadSavedEvents=()=>{try{return JSON.parse(localStorage.getItem("savedEven
 const persistSavedEvents=(arr,email)=>{
   localStorage.setItem("savedEvents",JSON.stringify(arr));
   if(email){
-    axios.put("/api/user/profile",{email,saved_events:arr},authHeaders()).catch(()=>{});
+    axios.put(`${BACKEND}/user/profile`,{email,saved_events:arr},authHeaders()).catch(()=>{});
   }
+};
+
+/* ── New helpers for premium features ── */
+const getEventStatus=(event)=>{
+  const status=event.dates?.status?.code;
+  if(status==="cancelled") return {label:"Cancelled",color:"#DC2626",bg:"#FEF2F2",icon:"✕"};
+  if(status==="postponed") return {label:"Postponed",color:"#D97706",bg:"#FFFBEB",icon:"⏸"};
+  if(status==="rescheduled") return {label:"Rescheduled",color:"#2563EB",bg:"#EFF6FF",icon:"🔄"};
+  if(status==="offsale") return {label:"Off Sale",color:"#6B7280",bg:"#F9FAFB",icon:"—"};
+  if(status==="onsale") return {label:"On Sale",color:"#059669",bg:"#ECFDF5",icon:"✓"};
+  return null;
+};
+const getAttractions=(event)=>{
+  const attractions=event._embedded?.attractions;
+  if(!attractions||attractions.length===0) return [];
+  return attractions.slice(0,3).map(a=>({name:a.name,image:a.images?.[0]?.url}));
+};
+const getCountdown=(dateStr)=>{
+  if(!dateStr) return null;
+  const eventDate=new Date(dateStr+"T00:00:00");
+  const now=new Date();
+  const diff=eventDate-now;
+  if(diff<0) return null;
+  const days=Math.floor(diff/86400000);
+  if(days===0) return "Today";
+  if(days===1) return "Tomorrow";
+  if(days<=7) return `${days} days away`;
+  if(days<=30) return `${Math.ceil(days/7)} weeks away`;
+  return null;
 };
 
 const Events = () => {
@@ -139,6 +179,7 @@ const Events = () => {
   const [keyword,setKeyword]=useState("");
   const [segmentIds,setSegmentIds]=useState([]);
   const [datePreset,setDatePreset]=useState(0);
+  const [sortBy,setSortBy]=useState("date,asc");
   const [events,setEvents]=useState([]);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
@@ -172,27 +213,6 @@ const Events = () => {
     return ()=>document.removeEventListener("mousedown",handler);
   },[cityDrop]);
 
-  // Auto-cleanup expired events (events that have passed)
-  useEffect(() => {
-    if (!savedEvents.length) return;
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const validEvents = savedEvents.filter(event => {
-      if (!event.date) return true; // Keep events without dates
-      const eventDate = new Date(event.date);
-      eventDate.setHours(0, 0, 0, 0);
-      return eventDate >= today; // Keep only today's or future events
-    });
-    
-    // If some events were removed, update state and persist
-    if (validEvents.length !== savedEvents.length) {
-      setSavedEvents(validEvents);
-      persistSavedEvents(validEvents, userEmail);
-    }
-  }, [savedEvents.length]); // Runs when savedEvents changes
-
   const toggleCountry=(code)=>{
     setCountries([code]);
     setCity("");setPage(0);
@@ -221,7 +241,7 @@ const Events = () => {
 
   useEffect(()=>{window.scrollTo(0,0);
     if(userEmail){
-      axios.get("/api/user/profile",{params:{email:userEmail},...authHeaders()}).then(res=>{
+      axios.get(`${BACKEND}/user/profile`,{params:{email:userEmail},...authHeaders()}).then(res=>{
         const serverSaved=res.data.saved_events||[];
         if(serverSaved.length>0){
           setSavedEvents(serverSaved);
@@ -234,7 +254,7 @@ const Events = () => {
   useEffect(()=>{if(city)fetchEvents(0);},[city]);
 
   const buildParams=(pg)=>{
-    const p={countryCode:countries.join(","),size:20,page:pg};
+    const p={countryCode:countries.join(","),size:20,page:pg,sort:sortBy};
     if(city)p.city=city;if(keyword)p.keyword=keyword;if(segmentIds.length===1)p.segmentId=segmentIds[0];else if(segmentIds.length>1)p.segmentId=segmentIds.join(",");
     const preset=DATE_PRESETS[datePreset];
     if(preset&&preset.days){const now=new Date();p.startDateTime=now.toISOString().replace(/\.\d+Z/,"Z");const end=new Date(now.getTime()+preset.days*86400000);p.endDateTime=end.toISOString().replace(/\.\d+Z/,"Z");}
@@ -270,6 +290,7 @@ const Events = () => {
   if(keyword) activeFilters.push('"'+keyword+'"');
   segmentIds.forEach(id=>{const cat=CATS.find(c=>c.id===id);if(cat)activeFilters.push(cat.label);});
   if(datePreset>0) activeFilters.push(DATE_PRESETS[datePreset].label);
+  if(sortBy!=="date,asc"){const so=SORT_OPTIONS.find(s=>s.value===sortBy);if(so)activeFilters.push("Sort: "+so.label);}
 
   return (
     <div style={S.page}>
@@ -452,34 +473,56 @@ const Events = () => {
         </div>
       )}
 
-      {/* ── FILTER PILLS — floating over background, not boxed ── */}
+      {/* ── FILTER PILLS — premium floating filter bar ── */}
       <div style={S.filterStrip}>
         <div style={S.filterInner}>
-          {/* Categories as pills */}
+          {/* ── Category section ── */}
+          <span style={S.filterSectionLabel}>Category</span>
           {CATS.map(cat=>{
             const active=(!cat.id&&segmentIds.length===0)||(cat.id&&segmentIds.includes(cat.id));
             return(
               <button key={cat.id} type="button" title={cat.label} onClick={()=>{if(!cat.id){setSegmentIds([]);}else{setSegmentIds(prev=>prev.includes(cat.id)?prev.filter(x=>x!==cat.id):[...prev,cat.id]);}setTimeout(()=>fetchEvents(0),50);}}
                 style={{...S.filterPill,...(active?S.filterPillOn:{})}}
-                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";}}}
-                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.2)";e.currentTarget.style.background="rgba(219,234,254,0.3)";e.currentTarget.style.color="#3B5998";}}}>
+                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 3px 10px rgba(0,33,165,0.08)";}}}
+                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.12)";e.currentTarget.style.background="rgba(255,255,255,0.65)";e.currentTarget.style.color="#64748B";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,33,165,0.04)";}}}>
                 <span style={{fontSize:"0.72rem",lineHeight:1}}>{cat.icon}</span>
                 <span>{cat.label}</span>
+                {active && cat.id && <span style={S.filterCheckmark}>✓</span>}
               </button>
             );
           })}
 
-          <span style={S.filterDot}/>
+          <span style={S.filterDivider}/>
 
-          {/* Date pills */}
+          {/* ── Date section ── */}
+          <span style={S.filterSectionLabel}>When</span>
           {DATE_PRESETS.map((dp,i)=>{
             const active=datePreset===i;
             return(
               <button key={i} type="button" onClick={()=>{setDatePreset(i);setTimeout(()=>fetchEvents(0),50);}}
                 style={{...S.filterPill,...(active?S.filterPillOn:{})}}
-                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";}}}
-                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.2)";e.currentTarget.style.background="rgba(219,234,254,0.3)";e.currentTarget.style.color="#3B5998";}}}>
+                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 3px 10px rgba(0,33,165,0.08)";}}}
+                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.12)";e.currentTarget.style.background="rgba(255,255,255,0.65)";e.currentTarget.style.color="#64748B";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,33,165,0.04)";}}}>
                 <span>{dp.label}</span>
+                {active && i > 0 && <span style={S.filterCheckmark}>✓</span>}
+              </button>
+            );
+          })}
+
+          <span style={S.filterDivider}/>
+
+          {/* ── Sort section ── */}
+          <span style={S.filterSectionLabel}>Sort</span>
+          {SORT_OPTIONS.map(so=>{
+            const active=sortBy===so.value;
+            return(
+              <button key={so.value} type="button" onClick={()=>{setSortBy(so.value);setTimeout(()=>fetchEvents(0),50);}}
+                style={{...S.filterPill,...(active?S.filterPillOn:{})}}
+                onMouseEnter={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.35)";e.currentTarget.style.background="rgba(219,234,254,0.5)";e.currentTarget.style.color="#0021A5";e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 3px 10px rgba(0,33,165,0.08)";}}}
+                onMouseLeave={e=>{if(!active){e.currentTarget.style.borderColor="rgba(0,33,165,0.12)";e.currentTarget.style.background="rgba(255,255,255,0.65)";e.currentTarget.style.color="#64748B";e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,33,165,0.04)";}}}>
+                <span style={{fontSize:"0.72rem",lineHeight:1}}>{so.icon}</span>
+                <span>{so.label}</span>
+                {active && <span style={S.filterCheckmark}>✓</span>}
               </button>
             );
           })}
@@ -488,7 +531,7 @@ const Events = () => {
           {activeFilters.length > 0 && (
             <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginLeft:"auto",flexShrink:0}}>
               {activeFilters.map((f,i) => <span key={i} style={S.activeTag}>{f}</span>)}
-              <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={S.clearBtn}
+              <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setSortBy("date,asc");setTimeout(()=>fetchEvents(0),50);}} style={S.clearBtn}
                 onMouseEnter={e=>{e.currentTarget.style.background="rgba(220,38,38,0.9)";e.currentTarget.style.transform="scale(1.03)";}}
                 onMouseLeave={e=>{e.currentTarget.style.background="rgba(220,38,38,0.75)";e.currentTarget.style.transform="scale(1)";}}>
                 <X size={8}/> Clear
@@ -499,11 +542,11 @@ const Events = () => {
 
         {/* Results count */}
         {!loading&&events.length>0&&(
-          <div style={{maxWidth:1280,margin:"0 auto",padding:"0.15rem 2rem 0",display:"flex",alignItems:"center",gap:"0.4rem"}}>
-            <span style={{fontSize:"0.62rem",fontWeight:500,color:"#9CA3AF",letterSpacing:"0.01em"}}>
+          <div style={{maxWidth:1280,margin:"0 auto",padding:"0.2rem 2rem 0",display:"flex",alignItems:"center",gap:"0.4rem"}}>
+            <span style={{fontSize:"0.65rem",fontWeight:500,color:"#9CA3AF",letterSpacing:"0.01em"}}>
               {totalResults>0?`${totalResults.toLocaleString()} events`:`${events.length} events`} in {countryObj.flag} {countryObj.label}{city?` · ${city}`:""}
             </span>
-            {keyword&&<span style={{fontSize:"0.58rem",color:"#93C5FD",fontWeight:500}}>for "{keyword}"</span>}
+            {keyword&&<span style={{fontSize:"0.6rem",color:"#93C5FD",fontWeight:500}}>for "{keyword}"</span>}
           </div>
         )}
       </div>
@@ -515,9 +558,9 @@ const Events = () => {
 
           {loading&&(
             <div>
-              <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"1rem"}}>
-                <div style={{width:20,height:20,borderRadius:"50%",border:"2px solid #E5E7EB",borderTopColor:"#0021A5",animation:"spin 0.8s linear infinite"}}/>
-                <p style={{color:"#6B7280",fontSize:"0.82rem",margin:0,fontWeight:500}}>Searching {countryObj.label}…</p>
+              <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"1.25rem",padding:"0.75rem 1rem",background:"rgba(255,255,255,0.7)",borderRadius:"0.75rem",border:"1px solid rgba(229,231,235,0.3)",backdropFilter:"blur(8px)"}}>
+                <div style={{width:18,height:18,borderRadius:"50%",border:"2px solid #E5E7EB",borderTopColor:"#0021A5",animation:"spin 0.8s linear infinite"}}/>
+                <p style={{color:"#6B7280",fontSize:"0.8rem",margin:0,fontWeight:500}}>Discovering events in {countryObj.label}…</p>
               </div>
               <EventGridSkeleton count={6}/>
             </div>
@@ -538,49 +581,104 @@ const Events = () => {
                 const monthShort=dateObj?dateObj.toLocaleDateString("en-US",{month:"short"}).toUpperCase():"";
                 const dayNum=dateObj?dateObj.getDate():"";
                 const weekday=dateObj?dateObj.toLocaleDateString("en-US",{weekday:"short"}):"";
+                const status=getEventStatus(event);
+                const attractions=getAttractions(event);
+                const countdown=getCountdown(date);
                 return(
-                  <div key={event.id} style={{...S.eventCard,animation:`fadeSlideUp 0.4s ${idx*0.045}s both`}}
-                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-6px) scale(1.01)";e.currentTarget.style.boxShadow="0 20px 50px rgba(0,33,165,0.14), 0 8px 20px rgba(0,0,0,0.06)";}}
-                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)";}}>
-                    {/* Image — cinematic ratio */}
+                  <div key={event.id} style={{...S.eventCard,animation:`fadeSlideUp 0.45s ${idx*0.04}s both`}}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-6px) scale(1.01)";e.currentTarget.style.boxShadow="0 24px 56px rgba(0,33,165,0.14), 0 8px 24px rgba(0,0,0,0.05)";e.currentTarget.style.borderColor="rgba(191,219,254,0.6)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 1px 4px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)";e.currentTarget.style.borderColor="rgba(229,231,235,0.25)";}}>
+                    {/* Image — premium cinematic */}
                     <div style={S.cardImg}>
                       {img ? (
-                        <div style={{width:"100%",height:"100%",backgroundImage:'url('+img+')',backgroundSize:"cover",backgroundPosition:"center",transition:"transform 0.5s cubic-bezier(.4,0,.2,1)"}}
-                          onMouseEnter={e=>e.currentTarget.style.transform="scale(1.06)"}
+                        <div style={{width:"100%",height:"100%",backgroundImage:'url('+img+')',backgroundSize:"cover",backgroundPosition:"center",transition:"transform 0.6s cubic-bezier(.4,0,.2,1)"}}
+                          onMouseEnter={e=>e.currentTarget.style.transform="scale(1.08)"}
                           onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}/>
                       ) : (
-                        <div style={{width:"100%",height:"100%",background:"linear-gradient(135deg,#0021A5 0%,#1E40AF 40%,#3B82F6 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
-                          <PartyPopper size={28} color="rgba(255,255,255,0.35)"/>
+                        <div style={{width:"100%",height:"100%",background:"linear-gradient(135deg,#001A6E 0%,#0021A5 40%,#1E40AF 100%)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <PartyPopper size={32} color="rgba(255,255,255,0.25)"/>
                         </div>
                       )}
-                      {/* Gradient overlay for text legibility */}
-                      <div style={{position:"absolute",inset:0,background:"linear-gradient(0deg,rgba(0,0,0,0.35) 0%,transparent 50%)",pointerEvents:"none"}}/>
-                      {/* Date badge */}
-                      <div style={{...S.dateBadge,...(isToday?{background:"#FA4616",color:"#fff",borderColor:"rgba(250,70,22,0.3)"}:{})}}>
-                        {isToday ? <><Zap size={10}/> TODAY</> : <><span style={{fontSize:"0.55rem",opacity:0.7}}>{weekday}</span> <span style={{fontWeight:800}}>{monthShort} {dayNum}</span></>}
+                      {/* Multi-layer gradient overlay */}
+                      <div style={{position:"absolute",inset:0,background:"linear-gradient(0deg,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.1) 35%,transparent 60%)",pointerEvents:"none"}}/>
+                      {/* Date badge — bottom left */}
+                      <div style={{...S.dateBadge,...(isToday?{background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",borderColor:"rgba(250,70,22,0.3)",boxShadow:"0 3px 12px rgba(250,70,22,0.35)"}:{})}}>
+                        {isToday ? <><Zap size={10}/> <span style={{fontWeight:800}}>TODAY</span></> : <><span style={{fontSize:"0.52rem",opacity:0.7,letterSpacing:"0.03em"}}>{weekday}</span> <span style={{fontWeight:800,letterSpacing:"0.01em"}}>{monthShort} {dayNum}</span></>}
                       </div>
+                      {/* Status badge — top left */}
+                      {status && (
+                        <div style={{position:"absolute",top:"0.55rem",left:"0.55rem",display:"flex",alignItems:"center",gap:"0.2rem",padding:"0.18rem 0.55rem",borderRadius:9999,background:status.bg,border:"1px solid "+status.color+"22",color:status.color,fontSize:"0.52rem",fontWeight:700,letterSpacing:"0.03em",backdropFilter:"blur(12px)",boxShadow:"0 2px 8px rgba(0,0,0,0.08)",zIndex:2}}>
+                          <span style={{fontSize:"0.5rem"}}>{status.icon}</span> {status.label}
+                        </div>
+                      )}
+                      {/* Countdown badge — bottom right */}
+                      {countdown && !isToday && (
+                        <div style={{position:"absolute",bottom:"0.55rem",right:"0.55rem",padding:"0.18rem 0.5rem",borderRadius:9999,background:"rgba(0,0,0,0.55)",backdropFilter:"blur(12px)",color:"rgba(255,255,255,0.9)",fontSize:"0.52rem",fontWeight:600,letterSpacing:"0.02em",border:"1px solid rgba(255,255,255,0.1)"}}>
+                          <Clock size={8} style={{display:"inline",verticalAlign:"-1px",marginRight:"0.2rem"}}/>{countdown}
+                        </div>
+                      )}
                       {/* Save button */}
-                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"#FEF2F2",borderColor:"#FECACA",boxShadow:"0 2px 12px rgba(239,68,68,0.18)"}:{})}}
-                        onMouseEnter={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.95)";e.currentTarget.style.transform="scale(1.08)";e.currentTarget.style.boxShadow="0 4px 14px rgba(0,0,0,0.15)";}}}
-                        onMouseLeave={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.85)";e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.1)";}}}>
+                      <button onClick={e=>{e.stopPropagation();toggleSave(event);}} style={{...S.heartBtn,...(saved?{background:"#FEF2F2",borderColor:"#FECACA",boxShadow:"0 2px 14px rgba(239,68,68,0.22)"}:{})}}
+                        onMouseEnter={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.98)";e.currentTarget.style.transform="scale(1.1)";e.currentTarget.style.boxShadow="0 6px 18px rgba(0,0,0,0.18)";}}}
+                        onMouseLeave={e=>{if(!saved){e.currentTarget.style.background="rgba(255,255,255,0.88)";e.currentTarget.style.transform="scale(1)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.1)";}}}>
                         <Heart size={14} fill={saved?"#EF4444":"none"} color={saved?"#EF4444":"#6B7280"} strokeWidth={saved?0:2}/>
                       </button>
                     </div>
 
-                    {/* Content */}
+                    {/* Content — premium spacing */}
                     <div style={S.cardBody}>
+                      {/* Genre / classification badges */}
+                      {(() => {
+                        const cls = event.classifications?.[0];
+                        const genre = cls?.genre?.name && cls.genre.name !== "Undefined" ? cls.genre.name : null;
+                        const subGenre = cls?.subGenre?.name && cls.subGenre.name !== "Undefined" ? cls.subGenre.name : null;
+                        const segment = cls?.segment?.name && cls.segment.name !== "Undefined" ? cls.segment.name : null;
+                        const label = genre || segment;
+                        if (!label) return null;
+                        return (
+                          <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.3rem",flexWrap:"wrap"}}>
+                            <span style={{fontSize:"0.54rem",fontWeight:700,color:"#0021A5",background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",padding:"0.15rem 0.5rem",borderRadius:9999,border:"1px solid #BFDBFE",letterSpacing:"0.02em"}}>{label}</span>
+                            {subGenre && subGenre !== genre && <span style={{fontSize:"0.5rem",fontWeight:500,color:"#6B7280",background:"#F3F4F6",padding:"0.12rem 0.4rem",borderRadius:9999}}>{subGenre}</span>}
+                          </div>
+                        );
+                      })()}
                       <h3 style={S.eventTitle}>{event.name}</h3>
+                      {/* Attractions / performers */}
+                      {attractions.length>0 && (
+                        <div style={{display:"flex",alignItems:"center",gap:"0.35rem",marginBottom:"0.3rem",flexWrap:"wrap"}}>
+                          <Users size={10} color="#9CA3AF" style={{flexShrink:0}}/>
+                          {attractions.map((a,i)=>(
+                            <span key={i} style={{fontSize:"0.58rem",fontWeight:600,color:"#4B5563",background:"#F9FAFB",padding:"0.12rem 0.42rem",borderRadius:9999,border:"1px solid #E5E7EB",maxWidth:120,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name}</span>
+                          ))}
+                        </div>
+                      )}
                       <div style={S.eventMeta}>
                         {(cityName||venueName)&&<span style={S.metaItem}><MapPin size={10} strokeWidth={2.5}/>{cityName||venueName}</span>}
                         {time&&<span style={S.metaItem}><Clock size={10}/>{fmtTime(time)}</span>}
                       </div>
-                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"auto",paddingTop:"0.5rem",borderTop:"1px solid #F3F4F6"}}>
-                        {event.url&&<a href={event.url} target="_blank" rel="noopener noreferrer" style={S.ticketBtn}
-                          onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 4px 14px rgba(250,70,22,0.3)";}}
-                          onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 6px rgba(250,70,22,0.15)";}}>
-                          <Ticket size={11}/> Get Tickets
-                        </a>}
-                        {venueName&&cityName&&<span style={{fontSize:"0.58rem",color:"#9CA3AF",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:110}}>{venueName}</span>}
+                      {/* Price range */}
+                      {event.priceRanges?.[0] && (
+                        <div style={{display:"flex",alignItems:"center",gap:"0.2rem",marginTop:"0.35rem"}}>
+                          <span style={{fontSize:"0.62rem",fontWeight:600,color:"#059669",display:"flex",alignItems:"center",gap:"0.15rem",letterSpacing:"0.01em",background:"#ECFDF5",padding:"0.14rem 0.5rem",borderRadius:9999,border:"1px solid #A7F3D0"}}>
+                            {event.priceRanges[0].currency || "€"}{event.priceRanges[0].min?.toFixed(0)}{event.priceRanges[0].max ? ` – ${event.priceRanges[0].currency || "€"}${event.priceRanges[0].max.toFixed(0)}` : "+"}
+                          </span>
+                        </div>
+                      )}
+                      {/* Footer — tickets + venue */}
+                      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:"auto",paddingTop:"0.55rem",borderTop:"1px solid rgba(243,244,246,0.8)"}}>
+                        <div style={{display:"flex",gap:"0.35rem",alignItems:"center"}}>
+                          {event.url&&<a href={event.url} target="_blank" rel="noopener noreferrer" style={S.ticketBtn}
+                            onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-1px)";e.currentTarget.style.boxShadow="0 6px 18px rgba(250,70,22,0.3)";}}
+                            onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="0 2px 8px rgba(250,70,22,0.15)";}}>
+                            <Ticket size={11}/> Tickets
+                          </a>}
+                          <button onClick={()=>navigate(`/event-details/${event.id}`)} style={S.detailBtn}
+                            onMouseEnter={e=>{e.currentTarget.style.borderColor="#93C5FD";e.currentTarget.style.color="#0021A5";e.currentTarget.style.background="#EFF6FF";}}
+                            onMouseLeave={e=>{e.currentTarget.style.borderColor="#E5E7EB";e.currentTarget.style.color="#6B7280";e.currentTarget.style.background="#fff";}}>
+                            <Eye size={10}/> Details
+                          </button>
+                        </div>
+                        {venueName&&<span style={{fontSize:"0.55rem",color:"#B0B8C4",fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:100,fontStyle:"italic"}}>{venueName}</span>}
                       </div>
                     </div>
                   </div>
@@ -600,7 +698,7 @@ const Events = () => {
                 {city&&<button onClick={()=>{setCity("");setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Try all cities</button>}
                 {keyword&&<button onClick={()=>{setKeyword("");setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Clear search</button>}
                 {datePreset>0&&<button onClick={()=>{setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Any date</button>}
-                <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #FECACA",background:"#FEF2F2",color:"#DC2626",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}><X size={12}/> Clear all filters</button>
+                <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setSortBy("date,asc");setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #FECACA",background:"#FEF2F2",color:"#DC2626",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}><X size={12}/> Clear all filters</button>
               </div>
             </div>
           )}
@@ -774,7 +872,7 @@ const Events = () => {
 };
 
 const S = {
-  page:{minHeight:"100vh",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",color:"#111827",background:"#F8FAFC"},
+  page:{minHeight:"100vh",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",color:"#111827",background:"linear-gradient(180deg,#F8FAFC 0%,#F1F5F9 40%,#F8FAFC 100%)"},
 
   /* ── Navbar ── */
   hdr:{backgroundColor:"rgba(255,255,255,0.88)",backdropFilter:"blur(24px) saturate(180%)",WebkitBackdropFilter:"blur(24px) saturate(180%)",borderBottom:"1px solid rgba(229,231,235,0.45)",position:"sticky",top:0,zIndex:1000,boxShadow:"0 1px 3px rgba(0,0,0,0.03)"},
@@ -787,7 +885,7 @@ const S = {
   nbA:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 1.1rem",border:"none",borderRadius:"0.5rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.78rem",fontWeight:700,letterSpacing:"0.02em",boxShadow:"0 2px 8px rgba(250,70,22,0.25)",marginLeft:"0.35rem"},
 
   /* ── Command bar — deeper, more dimensional ── */
-  commandBar:{background:"linear-gradient(135deg,#001A6E 0%,#0021A5 40%,#003087 75%,#1E40AF 100%)",position:"sticky",top:57,zIndex:900,boxShadow:"0 6px 32px rgba(0,33,165,0.22), 0 1px 0 rgba(255,255,255,0.05) inset",borderBottom:"1px solid rgba(30,64,175,0.3)",overflow:"visible",isolation:"isolate"},
+  commandBar:{background:"linear-gradient(135deg,#001050 0%,#001A6E 25%,#0021A5 50%,#003087 80%,#1E40AF 100%)",position:"sticky",top:57,zIndex:900,boxShadow:"0 8px 40px rgba(0,33,165,0.25), 0 1px 0 rgba(255,255,255,0.05) inset",borderBottom:"1px solid rgba(30,64,175,0.3)",overflow:"visible",isolation:"isolate"},
 
   commandInner:{maxWidth:1280,margin:"0 auto",padding:"0.7rem 2rem 0.6rem",display:"flex",alignItems:"flex-start",gap:"0.6rem",flexWrap:"nowrap",position:"relative",zIndex:1},
 
@@ -813,46 +911,51 @@ const S = {
   suggestChip:{display:"inline-flex",alignItems:"center",gap:"0.2rem",padding:"0.12rem 0.5rem",border:"1px solid rgba(255,255,255,0.08)",borderRadius:9999,background:"rgba(255,255,255,0.05)",color:"rgba(255,255,255,0.55)",cursor:"pointer",fontSize:"0.58rem",fontWeight:500,transition:"all 0.2s cubic-bezier(.4,0,.2,1)",letterSpacing:"0.01em"},
 
   /* ── Filter strip — floating pills, no boxed bar ── */
-  filterStrip:{background:"transparent",position:"sticky",top:120,zIndex:800,paddingTop:"0.55rem",paddingBottom:"0.1rem"},
-  filterInner:{maxWidth:1280,margin:"0 auto",padding:"0 2rem",display:"flex",alignItems:"center",gap:"0.4rem",flexWrap:"wrap"},
+  filterStrip:{background:"rgba(248,250,252,0.85)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",position:"sticky",top:120,zIndex:800,paddingTop:"0.55rem",paddingBottom:"0.35rem",borderBottom:"1px solid rgba(226,232,240,0.4)"},
+  filterInner:{maxWidth:1280,margin:"0 auto",padding:"0 2rem",display:"flex",alignItems:"center",gap:"0.35rem",flexWrap:"wrap"},
 
-  /* Pill filter buttons */
-  filterPill:{display:"inline-flex",alignItems:"center",gap:"0.22rem",padding:"0.32rem 0.7rem",border:"1.5px solid rgba(0,33,165,0.2)",borderRadius:9999,background:"rgba(219,234,254,0.3)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#3B5998",cursor:"pointer",fontSize:"0.68rem",fontWeight:550,transition:"all 0.22s cubic-bezier(.4,0,.2,1)",whiteSpace:"nowrap",letterSpacing:"0.01em",boxShadow:"0 1px 3px rgba(0,33,165,0.04)"},
-  filterPillOn:{color:"#0021A5",fontWeight:700,border:"1.5px solid transparent",background:"linear-gradient(#edf3fe,#edf3fe) padding-box, linear-gradient(135deg,#FA4616,#FF6B35,#0021A5) border-box",boxShadow:"0 2px 10px rgba(250,70,22,0.12), 0 2px 8px rgba(0,33,165,0.08)"},
-  filterDot:{width:3,height:3,borderRadius:"50%",background:"#D1D5DB",flexShrink:0},
+  /* Section labels */
+  filterSectionLabel:{fontSize:"0.5rem",fontWeight:800,color:"#94A3B8",textTransform:"uppercase",letterSpacing:"0.1em",marginRight:"0.1rem",flexShrink:0,userSelect:"none"},
+
+  /* Pill filter buttons — glass morphism */
+  filterPill:{display:"inline-flex",alignItems:"center",gap:"0.22rem",padding:"0.32rem 0.7rem",border:"1.5px solid rgba(0,33,165,0.12)",borderRadius:"0.5rem",background:"rgba(255,255,255,0.65)",backdropFilter:"blur(8px)",WebkitBackdropFilter:"blur(8px)",color:"#64748B",cursor:"pointer",fontSize:"0.68rem",fontWeight:550,transition:"all 0.25s cubic-bezier(.4,0,.2,1)",whiteSpace:"nowrap",letterSpacing:"0.01em",boxShadow:"0 1px 3px rgba(0,33,165,0.04)",position:"relative"},
+  filterPillOn:{color:"#fff",fontWeight:700,border:"1.5px solid #0021A5",background:"linear-gradient(135deg,#0021A5,#003087)",boxShadow:"0 3px 12px rgba(0,33,165,0.2), 0 1px 3px rgba(0,0,0,0.06)"},
+  filterCheckmark:{fontSize:"0.55rem",fontWeight:800,opacity:0.8,marginLeft:"0.05rem"},
+  filterDivider:{width:1,height:20,background:"linear-gradient(180deg,transparent,#CBD5E1,transparent)",flexShrink:0,margin:"0 0.25rem"},
 
   activeTag:{fontSize:"0.58rem",fontWeight:600,color:"#0021A5",background:"rgba(239,246,255,0.9)",padding:"0.14rem 0.5rem",borderRadius:9999,border:"1px solid #BFDBFE",letterSpacing:"0.01em"},
   clearBtn:{display:"flex",alignItems:"center",gap:"0.18rem",fontSize:"0.58rem",fontWeight:600,color:"#fff",background:"rgba(220,38,38,0.75)",border:"none",borderRadius:9999,padding:"0.2rem 0.55rem",cursor:"pointer",flexShrink:0,transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
 
   /* ── Layout ── */
-  layout:{maxWidth:1280,margin:"0 auto",padding:"1rem 2rem 2.5rem",display:"grid",gridTemplateColumns:"1fr 290px",gap:"1.5rem",alignItems:"start"},
+  layout:{maxWidth:1320,margin:"0 auto",padding:"1.25rem 2.5rem 3rem",display:"grid",gridTemplateColumns:"1fr 300px",gap:"1.75rem",alignItems:"start"},
   mainCol:{minWidth:0},
   sidebar:{display:"flex",flexDirection:"column",gap:"0.7rem",position:"sticky",top:152},
 
-  /* ── Event Grid — premium cards ── */
-  eventGrid:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"1rem",marginBottom:"1.5rem"},
-  eventCard:{backgroundColor:"#fff",borderRadius:"1rem",overflow:"hidden",border:"1px solid rgba(229,231,235,0.35)",transition:"all 0.35s cubic-bezier(.4,0,.2,1)",cursor:"default",boxShadow:"0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",display:"flex",flexDirection:"column"},
-  cardImg:{position:"relative",width:"100%",height:155,overflow:"hidden",flexShrink:0},
-  heartBtn:{position:"absolute",top:"0.55rem",right:"0.55rem",background:"rgba(255,255,255,0.85)",backdropFilter:"blur(12px)",WebkitBackdropFilter:"blur(12px)",border:"1px solid rgba(255,255,255,0.6)",borderRadius:"0.55rem",width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s cubic-bezier(.4,0,.2,1)",zIndex:2,boxShadow:"0 2px 8px rgba(0,0,0,0.1)"},
-  dateBadge:{position:"absolute",bottom:"0.55rem",left:"0.55rem",display:"flex",alignItems:"center",gap:"0.2rem",padding:"0.22rem 0.55rem",borderRadius:9999,backgroundColor:"rgba(255,255,255,0.95)",backdropFilter:"blur(12px)",border:"1px solid rgba(229,231,235,0.3)",color:"#111827",fontSize:"0.58rem",fontWeight:700,boxShadow:"0 2px 10px rgba(0,0,0,0.08)",letterSpacing:"0.02em"},
-  cardBody:{padding:"0.7rem 0.8rem",display:"flex",flexDirection:"column",flex:1,minHeight:0},
-  eventTitle:{fontSize:"0.84rem",fontWeight:700,color:"#111827",margin:"0 0 0.3rem",lineHeight:1.35,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",letterSpacing:"-0.01em"},
+  /* ── Event Grid — premium Vercel-tier cards ── */
+  eventGrid:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:"1.25rem",marginBottom:"1.75rem"},
+  eventCard:{backgroundColor:"#fff",borderRadius:"1rem",overflow:"hidden",border:"1px solid rgba(229,231,235,0.25)",transition:"all 0.4s cubic-bezier(.16,1,.3,1)",cursor:"default",boxShadow:"0 1px 4px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",display:"flex",flexDirection:"column"},
+  cardImg:{position:"relative",width:"100%",height:195,overflow:"hidden",flexShrink:0},
+  heartBtn:{position:"absolute",top:"0.55rem",right:"0.55rem",background:"rgba(255,255,255,0.88)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",border:"1px solid rgba(255,255,255,0.6)",borderRadius:"0.6rem",width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.3s cubic-bezier(.16,1,.3,1)",zIndex:2,boxShadow:"0 2px 10px rgba(0,0,0,0.1)"},
+  dateBadge:{position:"absolute",bottom:"0.6rem",left:"0.6rem",display:"flex",alignItems:"center",gap:"0.22rem",padding:"0.25rem 0.6rem",borderRadius:9999,backgroundColor:"rgba(255,255,255,0.97)",backdropFilter:"blur(16px)",border:"1px solid rgba(229,231,235,0.3)",color:"#111827",fontSize:"0.58rem",fontWeight:700,boxShadow:"0 3px 12px rgba(0,0,0,0.1)",letterSpacing:"0.02em"},
+  cardBody:{padding:"0.85rem 1rem",display:"flex",flexDirection:"column",flex:1,minHeight:0,gap:"0.1rem"},
+  eventTitle:{fontSize:"0.88rem",fontWeight:700,color:"#111827",margin:"0 0 0.25rem",lineHeight:1.35,display:"-webkit-box",WebkitLineClamp:2,WebkitBoxOrient:"vertical",overflow:"hidden",letterSpacing:"-0.015em"},
   eventMeta:{display:"flex",alignItems:"center",gap:"0.6rem",flexWrap:"wrap"},
   metaItem:{display:"flex",alignItems:"center",gap:"0.18rem",fontSize:"0.62rem",color:"#9CA3AF",fontWeight:500},
-  ticketBtn:{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.35rem 0.7rem",border:"none",borderRadius:"0.45rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.65rem",fontWeight:700,textDecoration:"none",boxShadow:"0 2px 6px rgba(250,70,22,0.15)",transition:"all 0.25s cubic-bezier(.4,0,.2,1)",letterSpacing:"0.01em"},
+  ticketBtn:{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.4rem 0.8rem",border:"none",borderRadius:"0.55rem",background:"linear-gradient(135deg,#FA4616,#FF6B35)",color:"#fff",cursor:"pointer",fontSize:"0.65rem",fontWeight:700,textDecoration:"none",boxShadow:"0 2px 8px rgba(250,70,22,0.15)",transition:"all 0.25s cubic-bezier(.16,1,.3,1)",letterSpacing:"0.02em"},
+  detailBtn:{display:"inline-flex",alignItems:"center",gap:"0.2rem",padding:"0.38rem 0.7rem",border:"1px solid #E5E7EB",borderRadius:"0.55rem",background:"#fff",color:"#6B7280",cursor:"pointer",fontSize:"0.62rem",fontWeight:600,transition:"all 0.2s cubic-bezier(.16,1,.3,1)",letterSpacing:"0.01em"},
 
   errorBox:{display:"flex",alignItems:"center",gap:"0.4rem",padding:"0.85rem 1rem",backgroundColor:"#FEF2F2",border:"1px solid #FECACA",borderRadius:"0.75rem",color:"#DC2626",fontSize:"0.82rem",marginBottom:"1rem"},
   loadWrap:{display:"flex",flexDirection:"column",alignItems:"center",padding:"4rem 1rem"},
   spinner:{width:36,height:36,border:"3px solid #E5E7EB",borderTopColor:"#0021A5",borderRadius:"50%",animation:"spin 0.8s linear infinite"},
-  emptyState:{textAlign:"center",padding:"4rem 2rem",backgroundColor:"#fff",borderRadius:"1.25rem",border:"1px solid rgba(229,231,235,0.3)",background:"linear-gradient(180deg,#fff 0%,#FAFBFF 100%)",gridColumn:"1 / -1",boxShadow:"0 1px 3px rgba(0,0,0,0.03)"},
-  pagination:{display:"flex",justifyContent:"center",alignItems:"center",gap:"0.5rem",marginBottom:"1rem",padding:"1rem 0",gridColumn:"1 / -1"},
-  pageBtn:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.45rem 0.9rem",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.55rem",backgroundColor:"#fff",color:"#374151",cursor:"pointer",fontSize:"0.72rem",fontWeight:600,transition:"all 0.2s cubic-bezier(.4,0,.2,1)",boxShadow:"0 1px 2px rgba(0,0,0,0.03)"},
-  pageDot:{width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.4rem",backgroundColor:"#fff",color:"#6B7280",cursor:"pointer",fontSize:"0.7rem",fontWeight:600,transition:"all 0.15s"},
-  pageDotActive:{background:"#0021A5",color:"#fff",borderColor:"#0021A5",boxShadow:"0 2px 8px rgba(0,33,165,0.2)"},
+  emptyState:{textAlign:"center",padding:"5rem 2rem",backgroundColor:"#fff",borderRadius:"1.25rem",border:"1px solid rgba(229,231,235,0.2)",background:"linear-gradient(180deg,#fff 0%,#FAFBFF 100%)",gridColumn:"1 / -1",boxShadow:"0 2px 8px rgba(0,0,0,0.03)"},
+  pagination:{display:"flex",justifyContent:"center",alignItems:"center",gap:"0.5rem",marginBottom:"1rem",padding:"1.5rem 0",gridColumn:"1 / -1"},
+  pageBtn:{display:"flex",alignItems:"center",gap:"0.3rem",padding:"0.55rem 1.1rem",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.6rem",backgroundColor:"#fff",color:"#374151",cursor:"pointer",fontSize:"0.72rem",fontWeight:600,transition:"all 0.2s cubic-bezier(.16,1,.3,1)",boxShadow:"0 1px 4px rgba(0,0,0,0.04)"},
+  pageDot:{width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",border:"1px solid rgba(229,231,235,0.4)",borderRadius:"0.5rem",backgroundColor:"#fff",color:"#6B7280",cursor:"pointer",fontSize:"0.72rem",fontWeight:600,transition:"all 0.2s"},
+  pageDotActive:{background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",borderColor:"#0021A5",boxShadow:"0 3px 12px rgba(0,33,165,0.25)"},
 
   /* ── Sidebar ── */
-  sideCard:{backgroundColor:"#fff",borderRadius:"0.9rem",border:"1px solid rgba(229,231,235,0.35)",overflow:"hidden",boxShadow:"0 1px 3px rgba(0,0,0,0.03)",transition:"all 0.25s cubic-bezier(.4,0,.2,1)"},
-  sideHeader:{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"0.7rem 0.8rem",border:"none",background:"transparent",cursor:"pointer",transition:"all 0.15s",borderRadius:"0.9rem"},
+  sideCard:{backgroundColor:"#fff",borderRadius:"1rem",border:"1px solid rgba(229,231,235,0.25)",overflow:"hidden",boxShadow:"0 1px 6px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",transition:"all 0.3s cubic-bezier(.16,1,.3,1)"},
+  sideHeader:{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"0.75rem 0.85rem",border:"none",background:"transparent",cursor:"pointer",transition:"all 0.15s",borderRadius:"0.9rem"},
   sideBody:{padding:"0 0.8rem 0.8rem",display:"flex",flexDirection:"column",gap:"0.45rem",maxHeight:380,overflowY:"auto"},
 
   savedItem:{display:"flex",alignItems:"center",gap:"0.45rem",padding:"0.45rem",borderRadius:"0.5rem",background:"#FFFBF9",border:"1px solid rgba(254,226,226,0.5)",transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
@@ -862,7 +965,7 @@ const S = {
   phraseItem:{padding:"0.5rem 0.6rem",borderRadius:"0.5rem",background:"linear-gradient(135deg,#FAFBFF,#F0F4FF)",border:"1px solid rgba(219,234,254,0.5)",transition:"all 0.15s"},
   phraseIconBtn:{display:"flex",alignItems:"center",justifyContent:"center",width:24,height:24,borderRadius:"0.35rem",border:"1px solid rgba(191,219,254,0.5)",backgroundColor:"#fff",color:"#0021A5",cursor:"pointer",transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
 
-  foot:{textAlign:"center",padding:"2rem 1.5rem",color:"#9CA3AF",fontSize:"0.72rem",fontWeight:500,borderTop:"1px solid rgba(229,231,235,0.5)",background:"linear-gradient(180deg,transparent,rgba(0,33,165,0.015))"},
+  foot:{textAlign:"center",padding:"3rem 1.5rem",color:"#9CA3AF",fontSize:"0.72rem",fontWeight:500,borderTop:"1px solid rgba(229,231,235,0.35)",background:"linear-gradient(180deg,transparent,rgba(0,33,165,0.015))",letterSpacing:"0.01em"},
 };
 
 if(typeof document!=="undefined"){
@@ -870,8 +973,9 @@ if(typeof document!=="undefined"){
   el.id="mtb-events-anim";
   el.textContent=`
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeSlideUp{from{opacity:0;transform:translateY(16px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
     @keyframes evtToastIn{from{opacity:0;transform:translateX(-50%) translateY(-12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @keyframes shimmerPulse{0%,100%{opacity:1}50%{opacity:0.7}}
     [data-events-bar] input::placeholder{color:rgba(255,255,255,0.4)!important}
     [data-events-bar] input:focus{outline:none}
     [data-events-bar] form:focus-within{border-color:rgba(255,255,255,0.22)!important;background:rgba(255,255,255,0.1)!important;box-shadow:0 0 0 3px rgba(255,255,255,0.06)!important}

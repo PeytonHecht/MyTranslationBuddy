@@ -3,8 +3,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { isLoggedIn, authHeaders } from "../utils/auth.js";
 import { Spinner, ErrorState } from "./ui/LoadingStates.jsx";
+import { API_BASE } from "../config.js";
 // Ensure this path matches your logo file
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import logo from "../assets/MTBLogo.png";
 
 const EventDetail = () => {
   const { event_id } = useParams();
@@ -18,7 +19,7 @@ const EventDetail = () => {
     const fetchEventDetails = async () => {
       try {
         // Using the Vite proxy to connect securely
-        const response = await axios.get(`/api/event-details/${event_id}`);
+        const response = await axios.get(`${API_BASE}/api/event-details/${event_id}`);
         setEventDetails(response.data);
       } catch (err) {
         setError("Error fetching event details. The event may no longer exist.");
@@ -63,7 +64,7 @@ const EventDetail = () => {
     // Sync to backend
     if (isLoggedIn()) {
       const email = localStorage.getItem("email");
-      axios.put("/api/user/profile", { email, reservations: storedReservations }, authHeaders()).catch(() => {});
+      axios.put(`${API_BASE}/api/user/profile`, { email, reservations: storedReservations }, authHeaders()).catch(() => {});
     }
 
     alert(`Successfully saved your reservation for ${tickets} ticket(s)!`);
