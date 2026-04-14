@@ -43,8 +43,9 @@ async def _translate_via_mymemory(text: str, source: str, target: str) -> str:
     if response.status_code != 200:
         raise Exception(f"MyMemory {response.status_code}: {response.text}")
     data = response.json()
+    logger.info("MyMemory raw response: %s", data)
     match = data.get("responseData", {}).get("translatedText")
-    if not match:
+    if match is None:
         raise Exception(f"Unexpected MyMemory response: {data}")
     return match
 
@@ -67,8 +68,8 @@ async def translate(req: TranslationCreate):
         translated = await _translate_via_mymemory(text, source, target)
         return {"translation": translated}
     except Exception as e:
-        logger.error("MyMemory fallback also failed: %s", e)
+        logger.error("MyMemory fallback also failed: %s", e, exc_info=True)
         raise HTTPException(
             status_code=503,
-            detail="Translation service unavailable. Both LibreTranslate and MyMemory failed.",
+            detail=f"Translation services unavailable. Error: {e}",
         )
