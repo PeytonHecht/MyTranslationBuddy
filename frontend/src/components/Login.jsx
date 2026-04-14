@@ -110,28 +110,31 @@ const Login = () => {
 
           <div style={S.form}>
             <div style={S.field}>
-              <label style={S.label}>Email <span style={{color:"#DC2626"}}>*</span></label>
-              <input type="email" placeholder="your.name@ufl.edu" value={email}
-                onChange={e => { setEmail(e.target.value); if (errorMsg) setErrorMsg(""); }}
-                onKeyDown={handleKeyDown} style={S.input} />
-                <span style={{fontSize:"0.72rem",color:"#9CA3AF",marginTop:"0.15rem"}}>Only @ufl.edu emails accepted</span>          
+              <label style={S.label}>Email</label>
+              <input className="auth-input" type="email" placeholder="gator@ufl.edu"
+                value={email} onChange={e=>{setEmail(e.target.value);if(errorMsg)setErrorMsg("");}}
+                onKeyDown={kd} style={S.input}/>
             </div>
 
             <div style={S.field}>
-              <label style={S.label}>Password <span style={{color:"#DC2626"}}>*</span></label>
-              <div style={S.passWrap}>
-                <input type={showPassword ? "text" : "password"} placeholder="Enter your password"
-                  value={password}
-                  onChange={e => { setPassword(e.target.value); if (errorMsg) setErrorMsg(""); }}
-                  onKeyDown={handleKeyDown} style={S.passInput} />
-                <button onClick={() => setShowPassword(!showPassword)} style={S.eyeBtn} type="button">
-                  {showPassword ? <EyeOff size={17} color="#9CA3AF"/> : <Eye size={17} color="#9CA3AF"/>}
+              <label style={S.label}>Password</label>
+              <div style={S.passRow}>
+                <input className="auth-input" type={showPassword?"text":"password"} placeholder="••••••••"
+                  value={password} onChange={e=>{setPassword(e.target.value);if(errorMsg)setErrorMsg("");}}
+                  onKeyDown={kd} style={S.passInput}/>
+                <button className="auth-eye" onClick={()=>setShowPassword(!showPassword)} style={S.eyeBtn} type="button">
+                  {showPassword ? <EyeOff size={15} color="#9CA3AF"/> : <Eye size={15} color="#9CA3AF"/>}
                 </button>
               </div>
             </div>
 
-            <button onClick={handleLogin} disabled={isSubmitting} style={{...S.primary, opacity: isSubmitting ? 0.7 : 1}}>
-              {isSubmitting ? "Signing in..." : "Sign In"} <ArrowRight size={16}/>
+            <button className="auth-btn" onClick={handleLogin} disabled={isSubmitting} style={{...S.primary,opacity:isSubmitting?.6:1}}>
+              {isSubmitting ? (
+                <span style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{width:15,height:15,border:"2px solid rgba(255,255,255,.3)",borderTopColor:"#fff",borderRadius:"50%",animation:"authSpin .6s linear infinite"}}/>
+                  Signing in…
+                </span>
+              ) : <>Sign In <ArrowRight size={15}/></>}
             </button>
 
             <div style={S.divider}><span style={S.divLine}/><span style={S.divText}>or</span><span style={S.divLine}/></div>
