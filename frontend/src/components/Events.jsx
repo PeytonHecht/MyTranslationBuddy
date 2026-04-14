@@ -23,44 +23,44 @@ const COUNTRIES = [
 ];
 const CITIES_BY = CITIES_BY_COUNTRY;
 const CATS = [
-  { id:"", label:"All", icon:"\u2728" },
-  { id:"KZFzniwnSyZfZ7v7nJ", label:"Music", icon:"\uD83C\uDFB5" },
-  { id:"KZFzniwnSyZfZ7v7nE", label:"Sports", icon:"\u26BD" },
-  { id:"KZFzniwnSyZfZ7v7na", label:"Arts", icon:"\uD83C\uDFA8" },
+  { id:"", label:"All", icon:"✨" },
+  { id:"KZFzniwnSyZfZ7v7nJ", label:"Music", icon:"🎵" },
+  { id:"KZFzniwnSyZfZ7v7nE", label:"Sports", icon:"⚽" },
+  { id:"KZFzniwnSyZfZ7v7na", label:"Arts", icon:"🎨" },
 ];
 const DATE_PRESETS = [
-  { label:"Any", icon:"\uD83D\uDCC5", start:"", end:"" },
-  { label:"Week", icon:"\uD83D\uDCC6", days:7 },
-  { label:"Month", icon:"\uD83D\uDDD3\uFE0F", days:30 },
-  { label:"3 mo", icon:"\uD83D\uDCC8", days:90 },
+  { label:"Any", icon:"📅", start:"", end:"" },
+  { label:"Week", icon:"📆", days:7 },
+  { label:"Month", icon:"🗓️", days:30 },
+  { label:"3 mo", icon:"📈", days:90 },
 ];
 const getSeasonLabel = () => {
   const m = new Date().getMonth();
-  if (m>=2&&m<=4) return "\uD83C\uDF38 Spring";
-  if (m>=5&&m<=7) return "\u2600\uFE0F Summer";
-  if (m>=8&&m<=10) return "\uD83C\uDF42 Autumn";
-  return "\u2744\uFE0F Winter";
+  if (m>=2&&m<=4) return "🌸 Spring";
+  if (m>=5&&m<=7) return "☀️ Summer";
+  if (m>=8&&m<=10) return "🍂 Autumn";
+  return "❄️ Winter";
 };
 const getSeasonEmoji = () => {
   const m = new Date().getMonth();
-  if (m>=2&&m<=4) return "\uD83C\uDF38";
-  if (m>=5&&m<=7) return "\u2600\uFE0F";
-  if (m>=8&&m<=10) return "\uD83C\uDF42";
-  return "\u2744\uFE0F";
+  if (m>=2&&m<=4) return "🌸";
+  if (m>=5&&m<=7) return "☀️";
+  if (m>=8&&m<=10) return "🍂";
+  return "❄️";
 };
 const getSeasonPicks = () => {
   const m = new Date().getMonth();
-  if (m>=2&&m<=4) return [{emoji:"\uD83C\uDF38",label:"Spring festivals",kw:"festival",city:"Munich"},{emoji:"\uD83C\uDF7A",label:"Biergarten season",kw:"beer garden",city:"Berlin"},{emoji:"\uD83C\uDFB5",label:"Open-air concerts",kw:"open air",city:"Hamburg"}];
-  if (m>=5&&m<=7) return [{emoji:"\u2600\uFE0F",label:"Summer fests",kw:"summer",city:"Cologne"},{emoji:"\uD83C\uDFB6",label:"Music festivals",kw:"festival",city:"Berlin"},{emoji:"\uD83C\uDF77",label:"Wine fests",kw:"wine festival",city:"W\u00FCrzburg"}];
-  if (m>=8&&m<=10) return [{emoji:"\uD83C\uDF7A",label:"Oktoberfest",kw:"oktoberfest",city:"Munich"},{emoji:"\uD83C\uDF42",label:"Autumn markets",kw:"autumn market",city:"Heidelberg"},{emoji:"\uD83C\uDFB5",label:"Jazz nights",kw:"jazz",city:"Vienna"}];
-  return [{emoji:"\uD83C\uDF84",label:"Christmas markets",kw:"weihnachtsmarkt",city:"Nuremberg"},{emoji:"\u2744\uFE0F",label:"Winter concerts",kw:"concert",city:"Vienna"},{emoji:"\uD83C\uDFBF",label:"Ski events",kw:"ski",city:"Innsbruck"}];
+  if (m>=2&&m<=4) return [{emoji:"🌸",label:"Spring festivals",kw:"festival",city:"Munich"},{emoji:"🍻",label:"Biergarten season",kw:"beer garden",city:"Berlin"},{emoji:"🎵",label:"Open-air concerts",kw:"open air",city:"Hamburg"}];
+  if (m>=5&&m<=7) return [{emoji:"☀️",label:"Summer fests",kw:"summer",city:"Cologne"},{emoji:"🎶",label:"Music festivals",kw:"festival",city:"Berlin"},{emoji:"🍷",label:"Wine fests",kw:"wine festival",city:"Würzburg"}];
+  if (m>=8&&m<=10) return [{emoji:"🍻",label:"Oktoberfest",kw:"oktoberfest",city:"Munich"},{emoji:"🍂",label:"Autumn markets",kw:"autumn market",city:"Heidelberg"},{emoji:"🎵",label:"Jazz nights",kw:"jazz",city:"Vienna"}];
+  return [{emoji:"🎄",label:"Christmas markets",kw:"weihnachtsmarkt",city:"Nuremberg"},{emoji:"❄️",label:"Winter concerts",kw:"concert",city:"Vienna"},{emoji:"🏂",label:"Ski events",kw:"ski",city:"Innsbruck"}];
 };
 
 const EVENT_PHRASES = {
   DE:[
     {de:"Gibt es noch Karten?",en:"Are there still tickets available?",ctx:"Tickets",pron:"gipt ess nokh KAR-ten"},
     {de:"Ist dieser Platz noch frei?",en:"Is this seat still free?",ctx:"Seating",pron:"ist DEE-zer plahts nokh fry"},
-    {de:"Wann f\u00E4ngt es an?",en:"What time does it start?",ctx:"Timing",pron:"vahn fengt ess AHN"},
+    {de:"Wann fängt es an?",en:"What time does it start?",ctx:"Timing",pron:"vahn fengt ess AHN"},
     {de:"Gibt es Studentenrabatt?",en:"Is there a student discount?",ctx:"Discount",pron:"gipt ess shtoo-DEN-ten-rah-baht"},
     {de:"Wo ist die Garderobe?",en:"Where is the coat check?",ctx:"Venue",pron:"voh ist dee gar-deh-ROH-beh"},
     {de:"Ein Bier, bitte!",en:"A beer, please!",ctx:"Ordering",pron:"ayn beer BIT-teh"},
@@ -68,17 +68,17 @@ const EVENT_PHRASES = {
     {de:"Das Konzert war super!",en:"The concert was awesome!",ctx:"Reactions",pron:"dahs kon-TSAIRT var ZOO-pair"},
   ],
   AT:[
-    {de:"Gr\u00FC\u00DF Gott! Gibt's noch Pl\u00E4tze?",en:"Hello! Are there still seats?",ctx:"Greeting",pron:"groos GOT gipts nokh PLEH-tseh"},
-    {de:"A Melange, bitte",en:"A coffee with milk, please",ctx:"Caf\u00E9",pron:"ah meh-LAHN-zheh BIT-teh"},
+    {de:"Grüß Gott! Gibt's noch Plätze?",en:"Hello! Are there still seats?",ctx:"Greeting",pron:"groos GOT gipts nokh PLEH-tseh"},
+    {de:"A Melange, bitte",en:"A coffee with milk, please",ctx:"Café",pron:"ah meh-LAHN-zheh BIT-teh"},
     {de:"Wo geht's zum Heurigen?",en:"Where's the wine tavern?",ctx:"Nightlife",pron:"voh gayts tsoom HOY-ree-gen"},
-    {de:"Zahlen, bitte \u2014 getrennt",en:"Check, please \u2014 separate",ctx:"Payment",pron:"TSAH-len BIT-teh geh-TRENNT"},
+    {de:"Zahlen, bitte — getrennt",en:"Check, please — separate",ctx:"Payment",pron:"TSAH-len BIT-teh geh-TRENNT"},
     {de:"Ist das Konzert ausverkauft?",en:"Is the concert sold out?",ctx:"Tickets",pron:"ist dahs kon-TSAIRT OWS-fair-kowft"},
     {de:"Das war leiwand!",en:"That was awesome! (Austrian)",ctx:"Slang",pron:"dahs var LY-vahnd"},
   ],
   CH:[
-    {de:"Gr\u00FCezi! H\u00E4t's no Billett?",en:"Hello! Are there still tickets?",ctx:"Greeting",pron:"GRUE-tsee hets noh bee-YET"},
-    {de:"Ch\u00F6nnt ich es Billett ha?",en:"Could I have a ticket?",ctx:"Ordering",pron:"KHUNT ikh es bee-YET hah"},
-    {de:"Wo isch de n\u00F6chscht Usgang?",en:"Where is the nearest exit?",ctx:"Navigation",pron:"voh ish deh NOKH-sht OOS-gahng"},
+    {de:"Grüezi! Hät's no Billett?",en:"Hello! Are there still tickets?",ctx:"Greeting",pron:"GRUE-tsee hets noh bee-YET"},
+    {de:"Chönnt ich es Billett ha?",en:"Could I have a ticket?",ctx:"Ordering",pron:"KHUNT ikh es bee-YET hah"},
+    {de:"Wo isch de nöchscht Usgang?",en:"Where is the nearest exit?",ctx:"Navigation",pron:"voh ish deh NOKH-sht OOS-gahng"},
     {de:"Es Stange, bitte",en:"A tall beer, please (Swiss)",ctx:"Ordering",pron:"es SHTAHN-geh BIT-teh"},
     {de:"Wieviel choschtet de Iihtritt?",en:"How much is the entry?",ctx:"Cost",pron:"VEE-feel KHOSH-tet deh EEN-trit"},
     {de:"Das isch mega gsi!",en:"That was amazing! (Swiss)",ctx:"Slang",pron:"dahs ish MEH-gah gsee"},
@@ -87,22 +87,22 @@ const EVENT_PHRASES = {
 
 const EVENT_TIPS = {
   DE:[
-    {icon:"\u23F0",title:"Punctuality is key",tip:"Events in Germany start on time. Arriving 10\u201315 minutes early is standard."},
-    {icon:"\uD83D\uDCB5",title:"Cash is still king",tip:"Many smaller venues and beer gardens only accept cash. Bring \u20AC20\u201350 in small bills."},
-    {icon:"\uD83C\uDF7A",title:"Beer garden etiquette",tip:"You can bring your own food to traditional beer gardens \u2014 just buy drinks there. Return Ma\u00DF glasses."},
-    {icon:"\uD83D\uDCF1",title:"Book ahead online",tip:"Use ticketmaster.de or eventim.de for advance booking. Student IDs get discounts."},
+    {icon:"⏱️",title:"Punctuality is key",tip:"Events in Germany start on time. Arriving 10–15 minutes early is standard."},
+    {icon:"💵",title:"Cash is still king",tip:"Many smaller venues and beer gardens only accept cash. Bring €20–50 in small bills."},
+    {icon:"🍻",title:"Beer garden etiquette",tip:"You can bring your own food to traditional beer gardens — just buy drinks there. Return Maß glasses."},
+    {icon:"📱",title:"Book ahead online",tip:"Use ticketmaster.de or eventim.de for advance booking. Student IDs get discounts."},
   ],
   AT:[
-    {icon:"\uD83C\uDFA9",title:"Dress code matters",tip:"Austrian venues expect smart casual. Jeans are fine for concerts, not for the Staatsoper."},
-    {icon:"\uD83D\uDCDE",title:"Reserve ahead",tip:"Say 'Ich h\u00E4tte gerne reserviert' on arrival. Austrians love reservations."},
-    {icon:"\uD83D\uDCB0",title:"Tipping norms",tip:"Round up or add 5\u201310%. Say 'Stimmt so' (keep the change) when paying."},
-    {icon:"\uD83C\uDFB5",title:"Standing room opera",tip:"Vienna Staatsoper sells standing-room tickets for \u20AC3\u20134. Line up 80 min early!"},
+    {icon:"🎩",title:"Dress code matters",tip:"Austrian venues expect smart casual. Jeans are fine for concerts, not for the Staatsoper."},
+    {icon:"📞",title:"Reserve ahead",tip:"Say 'Ich hätte gerne reserviert' on arrival. Austrians love reservations."},
+    {icon:"💰",title:"Tipping norms",tip:"Round up or add 5–10%. Say 'Stimmt so' (keep the change) when paying."},
+    {icon:"🎵",title:"Standing room opera",tip:"Vienna Staatsoper sells standing-room tickets for €3–4. Line up 80 min early!"},
   ],
   CH:[
-    {icon:"\uD83D\uDCB8",title:"Switzerland is expensive",tip:"Budget CHF 30\u201350 for a night out. Look for Studenten discounts."},
-    {icon:"\uD83D\uDE82",title:"SBB day passes",tip:"Check SBB Supersaver tickets (up to 70% off) for events in other cities."},
-    {icon:"\uD83E\uDD2B",title:"Quiet hours",tip:"Swiss noise regulations are strict. Outdoor events end by 10\u201311 PM."},
-    {icon:"\u267B\uFE0F",title:"Deposit systems",tip:"At festivals, you pay a Depot for cups. Return them for CHF 2\u20135 back."},
+    {icon:"💸",title:"Switzerland is expensive",tip:"Budget CHF 30–50 for a night out. Look for Studenten discounts."},
+    {icon:"🚆",title:"SBB day passes",tip:"Check SBB Supersaver tickets (up to 70% off) for events in other cities."},
+    {icon:"🤫",title:"Quiet hours",tip:"Swiss noise regulations are strict. Outdoor events end by 10–11 PM."},
+    {icon:"♻️",title:"Deposit systems",tip:"At festivals, you pay a Depot for cups. Return them for CHF 2–5 back."},
   ],
 };
 
@@ -139,6 +139,7 @@ const Events = () => {
   const [keyword,setKeyword]=useState("");
   const [segmentIds,setSegmentIds]=useState([]);
   const [datePreset,setDatePreset]=useState(0);
+  const [sortOrder,setSortOrder]=useState("date,asc");
   const [events,setEvents]=useState([]);
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState("");
@@ -175,17 +176,17 @@ const Events = () => {
   // Auto-cleanup expired events (events that have passed)
   useEffect(() => {
     if (!savedEvents.length) return;
-    
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const validEvents = savedEvents.filter(event => {
       if (!event.date) return true; // Keep events without dates
       const eventDate = new Date(event.date);
       eventDate.setHours(0, 0, 0, 0);
       return eventDate >= today; // Keep only today's or future events
     });
-    
+
     // If some events were removed, update state and persist
     if (validEvents.length !== savedEvents.length) {
       setSavedEvents(validEvents);
@@ -236,6 +237,7 @@ const Events = () => {
   const buildParams=(pg)=>{
     const p={countryCode:countries.join(","),size:20,page:pg};
     if(city)p.city=city;if(keyword)p.keyword=keyword;if(segmentIds.length===1)p.segmentId=segmentIds[0];else if(segmentIds.length>1)p.segmentId=segmentIds.join(",");
+    if(sortOrder)p.sort=sortOrder;
     const preset=DATE_PRESETS[datePreset];
     if(preset&&preset.days){const now=new Date();p.startDateTime=now.toISOString().replace(/\.\d+Z/,"Z");const end=new Date(now.getTime()+preset.days*86400000);p.endDateTime=end.toISOString().replace(/\.\d+Z/,"Z");}
     return p;
@@ -277,32 +279,32 @@ const Events = () => {
       <header style={S.hdr}><div style={S.hdrIn}>
         <div style={S.hdrL} onClick={()=>navigate("/")}><img src={logo} alt="MTB" style={{height:72}}/><span style={S.brand}>MyTranslationBuddy</span></div>
         <nav style={S.nav}>
-          <button 
-            onClick={() => navigate("/tips")} 
+          <button
+            onClick={() => navigate("/tips")}
             style={{...S.nb, ...(isActive("/tips") ? S.nbActive : {})}}
             onMouseEnter={e=>{if(!isActive("/tips")){e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}}
             onMouseLeave={e=>{if(!isActive("/tips")){e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}}
           >
             <Compass size={15} /> Explore
           </button>
-          <button 
-            onClick={() => navigate("/reservations")} 
+          <button
+            onClick={() => navigate("/reservations")}
             style={{...S.nb, ...(isActive("/reservations") ? S.nbActive : {})}}
             onMouseEnter={e=>{if(!isActive("/reservations")){e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}}
             onMouseLeave={e=>{if(!isActive("/reservations")){e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}}
           >
             <ClipboardList size={15} /> Study
           </button>
-          <button 
-            onClick={() => navigate("/events")} 
+          <button
+            onClick={() => navigate("/events")}
             style={{...S.nb, ...(isActive("/events") ? S.nbActive : {})}}
             onMouseEnter={e=>{if(!isActive("/events")){e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}}
             onMouseLeave={e=>{if(!isActive("/events")){e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}}
           >
             <Calendar size={15} /> Events
           </button>
-          <button 
-            onClick={() => navigate("/")} 
+          <button
+            onClick={() => navigate("/")}
             style={{...S.nb, ...(isActive("/") ? S.nbActive : {})}}
             onMouseEnter={e=>{if(!isActive("/")){e.currentTarget.style.backgroundColor="#dfdfdf"; e.currentTarget.style.color="#0021A5"; e.currentTarget.style.boxShadow="0 1px 3px rgba(0,0,0,0.08)";}}}
             onMouseLeave={e=>{if(!isActive("/")){e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280"; e.currentTarget.style.boxShadow="none";}}}
@@ -312,8 +314,8 @@ const Events = () => {
           {userEmail ? (
             <>
               <button onClick={() => navigate("/profile")} style={S.nbA}><User size={14}/> Profile</button>
-              <button onClick={handleLogout} style={{...S.nb, color:"#DC2626", marginLeft:"0.25rem"}} 
-                onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}} 
+              <button onClick={handleLogout} style={{...S.nb, color:"#DC2626", marginLeft:"0.25rem"}}
+                onMouseEnter={e=>{e.currentTarget.style.backgroundColor="#FEF2F2"; e.currentTarget.style.color="#DC2626";}}
                 onMouseLeave={e=>{e.currentTarget.style.backgroundColor="transparent"; e.currentTarget.style.color="#6B7280";}}>
                 <LogOut size={14}/> Logout
               </button>
@@ -404,7 +406,7 @@ const Events = () => {
                 {myCitiesDrop&&(
                   <div style={S.dropdown}>
                     <div style={{padding:"0.45rem 0.7rem",borderBottom:"1px solid #F3F4F6"}}><span style={{fontSize:"0.54rem",fontWeight:700,color:"#9CA3AF",textTransform:"uppercase",letterSpacing:"0.06em"}}>My Saved Cities</span></div>
-                    {myCities.map(slug=>{const name=slugToCity(slug);const cc=findCountryForCity(slug);const flag=COUNTRIES.find(c=>c.code===cc)?.flag||"\uD83C\uDF0D";return(
+                    {myCities.map(slug=>{const name=slugToCity(slug);const cc=findCountryForCity(slug);const flag=COUNTRIES.find(c=>c.code===cc)?.flag||"🌍";return(
                       <div key={slug} onClick={()=>{setCountries([cc]);setCity(name);setMyCitiesDrop(false);setTimeout(()=>fetchEvents(0),100);}} style={S.dropItem}
                         onMouseEnter={e=>e.currentTarget.style.background="rgba(0,33,165,0.04)"}
                         onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
@@ -497,13 +499,24 @@ const Events = () => {
           )}
         </div>
 
-        {/* Results count */}
+        {/* Results count & Sort */}
         {!loading&&events.length>0&&(
           <div style={{maxWidth:1280,margin:"0 auto",padding:"0.15rem 2rem 0",display:"flex",alignItems:"center",gap:"0.4rem"}}>
             <span style={{fontSize:"0.62rem",fontWeight:500,color:"#9CA3AF",letterSpacing:"0.01em"}}>
               {totalResults>0?`${totalResults.toLocaleString()} events`:`${events.length} events`} in {countryObj.flag} {countryObj.label}{city?` · ${city}`:""}
             </span>
             {keyword&&<span style={{fontSize:"0.58rem",color:"#93C5FD",fontWeight:500}}>for "{keyword}"</span>}
+
+            {/* SORTING DROPDOWN ADDITION */}
+            <div style={S.sortWrap}>
+              <SlidersHorizontal size={10} color="#0021A5"/>
+              <select value={sortOrder} onChange={e=>{setSortOrder(e.target.value);setTimeout(()=>fetchEvents(0),50);}} style={S.sortSelect}>
+                <option value="date,asc">Upcoming</option>
+                <option value="relevance,desc">Popular</option>
+                <option value="date,desc">By Date (Latest)</option>
+              </select>
+              <ChevronDown size={9} color="#0021A5" style={{marginLeft:"-0.3rem",pointerEvents:"none"}}/>
+            </div>
           </div>
         )}
       </div>
@@ -823,6 +836,10 @@ const S = {
 
   activeTag:{fontSize:"0.58rem",fontWeight:600,color:"#0021A5",background:"rgba(239,246,255,0.9)",padding:"0.14rem 0.5rem",borderRadius:9999,border:"1px solid #BFDBFE",letterSpacing:"0.01em"},
   clearBtn:{display:"flex",alignItems:"center",gap:"0.18rem",fontSize:"0.58rem",fontWeight:600,color:"#fff",background:"rgba(220,38,38,0.75)",border:"none",borderRadius:9999,padding:"0.2rem 0.55rem",cursor:"pointer",flexShrink:0,transition:"all 0.2s cubic-bezier(.4,0,.2,1)"},
+
+  /* Sorting Adds */
+  sortSelect:{background:"transparent",border:"none",color:"#0021A5",fontSize:"0.62rem",fontWeight:700,cursor:"pointer",outline:"none",appearance:"none",paddingRight:"0.5rem"},
+  sortWrap:{display:"flex",alignItems:"center",gap:"0.25rem",marginLeft:"auto",background:"rgba(239,246,255,0.6)",padding:"0.15rem 0.5rem",borderRadius:9999,border:"1px solid rgba(191,219,254,0.5)"},
 
   /* ── Layout ── */
   layout:{maxWidth:1280,margin:"0 auto",padding:"1rem 2rem 2.5rem",display:"grid",gridTemplateColumns:"1fr 290px",gap:"1.5rem",alignItems:"start"},

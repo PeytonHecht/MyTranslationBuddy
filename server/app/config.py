@@ -1,7 +1,8 @@
 import os
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
 from pathlib import Path
+
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 #load_dotenv()
 #load_dotenv(Path(__file__).resolve().parents[1] / ".env")  # loads server/.env
