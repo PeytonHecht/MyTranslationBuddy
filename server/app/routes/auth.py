@@ -94,6 +94,7 @@ class UpdatePreferencesRequest(BaseModel):
     saved_events: Optional[List[dict]] = None
     vocab_cards: Optional[List[dict]] = None
     study_stats: Optional[dict] = None
+    reservations: Optional[List[dict]] = None
 
 class ChangePasswordRequest(BaseModel):
     email: EmailStr
@@ -158,6 +159,7 @@ async def register(req: RegisterRequest, request: Request):
         "saved_events": [],
         "vocab_cards": [],
         "study_stats": {},
+        "reservations": [],
         "is_active": True,
         "role": "user",
         "created_at": datetime.now(timezone.utc),
@@ -211,6 +213,7 @@ async def login(req: LoginRequest, request: Request):
         "saved_events": user.get("saved_events", []),
         "vocab_cards": user.get("vocab_cards", []),
         "study_stats": user.get("study_stats", {}),
+        "reservations": user.get("reservations", []),
     }
 
 
@@ -274,6 +277,7 @@ async def get_profile(email: str, request: Request):
         "saved_events": user.get("saved_events", []),
         "vocab_cards": user.get("vocab_cards", []),
         "study_stats": user.get("study_stats", {}),
+        "reservations": user.get("reservations", []),
         "created_at": user.get("created_at"),
     }
 
@@ -309,6 +313,8 @@ async def update_profile(req: UpdatePreferencesRequest, request: Request):
         update_fields["vocab_cards"] = req.vocab_cards
     if req.study_stats is not None:
         update_fields["study_stats"] = req.study_stats
+    if req.reservations is not None:
+        update_fields["reservations"] = req.reservations
 
     await db.users_auth.users.update_one(
         {"email": req.email},
@@ -396,6 +402,7 @@ async def google_auth(req: GoogleAuthRequest):
             "saved_events": [],
             "vocab_cards": [],
             "study_stats": {},
+            "reservations": [],
             "is_active": True,
             "role": "user",
             "auth_provider": "google",
@@ -421,6 +428,7 @@ async def google_auth(req: GoogleAuthRequest):
         "saved_events": user.get("saved_events", []),
         "vocab_cards": user.get("vocab_cards", []),
         "study_stats": user.get("study_stats", {}),
+        "reservations": user.get("reservations", []),
         "needs_setup": needs_setup,
         "is_new_user": is_new_user,
     }
@@ -451,6 +459,7 @@ async def me(email: str = Depends(get_current_user)):
         "saved_events": user.get("saved_events", []),
         "vocab_cards": user.get("vocab_cards", []),
         "study_stats": user.get("study_stats", {}),
+        "reservations": user.get("reservations", []),
         "auth_provider": user.get("auth_provider", "local"),
         "token": _create_token(email),  # refresh the token
     }
