@@ -1,65 +1,67 @@
 from fastapi import APIRouter, HTTPException
 import httpx
 import logging
-import base64
 from app.schemas.translation import TranslationCreate
-from app.config import settings
 
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter(prefix="/api", tags=["translate"])
 
+LIBRETRANSLATE_URL = "http://localhost:5000"
 
 @router.post("/translate")
 async def translate(req: TranslationCreate):
-    account_id = settings.smartcat_account_id
-    api_key = settings.smartcat_api_key
-    profile_id = settings.smartcat_profile_id
-    smartcat_base_url = settings.smartcat_base_url
+    """
+    Proxy translation requests to the public LibreTranslate instance.
 
-    if not account_id or not api_key:
-        raise HTTPException(
-            status_code=500,
-            detail="Smartcat credentials not configured (SMARTCAT_ACCOUNT_ID / SMARTCAT_API_KEY).",
-        )
+    Keeps the existing API contract for the frontend:
+      Request:  { source_text, source_language, target_language }
+      Response: { translation: "<translated text>" }
+    """
+    # Your schema currently uses enums (req.source_language.value, req.target_language.value).
+    # Those values MUST be LibreTranslate language codes like "en", "de", "es", or "auto".
+    source = (req.source_language.value or "auto").strip().lower()
+    target = (req.target_language.value or "").strip().lower()
+    text = (req.source_text or "").strip()
 
-    url = f"{smartcat_base_url}/api/integration/v1/smartTranslation/translate"
+    if not text:
+        raise HTTPException(status_code=400, detail="source_text is required")
+    if not target:
+        raise HTTPException(status_code=400, detail="target_language is required")
 
     payload = {
-        "texts": [{"text": req.source_text}],  # object with a "value" key
-        "sourceLanguage": req.source_language.value,
-        "targetLanguages": [req.target_language.value],
+        "q": text,
+        "source": source,   # "auto" allowed
+        "target": target,   # e.g. "en"
+        "format": "text",
+        # "alternatives": 3,  # optional: enable if you want multiple options
+        # api_key omitted for public instance
     }
-
-    if profile_id:
-        payload["profileId"] = profile_id
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
-
-            credentials = f"{account_id}:{api_key}"
-            token = base64.b64encode(credentials.encode("utf-8")).decode("ascii")
-            headers = {
-                "Authorization": f"Basic {token}",
-                "Content-Type": "application/json",
-            }
-
-            response = await client.post(url, json=payload, headers=headers)
+            response = await client.post(
+                f"{LIBRETRANSLATE_URL}/translate",
+                json=payload,
+                headers={"Content-Type": "application/json"},
+            )
 
         if response.status_code < 200 or response.status_code >= 300:
-            raise HTTPException(status_code=502, detail=f"Smartcat error {response.status_code}: {response.text}")
+            # LibreTranslate often returns useful JSON errors; include body for debugging
+            raise HTTPException(
+                status_code=502,
+                detail=f"LibreTranslate error {response.status_code}: {response.text}",
+            )
 
         data = response.json()
-        # response is likely a list of results, one per input text
-        translation = None
-        if isinstance(data, list) and data:
-            translation = data[0].get("translation") or data[0].get("translatedText")
-        else:
-            translation = data.get("translation") or data.get("translatedText")
+        translation = data.get("translatedText")
 
         if not translation:
-            raise HTTPException(status_code=502, detail=f"Unexpected Smartcat response: {data}")
+            raise HTTPException(status_code=502, detail=f"Unexpected LibreTranslate response: {data}")
 
         return {"translation": translation}
 
     except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="Smartcat API timed out")
+        raise HTTPException(status_code=504, detail="LibreTranslate API timed out")
+    except httpx.RequestError as e:
+        # network errors, DNS, connection reset, etc.
+        raise HTTPException(status_code=502, detail=f"LibreTranslate request failed: {e}")
