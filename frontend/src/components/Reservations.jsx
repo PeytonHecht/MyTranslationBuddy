@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, isLoggedIn, authHeaders } from "../utils/auth.js";
+import { CITY_NAMES_LIST, CITY_SLUG_MAP, CITY_COUNTRY_MAP, COUNTRY_FLAGS } from "../constants/cities.js";
+import { PhraseListSkeleton, InlineSpinner } from "./ui/LoadingStates.jsx";
 
 /* ═══════════════════════════════════════════════════════
    STUDY HUB — A smart, engaging language-learning space
@@ -80,33 +82,10 @@ const Reservations = () => {
   const [celebrationMsg, setCelebrationMsg] = useState("");
 
   /* ── Static data ──────────────────────────────────── */
-  const cities = [
-    "Select a City",
-    "Hamburg","Berlin","Detmold","Osnabrück","Vallendar","Stuttgart",
-    "Aachen","Lemgo","Munich","Jena","Bonn",
-    "Wiesbaden (EBS)","Eltville","Mannheim",
-    "Würzburg","Leipzig",
-    "Vienna","Graz","Salzburg",
-    "Zurich","Bern","Rapperswil-Jona","Winterthur"
-  ];
-  const citySlugMap = {
-    "Hamburg":"hamburg","Berlin":"berlin","Detmold":"detmold","Osnabrück":"osnabruck",
-    "Vallendar":"vallendar","Stuttgart":"stuttgart","Aachen":"aachen","Lemgo":"lemgo",
-    "Munich":"munich","Jena":"jena","Bonn":"bonn",
-    "Wiesbaden (EBS)":"ebs","Eltville":"eltville",
-    "Mannheim":"mannheim","Würzburg":"wurzburg","Leipzig":"leipzig",
-    "Vienna":"vienna","Graz":"graz","Salzburg":"salzburg",
-    "Zurich":"zurich","Bern":"bern","Rapperswil-Jona":"rapperswil","Winterthur":"winterthur"
-  };
-  const cityCountryMap = {
-    "Hamburg":"DE","Berlin":"DE","Detmold":"DE","Osnabrück":"DE",
-    "Vallendar":"DE","Stuttgart":"DE","Aachen":"DE","Lemgo":"DE",
-    "Munich":"DE","Jena":"DE","Bonn":"DE","Wiesbaden (EBS)":"DE",
-    "Eltville":"DE","Mannheim":"DE","Würzburg":"DE","Leipzig":"DE",
-    "Vienna":"AT","Graz":"AT","Salzburg":"AT",
-    "Zurich":"CH","Bern":"CH","Rapperswil-Jona":"CH","Winterthur":"CH"
-  };
-  const countryFlags = { DE:"🇩🇪", AT:"🇦🇹", CH:"🇨🇭" };
+  const cities = CITY_NAMES_LIST;
+  const citySlugMap = CITY_SLUG_MAP;
+  const cityCountryMap = CITY_COUNTRY_MAP;
+  const countryFlags = COUNTRY_FLAGS;
   const countryColors = { DE:"#FFE5E5", AT:"#FFF0E5", CH:"#E5F0FF" };
   const CATEGORIES = ["academic","housing","dining","transportation","social","shopping","emergency","greetings","exclamations","health"];
 
@@ -126,7 +105,7 @@ const Reservations = () => {
     // Load everything from server if logged in
     if (isLoggedIn()) {
       const email = localStorage.getItem("email");
-      axios.get("/api/user/profile", authHeaders())
+      axios.get("/api/user/profile", { params: { email }, ...authHeaders() })
         .then(r => {
           // Vocab cards
           const serverCards = r.data.vocab_cards || [];
@@ -143,13 +122,25 @@ const Reservations = () => {
               }
             }
           }
-          // Study stats (dailyGoal, progress)
+          // Study stats (dailyGoal, progress, studyHistory, translationHistory)
           const stats = r.data.study_stats;
           if (stats && typeof stats === "object") {
             if (stats.daily_goal) setDailyGoal(stats.daily_goal);
             if (stats.progress_date === today && stats.today_progress != null) {
               setTodayProgress(stats.today_progress);
             }
+            if (Array.isArray(stats.study_history) && stats.study_history.length > 0) {
+              localStorage.setItem("studyHistory", JSON.stringify(stats.study_history));
+            }
+            if (Array.isArray(stats.translation_history) && stats.translation_history.length > 0) {
+              localStorage.setItem("twHistory", JSON.stringify(stats.translation_history));
+            }
+          }
+          // Reservations
+          const serverRes = r.data.reservations || [];
+          if (serverRes.length > 0) {
+            setReservations(serverRes);
+            localStorage.setItem("reservations", JSON.stringify(serverRes));
           }
         })
         .catch(() => {
@@ -162,7 +153,17 @@ const Reservations = () => {
     }
   }, []);
 
-  useEffect(() => { localStorage.setItem("reservations", JSON.stringify(reservations)); }, [reservations]);
+  useEffect(() => {
+    localStorage.setItem("reservations", JSON.stringify(reservations));
+    // Sync reservations to server
+    if (isLoggedIn()) {
+      const timer = setTimeout(() => {
+        const email = localStorage.getItem("email");
+        axios.put("/api/user/profile", { email, reservations }, authHeaders()).catch(() => {});
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [reservations]);
   useEffect(() => {
     localStorage.setItem("vocabCards", JSON.stringify(vocabCards));
     // Sync to server (debounced via timeout)
@@ -174,14 +175,27 @@ const Reservations = () => {
       return () => clearTimeout(timer);
     }
   }, [vocabCards]);
+  /** Build the full study_stats object for backend sync */
+  const buildStudyStats = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const studyHistory = JSON.parse(localStorage.getItem("studyHistory") || "[]");
+    const translationHistory = JSON.parse(localStorage.getItem("twHistory") || "[]");
+    return {
+      daily_goal: dailyGoal,
+      today_progress: todayProgress,
+      progress_date: today,
+      study_history: studyHistory,
+      translation_history: translationHistory,
+    };
+  };
+
   useEffect(() => {
     localStorage.setItem("dailyGoal", dailyGoal.toString());
     // Sync to server
     if (isLoggedIn()) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        const today = new Date().toISOString().split("T")[0];
-        axios.put("/api/user/profile", { email, study_stats: { daily_goal: dailyGoal, today_progress: todayProgress, progress_date: today } }, authHeaders()).catch(() => {});
+        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -194,7 +208,7 @@ const Reservations = () => {
     if (isLoggedIn()) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, study_stats: { daily_goal: dailyGoal, today_progress: todayProgress, progress_date: today } }, authHeaders()).catch(() => {});
+        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -265,6 +279,11 @@ const Reservations = () => {
     if (!history.includes(today)) {
       history.push(today);
       localStorage.setItem("studyHistory", JSON.stringify(history));
+      // Sync to server
+      if (isLoggedIn()) {
+        const email = localStorage.getItem("email");
+        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
+      }
     }
   }, []);
 
@@ -1377,7 +1396,7 @@ return (
             )}
 
             {phrasesLoading ? (
-              <div style={S.emptyState}><p style={{color:"#6B7280"}}>Loading phrases…</p></div>
+              <div style={S.emptyState}><PhraseListSkeleton count={5}/></div>
             ) : (() => {
               const SLUG_TO_COUNTRY = {
                 berlin:"DE",munich:"DE",hamburg:"DE",stuttgart:"DE",aachen:"DE",bonn:"DE",detmold:"DE",ebs:"DE",eltville:"DE",jena:"DE",lemgo:"DE",mannheim:"DE",osnabruck:"DE",vallendar:"DE",wurzburg:"DE",leipzig:"DE",
@@ -1518,7 +1537,7 @@ return (
                 </div>
               </div>
             ) : savedLoading ? (
-              <div style={S.emptyState}><p style={{color:"#6B7280"}}>Loading your saved phrases…</p></div>
+              <div style={S.emptyState}><PhraseListSkeleton count={3}/></div>
             ) : savedPhrases.length === 0 ? (
               <div style={S.emptyState}>
                 <Bookmark size={36} color="#D1D5DB"/>

@@ -1,7 +1,11 @@
+import warnings
 from datetime import datetime
 from typing import List, Optional, Literal
 from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 from enum import Enum
+
+# Suppress Pydantic warning: field "register" (formality level) shadows BaseModel.register()
+warnings.filterwarnings("ignore", message='Field name "register"')
 
 
 class PhraseCategory(str, Enum):
@@ -34,7 +38,7 @@ class PhraseType(str, Enum):
 
 
 class PhraseBase(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", protected_namespaces=())
 
     """Base schema for German phrases"""
     # Main content
@@ -175,7 +179,7 @@ class PhraseCreate(PhraseBase):
 
 class PhraseUpdate(BaseModel):
     """Schema for partially updating phrases"""
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", protected_namespaces=())
 
     german_phrase: Optional[str] = None
     english_translation: Optional[str] = None
@@ -251,7 +255,7 @@ class PhraseBookmark(BaseModel):
 
 class PhraseSearchRequest(BaseModel):
     """Schema for phrase search requests"""
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", protected_namespaces=())
 
     query: str = Field(..., min_length=1, description="Search term in English or German")
     search_type: Literal["english", "german", "all"] = Field(
