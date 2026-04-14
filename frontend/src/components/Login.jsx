@@ -73,22 +73,15 @@ const Login = () => {
 
   return (
     <div style={S.page}>
-      <div style={S.left}>
-        <div style={S.leftIn}>
-          <img src={logo} alt="MTB" style={S.logoImg} onClick={() => navigate("/")} />
-          <h1 style={S.leftBrand}>MyTranslationBuddy</h1>
-          <h2 style={S.leftT}>Welcome back 👋<br/><span style={S.leftHL}>Ready to explore?</span></h2>
-          <p style={S.leftSub}>Pick up where you left off — explore cities, practice phrases, and get ready for your semester abroad.</p>
-          <div style={S.features}>
-            <div style={S.feat}><Globe size={18} color="rgba(255,255,255,0.9)"/> <span>23 cities across Germany, Austria & Switzerland</span></div>
-            <div style={S.feat}><Languages size={18} color="rgba(255,255,255,0.9)"/> <span>295+ curated German phrases & dialect tips</span></div>
-            <div style={S.feat}><GraduationCap size={18} color="rgba(255,255,255,0.9)"/> <span>Built by UF students, for UF students</span></div>
-          </div>
+      <div style={S.topBar}>
+        <div style={S.topBarInner}>
+          <img src={logo} alt="MTB" style={S.topLogo} onClick={() => navigate("/")} />
+          <span style={S.topBrand}>MyTranslationBuddy</span>
         </div>
-        <p style={S.leftFoot}>MyTranslationBuddy</p>
       </div>
 
-      <div style={S.right}>
+      {/* Centered */}
+      <div style={S.content}>
         <div style={S.formWrap}>
           <h1 style={S.title}>Sign In</h1>
           <p style={S.sub}>Use your UF email to continue</p>
@@ -140,18 +133,12 @@ const Login = () => {
 };
 
 const S = {
-  page: { minHeight:"100vh", display:"flex", fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif" },
-  left: { width:"45%", minHeight:"100vh", background:"linear-gradient(135deg,#0021A5 0%,#003087 50%,#1a1a2e 100%)", display:"flex", flexDirection:"column", justifyContent:"center", padding:"3rem", position:"relative" },
-  leftIn: { maxWidth:400 },
-  logoImg: { height:80, objectFit:"contain", cursor:"pointer", marginBottom:"1rem", filter:"drop-shadow(0 4px 12px rgba(255,255,255,0.15))" },
-  leftBrand: { fontSize:"1.1rem", fontWeight:700, color:"rgba(255,255,255,0.7)", margin:"0 0 1.5rem 0", letterSpacing:"0.02em" },
-  leftT: { fontSize:"2rem", fontWeight:800, color:"#fff", margin:"0 0 1rem 0", lineHeight:1.25 },
-  leftHL: { background:"linear-gradient(90deg,#FA4616,#FFB347)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" },
-  leftSub: { fontSize:"1rem", color:"rgba(255,255,255,0.8)", margin:"0 0 2rem 0", lineHeight:1.6 },
-  features: { display:"flex", flexDirection:"column", gap:"0.85rem" },
-  feat: { display:"flex", alignItems:"center", gap:"0.65rem", fontSize:"0.9rem", color:"rgba(255,255,255,0.85)", fontWeight:500 },
-  leftFoot: { position:"absolute", bottom:"2rem", left:"3rem", fontSize:"0.75rem", color:"rgba(255,255,255,0.4)" },
-  right: { flex:1, display:"flex", alignItems:"center", justifyContent:"center", padding:"2rem", backgroundColor:"#F9FAFB" },
+  page:{minHeight:"100vh",display:"flex",flexDirection:"column",fontFamily:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",backgroundColor:"#F9FAFB"},
+  topBar:{width:"100%",background:"linear-gradient(135deg,#0021A5 0%,#003087 100%)",padding:"2rem 2rem",boxSizing:"border-box"},
+  topBarInner:{display:"flex",alignItems:"center",justifyContent:"center",gap:"1rem"},
+  topLogo:{height:40,objectFit:"contain",cursor:"pointer",filter:"drop-shadow(0 2px 6px rgba(255,255,255,0.15))"},
+  topBrand:{fontSize:"2rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em"},
+  content:{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"},
   formWrap: { width:"100%", maxWidth:420 },
   title: { fontSize:"1.75rem", fontWeight:800, color:"#111827", margin:"0 0 0.35rem 0" },
   sub: { fontSize:"0.92rem", color:"#6B7280", margin:"0 0 1.75rem 0" },
