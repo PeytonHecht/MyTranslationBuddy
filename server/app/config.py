@@ -1,8 +1,7 @@
 import os
-from pathlib import Path
-
-from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+from pathlib import Path
 
 #load_dotenv()
 #load_dotenv(Path(__file__).resolve().parents[1] / ".env")  # loads server/.env
@@ -22,6 +21,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
         "http://127.0.0.1:3000",
+        "https://peytonhecht.github.io",  # GitHub Pages
     ]
     
     # Database Connection
@@ -38,7 +38,10 @@ class Settings(BaseSettings):
     translations_db: str = os.getenv("TRANSLATIONS_DB", "translation_history")
     phrases_db: str = os.getenv("PHRASES_DB", "phrases_vocabulary")
 
-    # Smartcat API — no defaults, must be set in .env
+    # LibreTranslate — local Docker instance
+    libretranslate_url: str = os.getenv("LIBRETRANSLATE_URL", "http://localhost:5050")
+
+    # Smartcat API (legacy — replaced by LibreTranslate)
     smartcat_base_url: str = os.getenv("SMARTCAT_BASE_URL", "https://us.smartcat.ai").rstrip("/")
     smartcat_account_id: str = os.getenv("SMARTCAT_ACCOUNT_ID", "")
     smartcat_api_key: str = os.getenv("SMARTCAT_API_KEY", "")
@@ -47,9 +50,22 @@ class Settings(BaseSettings):
     # Ticketmaster API — must be set in .env
     ticketmaster_api_key: str = os.getenv("TICKETMASTER_API_KEY", "")
 
+    # Google OAuth — must match the client ID used in the frontend
+    google_client_id: str = os.getenv("GOOGLE_CLIENT_ID", "")
+
     # JWT
     jwt_secret: str = os.getenv("JWT_SECRET", "change-me-in-production")
     jwt_algorithm: str = "HS256"
     jwt_expire_hours: int = 72  # 3 days
 
 settings = Settings()
+
+# Warn if JWT secret is the insecure default
+if settings.jwt_secret == "change-me-in-production":
+    import warnings
+    warnings.warn(
+        "⚠️  JWT_SECRET is set to the insecure default! "
+        "Set a strong random secret in your .env file: "
+        "python -c \"import secrets; print(secrets.token_hex(32))\"",
+        stacklevel=1,
+    )

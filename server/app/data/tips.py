@@ -4561,3 +4561,1812 @@ jena_tassep_expanded_tips = [
         source_name="UFIC TASSEP Jena program page"
     ),
 ]
+
+
+# ============================================================================
+# CULTURAL TIPS ENRICHMENT — Ensure every city has at least 5 distinct cultural tips
+# ============================================================================
+
+berlin_cultural_tips = [
+    CityTipCreate(
+        city_slug="berlin",
+        category="city life",
+        title="Berlin Sundays — Ruhetag Culture",
+        content=(
+            "Almost everything in Berlin is closed on Sundays — grocery stores, shops, and hardware stores. "
+            "This is Ruhetag (rest day), a deeply rooted German tradition protected by law. Plan your groceries "
+            "for Saturday. Train stations like Hauptbahnhof have small shops open on Sundays. The upside: "
+            "flea markets like Mauerpark (Sunday 10am–6pm) and Boxhagener Platz are buzzing."
+        ),
+        short_description="Shops closed Sundays by law. Stock up Saturday; enjoy flea markets instead.",
+        tags=["Ruhetag", "Sunday", "shopping", "flea markets", "culture"],
+        priority=5,
+        source_name="General Berlin cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="city life",
+        title="Berlin Pfand System — Bottle Deposits",
+        content=(
+            "Germany has a bottle deposit system called Pfand. You pay €0.08–€0.25 extra per bottle and get it back "
+            "when you return the bottle to any supermarket's Pfandautomat machine. Glass bottles, plastic bottles, and "
+            "cans are all included. Many Berliners leave bottles next to public trash cans for people who collect them "
+            "— this is called Pfandsammeln and is a respectful local practice. Never throw away Pfand bottles."
+        ),
+        short_description="Return bottles to Pfandautomat machines for €0.08-€0.25 back each. Don't throw them away.",
+        tags=["Pfand", "recycling", "bottles", "deposits", "sustainability"],
+        priority=4,
+        source_name="General Berlin cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="city life",
+        title="Berlin Etiquette — Escalator Rules & Quiet Hours",
+        content=(
+            "Stand on the right, walk on the left — escalator etiquette is taken seriously in Berlin's U-Bahn. "
+            "Blocking the left side will get you annoyed looks. Also know about Ruhezeiten (quiet hours): "
+            "10pm–6am on weekdays and all day Sunday are quiet hours in apartments. No loud music, drilling, "
+            "or parties during these times — your neighbors will complain to your landlord."
+        ),
+        short_description="Stand right on escalators. Quiet hours: 10pm–6am weekdays, all day Sunday.",
+        tags=["etiquette", "escalator", "quiet hours", "Ruhezeiten", "U-Bahn"],
+        priority=3,
+        source_name="General German cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="city life",
+        title="Berlin Student Night — Pay with Cash",
+        content=(
+            "Many Berlin bars, clubs, and small restaurants are cash-only (nur Bargeld). Germany in general "
+            "is much more cash-reliant than the US. Always carry €20–50 in cash. ATMs (Geldautomaten) from "
+            "Sparkasse and Deutsche Bank have the lowest fees. Berghain, many Spätis (corner shops), and "
+            "most döner kebab shops only accept cash."
+        ),
+        short_description="Many Berlin spots are cash-only. Always carry €20-50. Use Sparkasse ATMs.",
+        tags=["cash", "Bargeld", "payments", "Spätis", "nightlife"],
+        priority=3,
+        source_name="General Berlin cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="berlin",
+        category="city life",
+        title="Berlin's Spätis — Your Late-Night Lifeline",
+        content=(
+            "Spätis (short for Spätkauf, 'late buy') are Berlin's beloved corner shops. Open late — often "
+            "until midnight or 24/7 — they sell drinks, snacks, cigarettes, and essentials. Locals gather "
+            "outside Spätis on warm evenings, drinking beer on the sidewalk (perfectly legal and very Berlin). "
+            "Spätis are also the cheapest place to buy water and beer. A 0.5L beer costs about €1.50."
+        ),
+        short_description="Corner shops open late/24/7 for drinks and essentials. Cheapest beer in the city.",
+        tags=["Spätis", "late night", "corner shop", "beer", "nightlife"],
+        priority=4,
+        source_name="General Berlin cultural knowledge"
+    ),
+]
+
+munich_cultural_tips = [
+    CityTipCreate(
+        city_slug="munich",
+        category="city life",
+        title="Biergarten Etiquette — BYO Food Is Fine",
+        content=(
+            "Munich's Biergärten (beer gardens) have a unique rule: you can bring your own food to any beer garden "
+            "that has a self-service area (Selbstbedienung). You only need to buy your drinks there. Locals bring "
+            "picnic spreads — Brezn, Obatzda cheese, and cold cuts. The Augustiner Keller and English Garden "
+            "Biergarten are student favorites. Tables without tablecloths are self-service; tables with white cloths "
+            "are waiter-served."
+        ),
+        short_description="BYO food to self-service beer gardens. Buy only drinks. Tablecloth = waiter service.",
+        tags=["Biergarten", "BYO", "Selbstbedienung", "beer", "etiquette"],
+        priority=5,
+        source_name="General Munich cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="city life",
+        title="Munich — Bavarian Greetings & Dialect",
+        content=(
+            "In Bavaria, people say 'Grüß Gott' (greet God) instead of 'Hallo' or 'Guten Tag'. Locals also say "
+            "'Servus' as a casual hello or goodbye — like 'Hey' or 'See ya'. In shops, cashiers say 'Passt scho' "
+            "(that's fine) instead of 'Danke'. The Bavarian dialect can be tricky — 'I mag di' means 'I like you', "
+            "and 'Pfiad di' means goodbye. Don't worry if you can't understand Bairisch at first — even Northern "
+            "Germans struggle with it."
+        ),
+        short_description="Say Grüß Gott, not Hallo. Servus = casual hi/bye. Bavarian dialect is unique.",
+        tags=["dialect", "Bavarian", "greetings", "Grüß Gott", "Servus"],
+        priority=4,
+        source_name="General Bavarian cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="city life",
+        title="Munich — Anmeldung & Bureaucracy Essentials",
+        content=(
+            "Within two weeks of moving into your apartment, you must register your address at the "
+            "Kreisverwaltungsreferat (KVR) — this is called Anmeldung. Book an appointment online ASAP "
+            "as slots fill up fast. You'll need your passport, rental contract, and Wohnungsgeberbestätigung "
+            "(landlord confirmation). The Anmeldung is required for opening a bank account, getting a phone "
+            "contract, and your semester enrollment."
+        ),
+        short_description="Register address (Anmeldung) within 2 weeks. Needed for bank, phone, and uni.",
+        tags=["Anmeldung", "bureaucracy", "KVR", "registration", "apartment"],
+        priority=5,
+        source_name="City of Munich"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="city life",
+        title="Munich's Mensa Culture — Cheap Student Meals",
+        content=(
+            "University Mensas (cafeterias) are the cheapest way to eat in Munich — full meals from €1.50–€3.50. "
+            "LMU's Mensa in the Leopoldstraße building and TU's Mensa Garching are the biggest. You need a "
+            "student ID card (Studentenausweis) loaded with credit to pay. Load it at Aufwertungsautomaten "
+            "in the Mensa. The daily menu changes and includes vegetarian/vegan options."
+        ),
+        short_description="Mensa meals from €1.50. Load student card at machines. Great value daily.",
+        tags=["Mensa", "student food", "cafeteria", "cheap eats", "LMU"],
+        priority=3,
+        source_name="Studierendenwerk München"
+    ),
+    CityTipCreate(
+        city_slug="munich",
+        category="city life",
+        title="Munich's MVV Semester Ticket — How Transit Works",
+        content=(
+            "Munich's MVV transit system includes U-Bahn (subway), S-Bahn (urban rail), trams, and buses. "
+            "As a student, your Semester ticket gives you unlimited travel in the entire MVV network. "
+            "Always validate paper tickets before boarding. Plain-clothes inspectors (Kontrolleure) check "
+            "regularly — a fine for riding without a valid ticket is €60. The U-Bahn runs from ~4:30am to 1am, "
+            "with all-night service on weekends."
+        ),
+        short_description="Semester ticket = unlimited MVV travel. Validate tickets. €60 fine if caught without.",
+        tags=["MVV", "transit", "U-Bahn", "semester ticket", "Kontrolleure"],
+        priority=3,
+        source_name="MVV Munich"
+    ),
+]
+
+hamburg_cultural_tips = [
+    CityTipCreate(
+        city_slug="hamburg",
+        category="city life",
+        title="Hamburg's Moin Culture — One Word Says It All",
+        content=(
+            "In Hamburg, locals greet each other with 'Moin' — at any time of day, not just morning. "
+            "It comes from Low German and means something like 'nice' or 'good'. Saying 'Moin Moin' is "
+            "considered overly chatty by true Hamburgers (they're proud of their northern reserve). "
+            "Hamburg people are known for being initially reserved but incredibly loyal once you're friends. "
+            "Don't be put off by the directness — it's just the Northern German way."
+        ),
+        short_description="Say 'Moin' (not Moin Moin!) at any time. Northern reserve hides warm loyalty.",
+        tags=["Moin", "greetings", "Northern German", "culture", "directness"],
+        priority=5,
+        source_name="General Hamburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="city life",
+        title="Hamburg — Rain Gear Is Non-Negotiable",
+        content=(
+            "Hamburg averages 130+ rainy days per year. Locals don't cancel plans for rain — they just dress for it. "
+            "Invest in a quality rain jacket (not an umbrella, the wind will destroy it). Hamburgers have a saying: "
+            "'Es gibt kein schlechtes Wetter, nur schlechte Kleidung' (there's no bad weather, only bad clothing). "
+            "Layer up and carry a packable rain jacket everywhere."
+        ),
+        short_description="130+ rainy days/year. Get a rain jacket, not an umbrella. Dress in layers.",
+        tags=["weather", "rain", "clothing", "practical", "Hamburg life"],
+        priority=4,
+        source_name="General Hamburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="city life",
+        title="Hamburg's Kiez Culture — Every Neighborhood Is a Village",
+        content=(
+            "Hamburg is organized into Kieze (neighborhoods) that function like small villages. Each has its own "
+            "personality: Schanzenviertel is alternative and artistic, Eimsbüttel is student-friendly, "
+            "St. Pauli is nightlife-famous, Ottensen is hipster-family, and Blankenese feels like a different country. "
+            "Pick your Kiez based on your personality. Locals are very loyal to their neighborhood."
+        ),
+        short_description="Hamburg = neighborhoods (Kieze). Schanze is artsy, Eimsbüttel is student-friendly.",
+        tags=["Kiez", "neighborhoods", "Schanzenviertel", "St. Pauli", "student life"],
+        priority=3,
+        source_name="General Hamburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="city life",
+        title="Hamburg — Sunday Fischmarkt Ritual",
+        content=(
+            "The Fischmarkt (fish market) at the harbor runs every Sunday 5–9:30am (7am in winter). "
+            "It's a Hamburg institution — locals go after a night out or early Sunday. Vendors shout and give away "
+            "free samples. You'll find everything from fish sandwiches to bananas to flowers. The Fischauktionshalle "
+            "next door has live music and breakfast. Arrive by 7am for the best atmosphere."
+        ),
+        short_description="Sunday Fischmarkt 5–9:30am. Go after clubbing or rise early. Live music next door.",
+        tags=["Fischmarkt", "Sunday", "harbor", "tradition", "food"],
+        priority=4,
+        source_name="General Hamburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="hamburg",
+        category="city life",
+        title="Hamburg — Alster Culture & Outdoor Living",
+        content=(
+            "The Alster lakes (Inner and Outer Alster) are Hamburg's heart. Locals jog, sail, kayak, and picnic "
+            "around them year-round. In summer, Jungfernstieg becomes a Mediterranean-feeling promenade. "
+            "In rare winters when the Alster freezes, the entire city celebrates on the ice. "
+            "Rent a paddleboard or kayak for ~€15/hour. The Alster sunset walk is free and unmissable."
+        ),
+        short_description="Alster lakes define Hamburg life. Jog, kayak, picnic. Free sunset walks.",
+        tags=["Alster", "outdoor", "kayak", "sunset", "lakes"],
+        priority=3,
+        source_name="General Hamburg cultural knowledge"
+    ),
+]
+
+vienna_cultural_tips = [
+    CityTipCreate(
+        city_slug="vienna",
+        category="city life",
+        title="Vienna's Kaffeehauskultur — Coffee House Etiquette",
+        content=(
+            "Vienna's coffee house culture is UNESCO Intangible Heritage. You're expected to sit for hours — "
+            "no one will rush you out. Order a Melange (Vienna's cappuccino), Einspänner (espresso with whipped cream), "
+            "or Kleiner Brauner (small coffee with cream). Your coffee comes with a glass of water on a silver tray — "
+            "it's refilled for free. Read newspapers on wooden holders. Café Central and Café Sperl are iconic."
+        ),
+        short_description="UNESCO heritage coffee culture. Sit for hours, free water refills. Try a Melange.",
+        tags=["Kaffeehaus", "coffee", "UNESCO", "Melange", "culture"],
+        priority=5,
+        source_name="General Vienna cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="city life",
+        title="Vienna — Grüß Gott & Austrian Social Norms",
+        content=(
+            "Austrians are more formal than Germans. Always greet shopkeepers with 'Grüß Gott' when entering "
+            "and 'Auf Wiedersehen' (or 'Wiederschaun') when leaving — even at the supermarket. Use 'Sie' (formal you) "
+            "with anyone you don't know well. Titles matter: a doctor is always 'Herr/Frau Doktor'. "
+            "Austrians take politeness seriously — not greeting someone is considered very rude."
+        ),
+        short_description="Always greet with Grüß Gott. Use Sie (formal). Titles matter. Politeness is key.",
+        tags=["etiquette", "Grüß Gott", "Sie", "formality", "Austrian customs"],
+        priority=4,
+        source_name="General Austrian cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="city life",
+        title="Vienna — The €10 Standing Room Opera Trick",
+        content=(
+            "The Vienna State Opera (Wiener Staatsoper) sells Stehplätze (standing room tickets) for €10–15. "
+            "Queue at the Stehplatz entrance on Operngasse about 80 minutes before curtain. Once inside, tie a "
+            "scarf to the railing to 'reserve' your spot (it's tradition), then explore the building. The acoustics "
+            "from standing room are actually excellent. Dress code: smart casual minimum."
+        ),
+        short_description="€10 standing opera tickets. Queue 80 min early. Tie scarf to reserve your spot.",
+        tags=["opera", "Stehplatz", "culture", "cheap", "Wiener Staatsoper"],
+        priority=5,
+        source_name="Wiener Staatsoper"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="city life",
+        title="Vienna's Heuriger — Wine Tavern Tradition",
+        content=(
+            "Heurige (wine taverns) are uniquely Viennese. Located in wine-growing districts like Grinzing, "
+            "Neustift, and Stammersdorf, they serve new wine (Heuriger literally means 'this year's'). "
+            "Look for a pine branch (Föhrenbusch) hanging outside — it means they're open. Order a Viertel "
+            "(quarter liter) of Grüner Veltliner and a buffet plate of spreads and bread. Bus 38A goes to "
+            "Grinzing. A Viertel costs about €3–4."
+        ),
+        short_description="Wine taverns serving this year's wine. Look for pine branch. €3-4 per glass.",
+        tags=["Heuriger", "wine", "Grinzing", "Grüner Veltliner", "tradition"],
+        priority=4,
+        source_name="General Vienna cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="vienna",
+        category="city life",
+        title="Vienna — Wiener Würstelstand Late-Night Ritual",
+        content=(
+            "After midnight, Viennese flock to Würstelstände (sausage stands). The most famous is Bitzinger "
+            "behind the Albertina museum. Order a Käsekrainer (cheese-filled sausage) with a Semmel (roll) "
+            "and sweet mustard. It's the quintessential post-opera, post-club, or anytime snack. "
+            "Locals eat standing up at the counter. A Käsekrainer costs ~€4.50."
+        ),
+        short_description="Midnight sausage stands. Try Käsekrainer with sweet mustard. ~€4.50 at Bitzinger.",
+        tags=["Würstelstand", "Käsekrainer", "late night", "food", "tradition"],
+        priority=3,
+        source_name="General Vienna cultural knowledge"
+    ),
+]
+
+salzburg_cultural_tips = [
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Salzburg — Stiegl & Beer Culture",
+        content=(
+            "Salzburg is home to Stiegl, Austria's largest private brewery (founded 1492). Visit the Stiegl-Brauwelt "
+            "brewery museum (€14 including beer tastings). In the old town, Augustinerbräu Mülln is a must — a "
+            "monastic beer hall where you fill your own mug from wooden barrels. Half-liter costs ~€4. "
+            "Bring your own food or buy from vendors inside. It's loud, communal, and unforgettable."
+        ),
+        short_description="Visit Stiegl brewery (1492). Augustinerbräu has self-serve wooden barrel beer, ~€4.",
+        tags=["Stiegl", "beer", "Augustinerbräu", "brewery", "tradition"],
+        priority=5,
+        source_name="General Salzburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Salzburg — The Salzburg Card Hack",
+        content=(
+            "The Salzburg Card (€30 for 24 hours) gives you free entry to all major attractions plus unlimited "
+            "public transport. It covers Hohensalzburg Fortress (normally €16), Mozart's Birthplace (€14), "
+            "Hellbrunn Palace (€15), and much more. If you're doing 3+ sights in a day, it pays for itself. "
+            "Buy at the tourist office or any hotel reception."
+        ),
+        short_description="Salzburg Card €30/24h = free fortress, Mozart house, transit. Saves €20+.",
+        tags=["Salzburg Card", "budget", "attractions", "fortress", "transport"],
+        priority=4,
+        source_name="Salzburg tourism"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Salzburg — Sound of Music Reality Check",
+        content=(
+            "Austrians generally find the Sound of Music tourism amusing — the film wasn't big in Austria. "
+            "But the tours are genuinely fun (about €50 for a half-day). You'll see Mirabell Gardens, the "
+            "Leopoldskron lake, and the Mondsee cathedral. The real Von Trapp house exists but is now a hotel. "
+            "Locals won't know what you're singing about, but they'll smile politely."
+        ),
+        short_description="Austrians don't know the movie. Tours are fun anyway (~€50). Real house is a hotel.",
+        tags=["Sound of Music", "tourism", "Mirabell", "culture"],
+        priority=3,
+        source_name="General Salzburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Salzburg — Crossing to Germany for Cheap Groceries",
+        content=(
+            "Salzburg is right on the German border — literally 10 minutes by bus to Freilassing or Bad Reichenhall. "
+            "Many students cross over to German supermarkets (Lidl, Aldi) because groceries are 20–30% cheaper "
+            "than in Austria. Bus 840 goes to Freilassing. Also useful: German Amazon deliveries are cheaper "
+            "than Austrian ones."
+        ),
+        short_description="10 min to Germany by bus. Groceries 20-30% cheaper at Lidl/Aldi across the border.",
+        tags=["border", "groceries", "budget", "Germany", "shopping"],
+        priority=4,
+        source_name="Student tip from Salzburg"
+    ),
+    CityTipCreate(
+        city_slug="salzburg",
+        category="city life",
+        title="Salzburg — Alpine Day Trips on a Budget",
+        content=(
+            "Salzburg's surrounded by Alps and lakes. Take Bus 150 to Hallstatt (~90 min, €11 each way or covered "
+            "by Klimaticket). The Untersberg cable car (€27 round trip) gives you 1,800m altitude views. "
+            "Königssee in Germany (30 min drive) has crystal-clear lake boat tours. In winter, ski resorts "
+            "like Flachau are 1 hour away with student day passes from €35."
+        ),
+        short_description="Bus to Hallstatt €11, Untersberg cable car €27, Königssee 30 min. Ski from €35.",
+        tags=["Alps", "day trips", "Hallstatt", "Untersberg", "skiing"],
+        priority=3,
+        source_name="General Salzburg travel info"
+    ),
+]
+
+graz_cultural_tips = [
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Graz — Schlossberg Elevator & Clock Tower",
+        content=(
+            "The Schlossberg (castle hill) is Graz's landmark. Take the free glass elevator from Schlossbergplatz "
+            "up to the top, or climb the 260 steps through the carved rock tunnel. The Uhrturm (clock tower, 1712) "
+            "is Graz's symbol — its hands are reversed (the big hand shows hours, small hand shows minutes), "
+            "a remnant of when there was only one hand. Sunset from the Schlossberg is spectacular and free."
+        ),
+        short_description="Free glass elevator to Schlossberg. Clock hands are reversed! Sunset views are incredible.",
+        tags=["Schlossberg", "Uhrturm", "clock tower", "views", "free"],
+        priority=5,
+        source_name="General Graz cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Graz — Lend District & Street Food Scene",
+        content=(
+            "Lend (across the Mur from the old town) is Graz's hippest district. The Lendplatz farmers market "
+            "(Mon–Sat mornings) has the best local produce. Lend is full of independent cafés, vintage shops, "
+            "and the Kunsthaus ('friendly alien' art museum). Thursday evenings, the area comes alive with "
+            "students. Frankowitsch is the local cult spot for open-face sandwiches."
+        ),
+        short_description="Lend = hippest district. Lendplatz market mornings. Frankowitsch for open sandwiches.",
+        tags=["Lend", "street food", "Lendplatz", "Kunsthaus", "nightlife"],
+        priority=4,
+        source_name="General Graz cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Graz — Styrian Cuisine & Kernöl Culture",
+        content=(
+            "Styria (Steiermark) has its own food culture. Kürbiskernöl (pumpkin seed oil) is liquid gold — "
+            "dark green, nutty, and drizzled on everything from salads to vanilla ice cream. Brettljause is a "
+            "traditional charcuterie board with local cold cuts and spreads. Sturm (partially fermented grape "
+            "juice) appears in autumn — it's slightly alcoholic and dangerously drinkable. Try Buschenschank "
+            "(Styrian wine taverns) for the full experience."
+        ),
+        short_description="Try Kürbiskernöl on ice cream, Brettljause boards, and Sturm in autumn.",
+        tags=["Kürbiskernöl", "Styrian food", "Brettljause", "Sturm", "Buschenschank"],
+        priority=4,
+        source_name="General Styrian cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Graz — Cheapest Austrian Student City",
+        content=(
+            "Graz is significantly cheaper than Vienna or Salzburg. A single room in a shared apartment (WG) "
+            "costs €300–400/month. Mensa meals are €2.50–€4. A monthly transit pass is €50, or the semester "
+            "ticket is ~€150 for 6 months. Beer in a student bar costs €3–3.50. Graz also has more sunshine "
+            "than any other major Austrian city — 2,000+ hours per year."
+        ),
+        short_description="Cheapest big Austrian city. WG €300-400, Mensa €2.50, beer €3. Sunniest too.",
+        tags=["affordable", "budget", "student life", "WG", "sunshine"],
+        priority=3,
+        source_name="General Graz student info"
+    ),
+    CityTipCreate(
+        city_slug="graz",
+        category="city life",
+        title="Graz — Murinsel & Creative City Identity",
+        content=(
+            "Graz was European Capital of Culture in 2003, which left behind the Murinsel — a floating steel "
+            "island/café in the middle of the Mur River (free to walk on). The Kunsthaus Graz (the 'friendly "
+            "alien') glows at night with a BIX media façade displaying art animations. Graz prides itself on "
+            "being Austria's most creative city. The Design Month festival in May is a highlight."
+        ),
+        short_description="Murinsel floating café, Kunsthaus alien building, Design Month in May. Creative city.",
+        tags=["Murinsel", "Kunsthaus", "design", "culture", "Capital of Culture"],
+        priority=3,
+        source_name="Graz tourism"
+    ),
+]
+
+zurich_cultural_tips = [
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Zurich — Swimming Culture & Badis",
+        content=(
+            "Zurich has a unique Badi (public bath) culture. From May to September, lakeside and riverside Badis "
+            "open up — many free, some €8. Seebad Enge, Frauenbadi (women only, except Tuesdays), and Flussbad "
+            "Oberer Letten are favorites. Locals swim in the Limmat River and Lake Zurich as part of daily life. "
+            "Bring a towel and join in — it's the most Zurich thing you can do."
+        ),
+        short_description="Swim in rivers and lakes May–September. Badis are free or €8. The most Zurich thing to do.",
+        tags=["Badi", "swimming", "Limmat", "Lake Zurich", "summer"],
+        priority=5,
+        source_name="General Zurich cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Zurich — The Expense Reality & Budget Hacks",
+        content=(
+            "Zurich is one of the world's most expensive cities. A restaurant meal costs CHF 25–40, a beer CHF 7–8. "
+            "Budget hacks: Migros and Coop supermarkets have cheap ready-made meals (CHF 6–8). ASVZ (university "
+            "sports) offers 100+ sports for CHF 100/year. Student Mensas serve meals for CHF 5–8. "
+            "The Zürich Card (CHF 27/24hr) covers all transit + museums. Cross to Germany for cheaper shopping."
+        ),
+        short_description="Very expensive. Budget: Migros meals CHF 6, Mensa CHF 5-8, ASVZ sports CHF 100/year.",
+        tags=["budget", "expensive", "Migros", "Mensa", "ASVZ"],
+        priority=5,
+        source_name="General Zurich student info"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Zurich — Swiss German Is Not German German",
+        content=(
+            "Swiss German (Schweizerdeutsch) is a spoken dialect only — there's no official written form. "
+            "Swiss people write in High German but speak Swiss German. 'Grüezi' replaces 'Hallo', 'Merci vielmal' "
+            "replaces 'Danke schön', and 'Tschüss' becomes 'Adé'. Don't worry if you can't understand Swiss "
+            "German at first — Swiss people switch to High German when speaking to Germans. Zurich dialect: "
+            "'Züritüütsch' is considered one of the easier Swiss dialects."
+        ),
+        short_description="Swiss German ≠ German German. Say Grüezi & Merci vielmal. They'll switch for you.",
+        tags=["Swiss German", "Schweizerdeutsch", "Grüezi", "dialect", "language"],
+        priority=4,
+        source_name="General Swiss cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Zurich — Recycling Rules Are Strict",
+        content=(
+            "Swiss recycling is not optional. You must use official Züri-Sack garbage bags (~CHF 2 each) "
+            "for regular waste. Everything else must be separated: glass by color, paper/cardboard bundled, "
+            "PET bottles at supermarkets, aluminum, batteries, etc. Wrong disposal can result in fines. "
+            "Recycling stations are at every grocery store. Ask your building's Hauswart (caretaker) for the schedule."
+        ),
+        short_description="Use Züri-Sack bags for trash. Strict recycling by type. Fines for non-compliance.",
+        tags=["recycling", "Züri-Sack", "sustainability", "rules", "waste"],
+        priority=3,
+        source_name="City of Zurich"
+    ),
+    CityTipCreate(
+        city_slug="zurich",
+        category="city life",
+        title="Zurich — Züri West & Nightlife Scene",
+        content=(
+            "Züri West (Zurich West) is the trendy nightlife and cultural quarter. Former industrial buildings "
+            "now house clubs, restaurants, and the Schiffbau theater complex. Frau Gerolds Garten is an urban "
+            "garden with food stalls and bars (summer favorite). Langstrasse is the edgier bar street. "
+            "Swiss clubs often have entry fees of CHF 15–25. Hive and Zukunft are the big electronic music venues."
+        ),
+        short_description="Züri West = trendy nightlife. Frau Gerolds Garten in summer. Clubs CHF 15-25 entry.",
+        tags=["nightlife", "Züri West", "clubs", "Langstrasse", "Frau Gerolds Garten"],
+        priority=3,
+        source_name="General Zurich cultural knowledge"
+    ),
+]
+
+leipzig_cultural_tips = [
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Leipzig — The Anti-Berlin (In a Good Way)",
+        content=(
+            "Leipzig is often called 'the better Berlin' — it has Berlin's creative energy at a fraction of the "
+            "cost. Rent averages €350–500 for a WG room. The Spinnerei (former cotton mill) houses 100+ artist "
+            "studios and 12 galleries — free to walk around. Karl-Liebknecht-Straße (KarLi) is the student "
+            "bar street. Leipzig is small enough to bike everywhere but big enough to never be bored."
+        ),
+        short_description="Berlin's creative energy, half the cost. Spinnerei galleries free. KarLi = student bars.",
+        tags=["creative", "affordable", "Spinnerei", "KarLi", "Berlin comparison"],
+        priority=5,
+        source_name="General Leipzig cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Leipzig — Music History Capital",
+        content=(
+            "Leipzig is where Bach worked for 27 years (at Thomaskirche), Mendelssohn founded the first German "
+            "conservatory, and Wagner was born. The Gewandhaus Orchestra is world-class with student tickets "
+            "from €8. Bach's grave is inside Thomaskirche (free to visit). Every Friday at 6pm, the Thomanerchor "
+            "(boys' choir, founded 1212) performs — arrive 30 min early for a seat."
+        ),
+        short_description="Bach's church free to visit. Gewandhaus from €8. Thomanerchor every Friday 6pm.",
+        tags=["Bach", "music", "Gewandhaus", "Thomaskirche", "classical"],
+        priority=4,
+        source_name="General Leipzig cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Leipzig — Plagwitz & Lindenau Neighborhoods",
+        content=(
+            "Plagwitz and Lindenau are Leipzig's coolest neighborhoods — former industrial areas now full of "
+            "cafés, galleries, and co-working spaces. The Karl-Heine-Kanal (canal) is great for kayaking in "
+            "summer. Westwerk is a cultural center with concerts and exhibitions. Schaubühne Lindenfels is "
+            "an indie cinema/bar. These neighborhoods are where most students and young creatives live."
+        ),
+        short_description="Plagwitz & Lindenau = coolest areas. Canal kayaking, indie cinema, galleries.",
+        tags=["Plagwitz", "Lindenau", "neighborhoods", "canal", "student life"],
+        priority=3,
+        source_name="General Leipzig cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Leipzig — Monday Demonstrations & History",
+        content=(
+            "Leipzig played a pivotal role in German reunification. The Monday Demonstrations (Montagsdemonstrationen) "
+            "at Nikolaikirche in 1989 helped bring down the Berlin Wall peacefully. The Zeitgeschichtliches Forum "
+            "(contemporary history museum) is free and tells this story powerfully. The Stasi Museum in the former "
+            "secret police headquarters is also a must-visit (€6, free on Mondays)."
+        ),
+        short_description="Peaceful revolution started here. Free history museum. Stasi Museum €6 (free Mondays).",
+        tags=["history", "reunification", "Nikolaikirche", "Stasi", "Monday demonstrations"],
+        priority=3,
+        source_name="General Leipzig cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="leipzig",
+        category="city life",
+        title="Leipzig — Lake Culture in Summer",
+        content=(
+            "Leipzig has a chain of former mining lakes that have become beautiful swimming lakes. Cospudener See "
+            "(Cossi) and Kulkwitzer See have beaches, cafés, and BBQ areas — all free. Bike there in 20–30 min "
+            "from the center. Markkleeberger See has a white-water rafting course. In summer, lakes replace clubs "
+            "as the main hangout. Bring a Grill (portable BBQ) and drinks."
+        ),
+        short_description="Free swimming lakes 20-30 min by bike. Cossi beach + BBQ areas. Summer student hangout.",
+        tags=["lakes", "swimming", "Cospudener See", "summer", "BBQ"],
+        priority=4,
+        source_name="General Leipzig cultural knowledge"
+    ),
+]
+
+mannheim_cultural_tips = [
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim — The Grid City (No Street Names Needed)",
+        content=(
+            "Mannheim's city center has no street names — it uses a grid system of letters and numbers instead. "
+            "Blocks are labeled A1 to U6 like a spreadsheet. 'I live in Q7' is a normal Mannheim address. "
+            "It was designed in the 17th century and is unique in Germany. The Baroque palace (now the university) "
+            "sits at the grid's southern edge. Once you get it, navigation becomes incredibly easy."
+        ),
+        short_description="No street names — grid system A1 to U6. Palace = university. Easy once you learn it.",
+        tags=["grid", "Quadrate", "navigation", "Baroque palace", "unique"],
+        priority=5,
+        source_name="General Mannheim cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim — Jungbusch Nightlife District",
+        content=(
+            "Jungbusch is Mannheim's nightlife and creative district — a former dock workers' area now full of "
+            "bars, clubs, and international restaurants. It's the most multicultural area in Mannheim. "
+            "Café Vienna is a student favorite for pre-drinks. The Alte Feuerwache (old fire station) hosts "
+            "concerts and cultural events. Thursday nights and weekends are the busiest."
+        ),
+        short_description="Jungbusch = nightlife district. Multicultural, student-friendly. Thursday is key night.",
+        tags=["Jungbusch", "nightlife", "multicultural", "Alte Feuerwache", "student life"],
+        priority=4,
+        source_name="General Mannheim cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim — Day Trip to Heidelberg (15 Minutes!)",
+        content=(
+            "Heidelberg is just 15 minutes by S-Bahn from Mannheim. The Heidelberg Castle ruins, old town, "
+            "and Philosophers' Walk are stunning. Student pub crawls on Untere Straße are legendary. "
+            "The S-Bahn runs every 10 minutes and is covered by the VRN semester ticket. Many Mannheim students "
+            "spend weekends in Heidelberg — it's like having two cities for the price of one."
+        ),
+        short_description="Heidelberg 15 min by S-Bahn (free with semester ticket). Castle, pub crawls, walks.",
+        tags=["Heidelberg", "day trip", "castle", "S-Bahn", "student life"],
+        priority=5,
+        source_name="General Mannheim student info"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim — Luisenpark & Outdoor Culture",
+        content=(
+            "Luisenpark (€6 entry, free with student events) is one of Germany's most beautiful urban parks. "
+            "It has Chinese gardens, a TV tower restaurant, gondola rides, and tropical greenhouses. "
+            "The Neckar River promenade is free and great for jogging. In summer, Herzogenriedpark has free "
+            "outdoor movie screenings and concerts."
+        ),
+        short_description="Luisenpark €6 with gondolas and gardens. Free Neckar promenade. Summer movie nights.",
+        tags=["Luisenpark", "parks", "Neckar", "outdoor", "summer"],
+        priority=3,
+        source_name="General Mannheim cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="mannheim",
+        category="city life",
+        title="Mannheim — Diverse Food Scene on a Budget",
+        content=(
+            "Mannheim has one of Germany's most diverse food scenes. The Turkish mile on Jungbuschstraße has "
+            "excellent döner (€4–5) and baklava. The weekly market on the Marktplatz (Tue, Thu, Sat) has "
+            "fresh produce and street food. Mannheimer Dreck is the local sweet specialty (a chocolate-coated "
+            "almond pastry). Mensa Schloss (in the palace!) serves meals from €2.50."
+        ),
+        short_description="Diverse food: Turkish mile, market 3x/week, palace Mensa €2.50. Try Mannheimer Dreck.",
+        tags=["food", "döner", "market", "Mensa", "diversity"],
+        priority=3,
+        source_name="General Mannheim cultural knowledge"
+    ),
+]
+
+stuttgart_cultural_tips = [
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="city life",
+        title="Stuttgart — Stäffele (Stairway) Culture",
+        content=(
+            "Stuttgart sits in a valley surrounded by hills and vineyards. The city has over 400 Stäffele "
+            "(outdoor stairways) connecting neighborhoods on different elevations — more than 20 km total. "
+            "Walking the Stäffele is a beloved Stuttgart activity. The 'Stäffelestour' is a guided walking "
+            "tour (or DIY with the free app). The views from the top of the Eugenstaffel are particularly stunning."
+        ),
+        short_description="400+ outdoor stairways (Stäffele) through vineyards. Free walking tours with great views.",
+        tags=["Stäffele", "stairways", "vineyards", "walking", "views"],
+        priority=5,
+        source_name="General Stuttgart cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="city life",
+        title="Stuttgart — Swabian Food & Culture",
+        content=(
+            "Swabians (Schwaben) have a distinct culture. 'Schaffe, schaffe, Häusle baue' (work, work, build a house) "
+            "is their motto. Must-try foods: Maultaschen (Swabian ravioli — the 'Herrgottsbscheißerle'), "
+            "Käsespätzle (cheese noodles), and Flädlesuppe (pancake soup). The Markthalle Stuttgart is a gourmet "
+            "food hall in an Art Nouveau building. Swabian people are known for being thrifty and hardworking."
+        ),
+        short_description="Try Maultaschen, Käsespätzle. Markthalle food hall. Swabians are thrifty & hardworking.",
+        tags=["Swabian", "Maultaschen", "Käsespätzle", "Markthalle", "food"],
+        priority=4,
+        source_name="General Swabian cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="city life",
+        title="Stuttgart — Free Museum Wednesdays & Culture Pass",
+        content=(
+            "Stuttgart's Staatsgalerie (state art gallery) is free on Wednesdays. The Mercedes-Benz Museum (€12) "
+            "and Porsche Museum (€10) offer student discounts. The StuttCard (€22 for 3 days) covers transit + "
+            "museums. The Weissenhof Estate is a UNESCO World Heritage Le Corbusier site — free exterior, €5 interior. "
+            "The Stuttgart TV Tower (Fernsehturm, €9) was the world's first concrete TV tower."
+        ),
+        short_description="Staatsgalerie free Wednesdays. StuttCard €22/3 days. TV Tower €9, UNESCO Weissenhof.",
+        tags=["museums", "Mercedes", "Porsche", "StuttCard", "TV Tower"],
+        priority=4,
+        source_name="Stuttgart tourism"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="city life",
+        title="Stuttgart — Wine Festivals & Vineyard Culture",
+        content=(
+            "Stuttgart is Germany's only major city with vineyards within city limits. The Stuttgarter Weindorf "
+            "(wine village festival, late August) is a 12-day celebration with 500+ wines in the city center. "
+            "Year-round, walk through the vineyards on the Weinwanderweg trail and stop at Besenwirtschaften "
+            "(seasonal pop-up wine bars in vintners' homes). A glass of local Trollinger costs €3–4."
+        ),
+        short_description="Vineyards inside the city. Weindorf festival in August. Besenwirtschaften pop-up wine bars.",
+        tags=["wine", "Weindorf", "vineyards", "Besenwirtschaft", "festivals"],
+        priority=3,
+        source_name="General Stuttgart cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="stuttgart",
+        category="city life",
+        title="Stuttgart — HdM Student Life & Vaihingen Campus",
+        content=(
+            "Hochschule der Medien (HdM) is in Vaihingen, Stuttgart's university district. The campus borders "
+            "Universität Stuttgart — they share the Mensa and sports facilities. The S1/S2/S3 to "
+            "Vaihingen station takes 15 min from the center. Vaihingen has affordable student housing and "
+            "a relaxed vibe compared to the city center. Waldau sports complex nearby has outdoor pools and fields."
+        ),
+        short_description="HdM in Vaihingen, 15 min by S-Bahn. Shared Mensa and sports. Affordable student area.",
+        tags=["HdM", "Vaihingen", "student life", "campus", "S-Bahn"],
+        priority=3,
+        source_name="HdM Stuttgart"
+    ),
+]
+
+aachen_cultural_tips = [
+    CityTipCreate(
+        city_slug="aachen",
+        category="city life",
+        title="Aachen — Pontstraße Student Scene",
+        content=(
+            "Pontstraße is Aachen's legendary student street — lined with bars, restaurants, and the city's "
+            "best nightlife. B9 (Pontstraße 141) is the most famous student bar. On Thursday nights (the student "
+            "night out), the entire street is packed. Cheap shots and beer specials start at €1–2. "
+            "The street runs from the Ponttor gate to the center. Start early, as bars close at 2am."
+        ),
+        short_description="Pontstraße = student bar street. Thursdays are the night. B9 is legendary. €1-2 drinks.",
+        tags=["Pontstraße", "nightlife", "B9", "student bars", "Thursday"],
+        priority=5,
+        source_name="General Aachen student life"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="city life",
+        title="Aachen — Charlemagne's City & UNESCO Cathedral",
+        content=(
+            "Aachen Cathedral (UNESCO since 1978) was Charlemagne's imperial chapel. It's free to enter and "
+            "contains his throne. The €5 treasury has medieval gold treasures. Aachen was the coronation city "
+            "of 30+ Holy Roman Emperors. The Rathaus (town hall) is built on Charlemagne's palace ruins — "
+            "you can see Roman foundations in the Couven Museum basement."
+        ),
+        short_description="UNESCO Cathedral free to enter. Charlemagne's throne inside. 1000+ years of history.",
+        tags=["Cathedral", "UNESCO", "Charlemagne", "history", "Rathaus"],
+        priority=4,
+        source_name="General Aachen cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="city life",
+        title="Aachen — Printen & Local Food Traditions",
+        content=(
+            "Aachener Printen are the city's famous gingerbread-style cookies — buy them at Nobis or Lambertz "
+            "factory shops for the freshest versions. Aachener Sauerbraten (sweet-sour pot roast) is the regional "
+            "specialty. The city also has a strong Belgian influence — excellent chocolate and frites shops. "
+            "Every Saturday, the Markt square hosts a farmers market with local cheeses and baked goods."
+        ),
+        short_description="Aachener Printen (famous cookies). Sauerbraten specialty. Belgian food influence.",
+        tags=["Printen", "Sauerbraten", "food", "Belgian", "cookies"],
+        priority=3,
+        source_name="General Aachen cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="city life",
+        title="Aachen — Three-Country Point & Border Hopping",
+        content=(
+            "Aachen sits where Germany, Belgium, and the Netherlands meet. The Dreiländereck (three-country point) "
+            "is a 15-minute bike ride from campus. Maastricht (Netherlands, 30 min by train) has amazing food. "
+            "Liège (Belgium, 45 min) has the best waffles. With the Deutschland Semesterticket, German regional "
+            "trains are free. Eurostar connects from Liège to Brussels, Paris, and London."
+        ),
+        short_description="Germany-Belgium-Netherlands border. Maastricht 30 min, Liège 45 min. Free with Semesterticket.",
+        tags=["Dreiländereck", "border", "Maastricht", "Liège", "day trips"],
+        priority=5,
+        source_name="General Aachen travel info"
+    ),
+    CityTipCreate(
+        city_slug="aachen",
+        category="city life",
+        title="Aachen — Thermal Baths & Spa Tradition",
+        content=(
+            "Aachen's name comes from 'Aix' (water) — it's been a spa city since Roman times. Carolus Thermen "
+            "is a modern thermal bath complex (€16 for 2.5 hours). The hot springs reach 74°C — the hottest "
+            "north of the Alps. Elisenbrunnen is a free neo-classical fountain with thermal water you can drink "
+            "(it tastes terrible but is tradition). Locals swear by the thermal waters for exam-week stress relief."
+        ),
+        short_description="Roman spa city. Carolus Thermen €16. Free thermal water at Elisenbrunnen (tastes awful).",
+        tags=["thermal baths", "Carolus Thermen", "spa", "Elisenbrunnen", "Roman"],
+        priority=3,
+        source_name="General Aachen cultural knowledge"
+    ),
+]
+
+bonn_cultural_tips = [
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Bonn — Cherry Blossom Season (Heerstraße)",
+        content=(
+            "Every April, Bonn's Heerstraße and Breite Straße transform into a pink tunnel of cherry blossoms "
+            "— it's gone viral on social media and rivals Japan's sakura. The peak lasts only 7–10 days. "
+            "Follow @bonnkirschbluete on Instagram for real-time updates. Best photo spots: Heerstraße (looking "
+            "south) and the corner of Breite Straße. Go early morning or at sunset for the best light."
+        ),
+        short_description="Cherry blossoms on Heerstraße go viral every April. Peak lasts 7-10 days. Go at sunrise.",
+        tags=["cherry blossoms", "Heerstraße", "spring", "Instagram", "sakura"],
+        priority=5,
+        source_name="General Bonn cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Bonn — Beethoven's Birthplace & Music Scene",
+        content=(
+            "Beethoven was born in Bonn in 1770 — the Beethoven-Haus museum (€10, student €7) has original "
+            "manuscripts and instruments. The annual Beethovenfest (September) brings world-class classical "
+            "concerts. Every year, free Beethoven organ concerts play at the Münster basilica. The Beethoven "
+            "monument on Münsterplatz is the city's most photographed spot."
+        ),
+        short_description="Beethoven-Haus €7 students. Beethovenfest in September. Free organ concerts at Münster.",
+        tags=["Beethoven", "music", "Beethoven-Haus", "Beethovenfest", "classical"],
+        priority=4,
+        source_name="General Bonn cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Bonn — Museum Mile (Museumsmeile)",
+        content=(
+            "Bonn's Museumsmeile is a cluster of 5 major museums along the B9 highway. The Bundeskunsthalle "
+            "(contemporary art), Haus der Geschichte (free! German post-war history), Kunstmuseum Bonn, Museum "
+            "Koenig (natural history), and Deutsches Museum Bonn are all within walking distance. "
+            "Haus der Geschichte is genuinely one of Germany's best free museums."
+        ),
+        short_description="5 museums on Museum Mile. Haus der Geschichte is free and incredible.",
+        tags=["Museumsmeile", "Haus der Geschichte", "free museum", "Bundeskunsthalle", "culture"],
+        priority=4,
+        source_name="General Bonn cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Bonn — Rhine River Student Life",
+        content=(
+            "The Rhine promenade in Bonn is the city's living room. Students gather at the Alter Zoll beer garden "
+            "(amazing sunset views) or along the Rheinaue park (huge park with a lake, free concerts in summer). "
+            "The Rhine ferry to Königswinter (€2 each way) takes you to Drachenfels castle ruins with panoramic "
+            "views. Inline skating and cycling along the Rhine path is a weekend ritual."
+        ),
+        short_description="Alter Zoll beer garden for sunsets. Rhine ferry €2 to Drachenfels castle. Rheinaue park.",
+        tags=["Rhine", "Alter Zoll", "Rheinaue", "Drachenfels", "beer garden"],
+        priority=3,
+        source_name="General Bonn cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bonn",
+        category="city life",
+        title="Bonn — The Cologne Connection (20 Min Away)",
+        content=(
+            "Bonn and Cologne have a friendly rivalry. Cologne is only 20 minutes by S-Bahn (free with "
+            "Semesterticket). Cologne has the famous cathedral, better nightlife (Belgisches Viertel), and "
+            "Karneval (the 'fifth season', February). Bonn students regularly go to Cologne for nights out "
+            "but prefer Bonn's quieter lifestyle. Pro tip: Cologne's 1Live Krone concert is free every December."
+        ),
+        short_description="Cologne 20 min by free S-Bahn. Better nightlife there, quieter living in Bonn.",
+        tags=["Cologne", "Köln", "S-Bahn", "Karneval", "nightlife"],
+        priority=3,
+        source_name="General Bonn student info"
+    ),
+]
+
+osnabruck_cultural_tips = [
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="city life",
+        title="Osnabrück — City of Peace History",
+        content=(
+            "Osnabrück is the 'Friedensstadt' (City of Peace) — the Peace of Westphalia was signed here in 1648, "
+            "ending the 30 Years' War. The Peace Hall in the Rathaus (free entry) has portraits of all the "
+            "negotiators. Every October 25, the city celebrates Steckenpferdreiten — children ride hobby horses "
+            "through the old town (dates back to the peace treaty). It's wonderfully quirky and very Osnabrück."
+        ),
+        short_description="Peace of Westphalia signed here 1648. Free Peace Hall. Hobby horse festival in October.",
+        tags=["Peace of Westphalia", "Friedensstadt", "Rathaus", "Steckenpferdreiten", "history"],
+        priority=5,
+        source_name="General Osnabrück cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="city life",
+        title="Osnabrück — The Zoo & Botanical Garden",
+        content=(
+            "Osnabrück Zoo (€23, student €16) is consistently rated one of Germany's best small zoos, with "
+            "natural enclosures and an underground aquarium. The Botanischer Garten (free!) is run by the "
+            "university and has tropical greenhouses perfect for winter visits. Both are within walking distance "
+            "of campus. The zoo's 'Unterirdischer Zoo' (underground zoo) showcases nocturnal animals."
+        ),
+        short_description="Zoo €16 students with underground section. Botanical Garden free with tropical houses.",
+        tags=["zoo", "Botanischer Garten", "underground zoo", "nature", "free"],
+        priority=4,
+        source_name="General Osnabrück cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="city life",
+        title="Osnabrück — Student-Friendly & Affordable",
+        content=(
+            "Osnabrück is one of Germany's most affordable university cities. A WG room costs €250–380/month. "
+            "The Mensa serves meals from €1.80. The Altstadt (old town) is compact and walkable — most students "
+            "bike everywhere. The Neumarkt area has the best student bars. The city has ~30,000 students out of "
+            "~165,000 residents, so 1 in 5 people is a student — the city revolves around university life."
+        ),
+        short_description="WG €250-380, Mensa €1.80. 1 in 5 residents is a student. Very bike-friendly.",
+        tags=["affordable", "WG", "Mensa", "student city", "bike"],
+        priority=4,
+        source_name="General Osnabrück student info"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="city life",
+        title="Osnabrück — Nettetal Hiking & Nature",
+        content=(
+            "The Nettetal (Nette Valley) is a nature reserve 20 minutes by bike from campus. It has hiking "
+            "trails, limestone formations, and swimming spots. The Teutoburger Wald (Teutoburg Forest) is "
+            "just south of the city — the Hermannsweg long-distance trail passes through. Rubbenbruchsee "
+            "is a popular lake for swimming and BBQ in summer (free). Perfect for study breaks."
+        ),
+        short_description="Nettetal nature reserve by bike. Teutoburg Forest hiking. Rubbenbruchsee swimming free.",
+        tags=["Nettetal", "hiking", "Teutoburg Forest", "lakes", "nature"],
+        priority=3,
+        source_name="General Osnabrück outdoor info"
+    ),
+    CityTipCreate(
+        city_slug="osnabruck",
+        category="city life",
+        title="Osnabrück — Felix Nussbaum & Art Scene",
+        content=(
+            "The Felix Nussbaum Haus, designed by Daniel Libeskind, houses the world's largest collection of "
+            "works by the Osnabrück-born Jewish painter murdered in Auschwitz. The building itself is an "
+            "architectural masterpiece (€5, free first Sunday of month). Osnabrück also has Kunsthalle "
+            "exhibitions and the annual Emaf (European Media Art Festival) in April."
+        ),
+        short_description="Felix Nussbaum Haus by Libeskind (€5, free 1st Sunday). EMAF art festival in April.",
+        tags=["Felix Nussbaum", "Libeskind", "art", "EMAF", "museum"],
+        priority=3,
+        source_name="General Osnabrück cultural knowledge"
+    ),
+]
+
+wurzburg_cultural_tips = [
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Würzburg — Alte Mainbrücke Wine Ritual",
+        content=(
+            "The Alte Mainbrücke (Old Main Bridge) is Würzburg's iconic social spot. Every evening, hundreds "
+            "of locals and students gather on the bridge drinking Brückenschoppen — wine from local vintners "
+            "sold in stands right on the bridge. A glass of Silvaner (the local grape) costs €3–4. "
+            "Sunset over the Marienberg Fortress from the bridge is one of Germany's most beautiful views."
+        ),
+        short_description="Drink wine on the old bridge at sunset. Silvaner €3-4. Best view in Franconia.",
+        tags=["Alte Mainbrücke", "wine", "Silvaner", "sunset", "Brückenschoppen"],
+        priority=5,
+        source_name="General Würzburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Würzburg — Franconian Wine Region",
+        content=(
+            "Würzburg is the capital of Franconian wine. The distinctive Bocksbeutel (flat round bottle) is "
+            "unique to this region. Must-try: Silvaner (dry, mineral) and Müller-Thurgau (fruity, light). "
+            "Visit the Staatlicher Hofkeller (wine cellar under the Residenz palace) for tastings from €12. "
+            "The Weinfest am Stein (wine festival, July) is the city's biggest party."
+        ),
+        short_description="Bocksbeutel wine bottles unique to region. Hofkeller tastings €12. Weinfest in July.",
+        tags=["Franconian wine", "Silvaner", "Bocksbeutel", "Hofkeller", "Weinfest"],
+        priority=4,
+        source_name="General Franconian wine knowledge"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Würzburg Residenz — UNESCO Baroque Palace",
+        content=(
+            "The Würzburg Residenz is a UNESCO World Heritage Baroque palace with the world's largest ceiling "
+            "fresco (by Tiepolo, 1753). Student entry is €7.50. The Court Garden (Hofgarten) behind the palace "
+            "is free and perfect for studying in warm weather. Every June, the Mozart Festival uses the palace "
+            "as a concert venue — student tickets from €15."
+        ),
+        short_description="UNESCO palace, €7.50 students. World's largest ceiling fresco. Free garden. Mozart Fest.",
+        tags=["Residenz", "UNESCO", "Baroque", "Tiepolo", "Hofgarten"],
+        priority=4,
+        source_name="General Würzburg cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Würzburg — Student Nightlife & Kneipenviertel",
+        content=(
+            "The Sanderstraße area is the student nightlife hub. Kult is the classic student bar with cheap beer. "
+            "Standard is the indie music venue. The Bürgerspital Weinstube serves excellent Franconian wine "
+            "in a 700-year-old building. Every semester, student organizations host Kneipentouren (pub crawls) "
+            "with €5 wristbands covering 5+ bars."
+        ),
+        short_description="Sanderstraße for nightlife. Kult bar for cheap beer. Pub crawl wristbands €5.",
+        tags=["Sanderstraße", "nightlife", "Kult", "pub crawl", "wine"],
+        priority=3,
+        source_name="General Würzburg student life"
+    ),
+    CityTipCreate(
+        city_slug="wurzburg",
+        category="city life",
+        title="Würzburg — Romantic Road Starting Point",
+        content=(
+            "Würzburg is the northern starting point of Germany's Romantic Road (Romantische Straße), "
+            "a 350 km scenic route to Füssen and Neuschwanstein Castle. The Eurobus runs the route daily in summer "
+            "(€15–45 per segment). Day trips to Rothenburg ob der Tauber (45 min by train, one of Germany's "
+            "most preserved medieval towns) are easy and free with the Semesterticket."
+        ),
+        short_description="Start of Romantic Road. Day trip to Rothenburg 45 min (free with Semesterticket).",
+        tags=["Romantic Road", "Rothenburg", "Neuschwanstein", "day trips", "medieval"],
+        priority=3,
+        source_name="General Franconian travel info"
+    ),
+]
+
+vallendar_cultural_tips = [
+    CityTipCreate(
+        city_slug="vallendar",
+        category="city life",
+        title="Vallendar — Tight-Knit WHU Community",
+        content=(
+            "Vallendar is a small Rhine village (population ~9,000) dominated by WHU Otto Beisheim School of "
+            "Management, consistently ranked Germany's top business school. The WHU community is extremely tight — "
+            "everyone knows everyone. Student parties happen in the WHU Audimax or at houses along the Rhine. "
+            "The social scene is intense: WHU SemesterOpening parties are legendary."
+        ),
+        short_description="Tiny village, top business school. Everyone knows everyone. Legendary SemesterOpening parties.",
+        tags=["WHU", "business school", "tight-knit", "parties", "Rhine"],
+        priority=5,
+        source_name="General WHU Vallendar knowledge"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="city life",
+        title="Vallendar — Koblenz Is Your Real City",
+        content=(
+            "Vallendar itself is very small — for nightlife, shopping, and urban amenities, take the 10-minute "
+            "bus to Koblenz. Koblenz has the Deutsches Eck (confluence of Rhine and Moselle rivers), Ehrenbreitstein "
+            "Fortress (cable car ride, €13.80 return), and a lively Altstadt bar scene. "
+            "The Löhr Center mall and Schlossstraße shopping are in Koblenz center."
+        ),
+        short_description="Bus to Koblenz in 10 min for nightlife and shopping. Deutsches Eck is stunning.",
+        tags=["Koblenz", "Deutsches Eck", "nightlife", "shopping", "fortress"],
+        priority=4,
+        source_name="General Koblenz/Vallendar info"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="city life",
+        title="Vallendar — Rhine Valley Wine & Hiking",
+        content=(
+            "The Middle Rhine Valley is UNESCO World Heritage — and Vallendar is right in it. The Rheinsteig "
+            "long-distance hiking trail passes through. Rhine wine from the Moselle region is excellent — "
+            "visit Winningen or Cochem wine villages (30–60 min). Rhine river cruises from Koblenz are "
+            "€15–30 for day trips past castles and vineyards."
+        ),
+        short_description="UNESCO Rhine Valley. Rheinsteig hiking. Wine villages 30 min. River cruises €15-30.",
+        tags=["Rhine Valley", "UNESCO", "Rheinsteig", "wine", "river cruise"],
+        priority=3,
+        source_name="General Rhine Valley cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="city life",
+        title="Vallendar — Koblenz Day Trips by Train",
+        content=(
+            "From Koblenz Hauptbahnhof (10 min from Vallendar), you can reach Cologne in 1 hour, Frankfurt "
+            "in 1.5 hours, and Trier (Germany's oldest city, Roman ruins) in 1.5 hours. The Moselle Valley "
+            "wine route is stunning by regional train. Burg Eltz (one of Germany's most beautiful castles) "
+            "is 40 min by train plus a beautiful 2km forest walk."
+        ),
+        short_description="Cologne 1h, Frankfurt 1.5h. Burg Eltz 40 min. Moselle wine trains. Great connections.",
+        tags=["day trips", "Burg Eltz", "Cologne", "Frankfurt", "Moselle"],
+        priority=3,
+        source_name="General Koblenz travel info"
+    ),
+    CityTipCreate(
+        city_slug="vallendar",
+        category="city life",
+        title="Vallendar — Budget Living in a Wealthy Context",
+        content=(
+            "WHU students tend to come from wealthy backgrounds, but exchange students can live cheaply. "
+            "Shared housing near campus costs €350–500/month. The WHU Mensa is good and affordable. "
+            "Grocery shopping at Aldi or Lidl in Vallendar is budget-friendly. "
+            "The contrast between WHU's prestigious reputation and Vallendar's quiet village life is charming."
+        ),
+        short_description="WG €350-500. Affordable Mensa. Quiet village life meets prestigious business school.",
+        tags=["budget", "WHU", "WG", "Mensa", "village life"],
+        priority=2,
+        source_name="General WHU student info"
+    ),
+]
+
+ebs_cultural_tips = [
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="Wiesbaden — Spa City Elegance",
+        content=(
+            "Wiesbaden is one of Europe's oldest spa cities with 26 hot springs. Kaiser-Friedrich-Therme "
+            "(€5 for 3 hours on Tuesdays) is a stunning Art Nouveau thermal bath. The Neroberg hilltop "
+            "gives panoramic views — take the Nerobergbahn water-powered funicular (€4 round trip, from 1888). "
+            "Wiesbaden has a wealthy, elegant vibe — think grand 19th-century buildings and tree-lined boulevards."
+        ),
+        short_description="26 hot springs. Kaiser-Friedrich-Therme €5 Tuesdays. Nerobergbahn funicular €4.",
+        tags=["spa", "thermal bath", "Neroberg", "Nerobergbahn", "elegant"],
+        priority=5,
+        source_name="General Wiesbaden cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="EBS — Frankfurt Is 30 Minutes Away",
+        content=(
+            "Frankfurt — Germany's financial capital with the best skyline — is just 30 minutes from Wiesbaden "
+            "by S-Bahn (free with RMV semester ticket). Frankfurt's Sachsenhausen district has Apfelwein (apple wine) "
+            "taverns, and the Museumsufer (museum embankment) has 12+ museums along the river. "
+            "Frankfurt Airport is one of Europe's biggest hubs for cheap flights."
+        ),
+        short_description="Frankfurt 30 min (free S-Bahn). Apfelwein district, 12 museums, cheap flights hub.",
+        tags=["Frankfurt", "S-Bahn", "Apfelwein", "Museumsufer", "airport"],
+        priority=4,
+        source_name="General EBS/Wiesbaden student info"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="EBS — Rheingau Wine Country at Your Door",
+        content=(
+            "EBS sits at the entrance to the Rheingau, Germany's most famous Riesling wine region. "
+            "The Rheingauer Weinwanderweg (wine hiking trail) connects 13 wine villages over 77 km. "
+            "Wine tastings cost €5–12 at most estates. The Rheingau Musik Festival (summer) hosts concerts "
+            "in castle courtyards and monasteries. Kloster Eberbach (where The Name of the Rose was filmed) "
+            "is a 20-minute drive."
+        ),
+        short_description="Rheingau = Germany's Riesling region. Wine tastings €5-12. Kloster Eberbach nearby.",
+        tags=["Rheingau", "Riesling", "wine trail", "Kloster Eberbach", "wine"],
+        priority=4,
+        source_name="General Rheingau cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="Wiesbaden — Kochbrunnen & Kurpark Ritual",
+        content=(
+            "The Kochbrunnen is a hot spring fountain in the city center — locals drink the 66°C mineral water "
+            "(it's free but sulfurous). The Kurpark is Wiesbaden's beautiful central park with concerts in the "
+            "Kurhaus (a neo-classical spa house). The casino inside the Kurhaus is Germany's oldest (1810) — "
+            "entry is €2.50 with student ID. Dress smart casual."
+        ),
+        short_description="Free hot spring fountain. Kurpark concerts. Germany's oldest casino €2.50 entry.",
+        tags=["Kochbrunnen", "Kurpark", "casino", "thermal", "Kurhaus"],
+        priority=3,
+        source_name="General Wiesbaden cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="ebs",
+        category="city life",
+        title="Wiesbaden — Mainz Across the Rhine",
+        content=(
+            "Mainz (state capital of Rhineland-Palatinate) is directly across the Rhine from Wiesbaden — "
+            "connected by bridges and a 5-minute S-Bahn ride. Mainz has the Gutenberg (inventor of printing) "
+            "Museum (€5), a lively student scene at Johannes Gutenberg University, and Germany's biggest "
+            "Karneval celebration. Mainzer Fastnacht (February) is an incredible street party."
+        ),
+        short_description="Mainz 5 min across the Rhine. Gutenberg Museum €5. Karneval in February is wild.",
+        tags=["Mainz", "Gutenberg", "Karneval", "Rhine", "day trip"],
+        priority=3,
+        source_name="General Mainz/Wiesbaden info"
+    ),
+]
+
+eltville_cultural_tips = [
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville — Rose Town on the Rhine",
+        content=(
+            "Eltville is officially the 'Rosenstadt' (Rose Town) — over 22,000 rose bushes bloom from May to "
+            "October. The Electoral Castle rose garden is free. Every June, the Rosentage (Rose Days) festival "
+            "celebrates with rose wine, rose ice cream, and rose markets. The Rhine promenade walk through the "
+            "rose gardens is one of the most beautiful free activities in the Rheingau."
+        ),
+        short_description="22,000 roses blooming May–October. Rose festival in June. Free castle rose garden.",
+        tags=["roses", "Rosenstadt", "rose festival", "Rhine promenade", "free"],
+        priority=5,
+        source_name="General Eltville cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville — Heart of the Rheingau Riesling Trail",
+        content=(
+            "Eltville is surrounded by vineyards and is the Rheingau's most charming wine town. The Riesling "
+            "Route connects Eltville to Rüdesheim (walkable in a day). Visit Weingut Kloster Eberbach nearby "
+            "— a 12th-century monastery that produces world-class Riesling. Local Straußwirtschaften (seasonal "
+            "wine bars in vintners' homes) serve wine and cheese plates from €8."
+        ),
+        short_description="Riesling trail to Rüdesheim. Kloster Eberbach monastery wines. Seasonal wine bars €8.",
+        tags=["Riesling", "Rheingau", "Kloster Eberbach", "Straußwirtschaft", "wine"],
+        priority=4,
+        source_name="General Rheingau wine knowledge"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville — Quiet Village Life as a Student",
+        content=(
+            "Eltville has ~17,000 residents and a medieval old town. Student life is quiet — there are no clubs, "
+            "but several wine bars and traditional restaurants. The upside: extremely safe, beautiful Rhine views "
+            "from everywhere, and lower rent than Wiesbaden. For nightlife, take the S-Bahn to Wiesbaden (20 min) "
+            "or Frankfurt (40 min). The village pace is actually great for focused studying."
+        ),
+        short_description="Quiet medieval village. Safe, beautiful, cheap. Wiesbaden 20 min for nightlife.",
+        tags=["village life", "quiet", "safe", "affordable", "medieval"],
+        priority=3,
+        source_name="General Eltville student info"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville — Rhine Swimming & Cycling",
+        content=(
+            "The Rhine cycle path (Rheinradweg) passes directly through Eltville — rent a bike and ride to "
+            "Rüdesheim (1 hour, flat), then take the ferry across to explore the opposite bank. "
+            "In summer, locals swim in the Rhine at designated spots (check current safety conditions). "
+            "The Rheingau vineyards have hiking trails with panoramic views above the river."
+        ),
+        short_description="Rhine cycle path through town. Bike to Rüdesheim 1 hour. Vineyard hikes with views.",
+        tags=["cycling", "Rhine", "Rüdesheim", "swimming", "vineyards"],
+        priority=3,
+        source_name="General Eltville outdoor info"
+    ),
+    CityTipCreate(
+        city_slug="eltville",
+        category="city life",
+        title="Eltville — Gutenberg Press Heritage",
+        content=(
+            "Eltville has a connection to Gutenberg — the Electoral Castle was where the Archbishop of Mainz "
+            "gave Gutenberg a court title. The castle is free to walk around and has seasonal exhibitions. "
+            "The half-timbered old town is one of the best-preserved in Hesse. The Kurfürstliche Burg "
+            "(Electoral Castle) tower has river views and hosts cultural events."
+        ),
+        short_description="Gutenberg heritage. Free castle grounds. Best-preserved half-timbered old town in Hesse.",
+        tags=["Gutenberg", "castle", "half-timbered", "Hesse", "history"],
+        priority=2,
+        source_name="General Eltville cultural knowledge"
+    ),
+]
+
+detmold_cultural_tips = [
+    CityTipCreate(
+        city_slug="detmold",
+        category="city life",
+        title="Detmold — Hermannsdenkmal Monument",
+        content=(
+            "The Hermannsdenkmal (Hermann Monument) is a 53-meter copper statue on a forested hilltop — "
+            "it commemorates the Germanic chieftain Arminius who defeated three Roman legions in 9 AD. "
+            "The views from the top are incredible. Entry is €4. It's a 40-minute walk or short bus ride from "
+            "the center. The surrounding Teutoburg Forest is perfect for hiking after your visit."
+        ),
+        short_description="53m copper monument, €4 entry. Incredible views. Teutoburg Forest hiking after.",
+        tags=["Hermannsdenkmal", "monument", "Teutoburg Forest", "hiking", "history"],
+        priority=5,
+        source_name="General Detmold cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="city life",
+        title="Detmold — Open Air Museum (LWL-Freilichtmuseum)",
+        content=(
+            "The LWL-Freilichtmuseum Detmold is Germany's largest open-air museum — 100+ historic buildings "
+            "relocated from across Westphalia, set in 90 hectares of countryside. It costs €9 (student €5) "
+            "and you need a full day. Traditional bread-baking demos, blacksmith workshops, and heritage "
+            "farm animals are highlights. It's like walking through 500 years of rural German life."
+        ),
+        short_description="Germany's largest open-air museum, €5 students. 100+ historic buildings. Full day trip.",
+        tags=["Freilichtmuseum", "open-air museum", "Westphalia", "heritage", "LWL"],
+        priority=4,
+        source_name="General Detmold cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="city life",
+        title="Detmold — Small-Town Student Charm",
+        content=(
+            "Detmold has ~75,000 residents and a cozy, walkable center with half-timbered houses. The old "
+            "Marktplatz has cafés and the city palace (Fürstliches Residenzschloss, €7.50 guided tour). "
+            "The city is very safe and affordable — WG rooms cost €250–350/month. The Lange Straße "
+            "pedestrian zone has small shops. Student nightlife centers around a few loyal Kneipen (pubs)."
+        ),
+        short_description="Cozy half-timbered town. Palace €7.50. WG €250-350. Safe and affordable.",
+        tags=["small town", "palace", "affordable", "half-timbered", "student life"],
+        priority=3,
+        source_name="General Detmold student info"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="city life",
+        title="Detmold — Bike to Lemgo in 30 Minutes",
+        content=(
+            "Detmold and Lemgo are sister cities only 15 km apart. Many TH OWL students live in one and study "
+            "in the other. The bike path between them follows the river and is flat and scenic. "
+            "The regional train takes 15 minutes (free with Semesterticket). Paderborn, Bielefeld, and Hameln "
+            "(Pied Piper town!) are all easy day trips by regional train."
+        ),
+        short_description="Bike to Lemgo 30 min. Train to Bielefeld, Paderborn, Hameln. All free with Semesterticket.",
+        tags=["Lemgo", "bike", "Bielefeld", "day trips", "TH OWL"],
+        priority=3,
+        source_name="General Detmold travel info"
+    ),
+    CityTipCreate(
+        city_slug="detmold",
+        category="city life",
+        title="Detmold — Lippe Region Food & Externsteine",
+        content=(
+            "The Lippe region has its own culinary traditions. Lippischer Pickert is a local potato pancake "
+            "served sweet or savory — try it at the Marktplatz restaurants. The region is famous for its ham "
+            "(Lippischer Schinken). The Externsteine sandstone rock pillars (20 min by bus) are a mystical "
+            "natural monument — some call them 'Germany's Stonehenge'. Free to view from below, €4 to climb."
+        ),
+        short_description="Try Lippischer Pickert. Externsteine 'Germany's Stonehenge' 20 min. Free views.",
+        tags=["Lippe", "Pickert", "Externsteine", "food", "nature"],
+        priority=4,
+        source_name="General Lippe cultural knowledge"
+    ),
+]
+
+lemgo_cultural_tips = [
+    CityTipCreate(
+        city_slug="lemgo",
+        category="city life",
+        title="Lemgo — Medieval Old Town Gem",
+        content=(
+            "Lemgo has one of the best-preserved medieval old towns in Westphalia. The Hexenbürgermeisterhaus "
+            "(Witch Mayor's House, 1571) is now a museum about the city's dark witch-trial history (€3). "
+            "Colorful half-timbered houses line the Mittelstraße. The Junker-Haus museum shows Art Nouveau "
+            "interiors. Lemgo's old town is genuinely stunning — often compared to a fairy tale."
+        ),
+        short_description="Best-preserved medieval town in Westphalia. Witch Mayor's House €3. Fairy-tale streets.",
+        tags=["medieval", "Hexenbürgermeisterhaus", "half-timbered", "witch trials", "museum"],
+        priority=5,
+        source_name="General Lemgo cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="city life",
+        title="Lemgo — TH OWL Campus Life",
+        content=(
+            "Lemgo is small (~40,000) and the TH OWL Innovation Campus dominates student life. The campus "
+            "has modern facilities, a good Mensa, and is within walking distance of the old town. "
+            "Student housing is incredibly affordable (€200–320/month). Most students bike everywhere. "
+            "The Alte Hansestadt atmosphere makes studying feel like living in a history book."
+        ),
+        short_description="TH OWL Innovation Campus. WG €200-320. Bike everywhere. Historic atmosphere.",
+        tags=["TH OWL", "campus", "affordable", "bike", "Innovation Campus"],
+        priority=4,
+        source_name="General Lemgo student info"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="city life",
+        title="Lemgo — Hanseatic Heritage & Markets",
+        content=(
+            "Lemgo was a Hanseatic League member, and its wealth from medieval trade built the stunning buildings "
+            "you see today. The Wochenmarkt (weekly market, Wednesday and Saturday) fills the Marktplatz with "
+            "local produce, bread, and flowers. The Weihnachtsmarkt (Christmas market) in December transforms "
+            "the old town into a magical medieval setting with mulled wine and handcrafts."
+        ),
+        short_description="Former Hanseatic League town. Market Wed & Sat. Magical Christmas market in December.",
+        tags=["Hanseatic", "market", "Christmas market", "medieval", "Wochenmarkt"],
+        priority=3,
+        source_name="General Lemgo cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="city life",
+        title="Lemgo — Teutoburg Forest at the Doorstep",
+        content=(
+            "Lemgo sits at the edge of the Teutoburg Forest. The Hermannsweg hiking trail is accessible by bike "
+            "from the city. For swimming, the Aqua-Fun water park has indoor and outdoor pools. "
+            "The Schiedersee lake (30 min by bus) is a great summer spot. In winter, the Hermannsweg turns into "
+            "cross-country skiing trails when there's enough snow."
+        ),
+        short_description="Teutoburg Forest at the doorstep. Aqua-Fun pools. Schiedersee lake 30 min.",
+        tags=["Teutoburg Forest", "hiking", "swimming", "Schiedersee", "nature"],
+        priority=3,
+        source_name="General Lemgo outdoor info"
+    ),
+    CityTipCreate(
+        city_slug="lemgo",
+        category="city life",
+        title="Lemgo — Weekend Trips from a Small Town Base",
+        content=(
+            "Lemgo's small size is an advantage for travel — everything interesting is a day trip. "
+            "Detmold (15 min train, free), Bielefeld (30 min), Hannover (1 hour), and even Hamburg (2.5 hours) "
+            "are all reachable with the Deutschland Semesterticket. The Weserbergland (Weser Hills) "
+            "south of Lemgo are beautiful for scenic drives and the Pied Piper city of Hameln."
+        ),
+        short_description="Everything is a day trip. Detmold 15 min, Bielefeld 30 min. All free with Semesterticket.",
+        tags=["day trips", "Semesterticket", "Bielefeld", "Hannover", "Weserbergland"],
+        priority=2,
+        source_name="General Lemgo travel info"
+    ),
+]
+
+jena_cultural_tips = [
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="Jena — Zeiss Planetarium Experience",
+        content=(
+            "The Zeiss Planetarium Jena is the world's oldest operating planetarium (1926). Shows include "
+            "cosmic journeys, laser music shows (Pink Floyd night is popular), and educational presentations. "
+            "Tickets are €9 (student €7). The planetarium uses state-of-the-art Zeiss projection — fitting, "
+            "since Carl Zeiss founded his optics company in Jena in 1846."
+        ),
+        short_description="World's oldest planetarium. €7 students. Pink Floyd laser shows. Zeiss heritage.",
+        tags=["planetarium", "Zeiss", "laser show", "science", "heritage"],
+        priority=5,
+        source_name="General Jena cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="Jena — One of Germany's Cheapest Student Cities",
+        content=(
+            "Jena is consistently ranked among Germany's cheapest cities for students. A WG room costs "
+            "€200–300/month. The Mensa serves meals from €1.50–3.00. Student bars in the center sell beer "
+            "for €2–3. The city is small enough to walk everywhere — many students don't even own a bike. "
+            "Monthly transit passes are optional since most things are within 20 minutes on foot."
+        ),
+        short_description="WG €200-300. Mensa €1.50. Beer €2-3. Walk everywhere. Truly affordable.",
+        tags=["affordable", "WG", "Mensa", "cheap", "walkable"],
+        priority=4,
+        source_name="General Jena student info"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="Jena — Paradies Park & Saale River Life",
+        content=(
+            "Paradies Park along the Saale River is Jena's green heart. Students study on the grass, BBQ in "
+            "designated areas, and swim in the river in summer (at your own risk). The Saaleradweg cycle path "
+            "follows the river through gorgeous countryside. The Kernberge hills on the east side have "
+            "viewpoints and short hiking trails with panoramas over the Saale valley."
+        ),
+        short_description="Paradies Park for studying & BBQ. Saale River swimming. Kernberge hill views.",
+        tags=["Paradies Park", "Saale", "nature", "BBQ", "hiking"],
+        priority=3,
+        source_name="General Jena cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="Jena — Goethe & Schiller Literary Heritage",
+        content=(
+            "Jena was where Schiller lived and taught, and Goethe visited frequently — their friendship "
+            "shaped German literature. Schiller's garden house (Schillers Gartenhaus, €4) is where he wrote "
+            "major works. The Romantikerhaus museum celebrates the Jena Romantics (literary movement). "
+            "The university is named after Friedrich Schiller, founded in 1558."
+        ),
+        short_description="Schiller's garden house €4. Romantikerhaus museum. University founded 1558.",
+        tags=["Schiller", "Goethe", "literature", "Romantics", "history"],
+        priority=3,
+        source_name="General Jena cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="jena",
+        category="city life",
+        title="Jena — Day Trips to Weimar & Erfurt",
+        content=(
+            "Weimar (15 min by train, free with Semesterticket) is a UNESCO city — home of Goethe, Schiller, "
+            "the Bauhaus, and the Weimar Republic. Erfurt (30 min) has Germany's best-preserved medieval center "
+            "and the stunning Krämerbrücke (bridge with houses). Both are perfect day trips. "
+            "Jena, Weimar, and Erfurt together offer an incredibly rich cultural triangle."
+        ),
+        short_description="Weimar 15 min, Erfurt 30 min (free trains). UNESCO sites, Bauhaus, medieval bridges.",
+        tags=["Weimar", "Erfurt", "day trips", "Bauhaus", "UNESCO"],
+        priority=4,
+        source_name="General Thuringian travel info"
+    ),
+]
+
+bern_cultural_tips = [
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Bern — Aare River Swimming Culture",
+        content=(
+            "Swimming in the Aare River is THE Bern experience. From May to September, thousands of Bernese float "
+            "downstream in the turquoise glacial water. Enter at Eichholz or Marzili Badi, float for 10-20 minutes, "
+            "and climb out at the Marzili steps. The water is cold (15-20°C) but refreshing. Keep your belongings "
+            "in a waterproof bag (Schwimmsack, buy one at Coop). It's free and an absolute must-do."
+        ),
+        short_description="Float down the turquoise Aare River. Free, iconic, and unforgettable. Bring a Schwimmsack.",
+        tags=["Aare", "swimming", "Marzili", "summer", "free"],
+        priority=5,
+        source_name="General Bern cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Bern — Arcade City (6 km of Lauben)",
+        content=(
+            "Bern's old town has 6 km of Lauben (covered arcades) — the longest covered shopping promenade "
+            "in Europe. Rain never stops shopping or strolling. Underneath the arcades are Keller (cellar) "
+            "shops, bars, and theaters. The entire old town is a UNESCO World Heritage Site. "
+            "The Zytglogge (clock tower) performs an animated show 4 minutes before every hour."
+        ),
+        short_description="6 km covered arcades — Europe's longest. UNESCO old town. Zytglogge clock show hourly.",
+        tags=["Lauben", "arcades", "UNESCO", "Zytglogge", "old town"],
+        priority=4,
+        source_name="General Bern cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Bern — Federal Capital but Small-Town Vibe",
+        content=(
+            "Bern is Switzerland's capital but feels like a small town (~130,000 people). Life moves slower than "
+            "Zurich. Locals are friendly but reserved — the Bernese dialect (Bärndütsch) is the slowest Swiss German "
+            "dialect, and people joke that Bernese do everything slowly. Tuesday and Saturday markets on Bundesplatz "
+            "are excellent for fresh produce and cheese. The bear park (BärenPark) with real bears is free."
+        ),
+        short_description="Capital with small-town vibes. Bärndütsch is slow Swiss German. Free BärenPark with real bears.",
+        tags=["Bärndütsch", "capital", "small town", "bear park", "market"],
+        priority=3,
+        source_name="General Bern cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Bern — Gürbetal & Day Trips",
+        content=(
+            "From Bern, reach Thun and Lake Thun in 20 minutes (stunning Alpine lake), Interlaken in 50 minutes "
+            "(adventure sports capital), and the Jungfraujoch (Top of Europe, 3,454m) in 2 hours. The Gurten "
+            "(Bern's local mountain) has a funicular and panoramic views — free to hike up, CHF 10 funicular. "
+            "The Gurtenfestival (July) is Switzerland's biggest open-air music festival."
+        ),
+        short_description="Thun 20 min, Interlaken 50 min. Gurten funicular CHF 10. Gurtenfestival in July.",
+        tags=["Thun", "Interlaken", "Gurten", "Alps", "day trips"],
+        priority=3,
+        source_name="General Bern travel info"
+    ),
+    CityTipCreate(
+        city_slug="bern",
+        category="city life",
+        title="Bern — Mensa & Student Budget Hacks",
+        content=(
+            "University of Bern Mensas serve meals from CHF 5.50. The Migros and Coop 'take-away' sections have "
+            "ready meals from CHF 6-8. The Bärengraben area has cheaper restaurants. For groceries, Denner and "
+            "Aldi are the cheapest options. Swiss francs are expensive — cross to Germany (2 hours by train) for "
+            "big shopping hauls. The ASVZ-equivalent (ASVZ Bern) offers university sports for CHF 50/semester."
+        ),
+        short_description="Mensa CHF 5.50. Denner/Aldi for groceries. Uni sports CHF 50/semester.",
+        tags=["budget", "Mensa", "groceries", "student life", "affordable"],
+        priority=4,
+        source_name="General Bern student info"
+    ),
+]
+
+winterthur_cultural_tips = [
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Winterthur — Switzerland's Hidden Art Capital",
+        content=(
+            "Winterthur has more museums per capita than almost any Swiss city. The Oskar Reinhart collection "
+            "has world-class Impressionist art (CHF 12). The Fotomuseum Winterthur is Europe's leading photography "
+            "museum (CHF 12). Kunst Museum Winterthur houses a major modern art collection. Many museums offer "
+            "free entry on the first Sunday of the month."
+        ),
+        short_description="More museums per capita than almost anywhere. First Sunday = free entry. World-class art.",
+        tags=["museums", "art", "Oskar Reinhart", "Fotomuseum", "culture"],
+        priority=5,
+        source_name="General Winterthur cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Winterthur — Altstadt & Marktgasse Scene",
+        content=(
+            "Winterthur's pedestrian Altstadt (old town) is lively and compact. Marktgasse is the main shopping "
+            "and café street. Tuesday and Friday mornings bring a farmers market to the Graben. "
+            "The Steinberggasse area has independent boutiques and the best cafés. Albani Music Club is the city's "
+            "legendary live music venue. Winterthur feels like a smaller, friendlier Zurich."
+        ),
+        short_description="Compact, walkable old town. Market Tue & Fri. Albani Club for live music. Mini-Zurich vibe.",
+        tags=["Altstadt", "Marktgasse", "market", "Albani", "cafés"],
+        priority=4,
+        source_name="General Winterthur cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Winterthur — Zurich in 20 Minutes",
+        content=(
+            "Winterthur is just 20 minutes from Zurich by train (runs every 10 min). With your student "
+            "ZVV transit pass, the ride is covered. Access Zurich's nightlife, lakefront, and international "
+            "airport easily while enjoying Winterthur's lower rents (CHF 500-700 for a WG room vs CHF 800+ "
+            "in Zurich). Many students live in Winterthur and commute to Zurich for events."
+        ),
+        short_description="Zurich 20 min by train (every 10 min). Lower rent, same access. Best of both worlds.",
+        tags=["Zurich", "commute", "train", "affordable", "ZVV"],
+        priority=5,
+        source_name="General Winterthur student info"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Winterthur — Technorama Science Center",
+        content=(
+            "Swiss Science Center Technorama is one of Europe's best interactive science museums — 500+ "
+            "hands-on exhibits across multiple floors. Student entry is CHF 19. It's especially fun on "
+            "rainy days. The outdoor science park is free. The museum regularly hosts special evening events "
+            "with DJ sets in the exhibit halls — science meets nightlife."
+        ),
+        short_description="500+ hands-on science exhibits, CHF 19. DJ nights in the museum. Outdoor park free.",
+        tags=["Technorama", "science", "interactive", "museum", "rainy day"],
+        priority=3,
+        source_name="General Winterthur cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="winterthur",
+        category="city life",
+        title="Winterthur — Cycling City & Green Spaces",
+        content=(
+            "Winterthur is Switzerland's cycling city — extensive bike paths connect every neighborhood. "
+            "The Eschenberg forest and Wildpark (free deer/wild boar park) is a 15-minute bike ride. "
+            "The Töss River trail goes through gorges and past swimming holes. In summer, the Schwimmbad "
+            "Geiselweid (public pool, CHF 6) is the social hub. The annual SlowUp cycling event closes "
+            "roads to cars for a car-free ride through the countryside."
+        ),
+        short_description="Cycling city. Free Wildpark. Töss River gorge trail. SlowUp car-free road event.",
+        tags=["cycling", "Wildpark", "Töss", "swimming", "green spaces"],
+        priority=3,
+        source_name="General Winterthur outdoor info"
+    ),
+]
+
+rapperswil_cultural_tips = [
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Rapperswil — The Rose City on Lake Zurich",
+        content=(
+            "Rapperswil-Jona is called the 'Rosenstadt' (Rose City) — 15,000 roses in 600 varieties bloom "
+            "in the castle rose gardens from June to October (free). The medieval Rapperswil Castle overlooks "
+            "Lake Zurich and houses the Polish Museum (unique!). The lakefront promenade is perfect for evening "
+            "walks. The wooden footbridge (Holzsteg) across the lake to Hurden is a 850m scenic crossing."
+        ),
+        short_description="15,000 roses in castle gardens (free). Wooden lake bridge. Polish Museum in the castle.",
+        tags=["Rosenstadt", "roses", "castle", "Lake Zurich", "Holzsteg"],
+        priority=5,
+        source_name="General Rapperswil cultural knowledge"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Rapperswil — Lake Zurich Swimming & Water Sports",
+        content=(
+            "The Badi Rapperswil (Strandbad, CHF 6) has a huge waterfront lawn and swimming area in Lake Zurich. "
+            "Paddleboard rental is CHF 20/hour. The Seedamm (lake causeway) area has free swimming spots. "
+            "In summer, boats run from Rapperswil to Zurich city center (1 hour scenic ride, ZVV ticket). "
+            "The ferry to Meilen and Zurich is one of the most beautiful commutes in Switzerland."
+        ),
+        short_description="Badi CHF 6. Paddleboard CHF 20/hour. Scenic boat to Zurich 1 hour with ZVV ticket.",
+        tags=["Lake Zurich", "swimming", "paddleboard", "Badi", "boat"],
+        priority=4,
+        source_name="General Rapperswil outdoor info"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Rapperswil — HSR/OST Campus Life",
+        content=(
+            "The OST (Eastern Switzerland University of Applied Sciences) campus sits right on the lake — "
+            "possibly the most scenic university location in Switzerland. The campus Mensa has CHF 6–8 meals "
+            "with lake views. Student housing in Rapperswil is cheaper than Zurich (CHF 500–650 for a WG room). "
+            "The campus library has panoramic windows over the water."
+        ),
+        short_description="Lakeside campus with stunning views. Mensa CHF 6-8. WG CHF 500-650. Library on the water.",
+        tags=["OST", "campus", "lakeside", "Mensa", "affordable"],
+        priority=4,
+        source_name="General Rapperswil student info"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Rapperswil — Zurich in 40 Minutes, Mountains in 30",
+        content=(
+            "Rapperswil is perfectly positioned: Zurich center in 40 minutes by S-Bahn, and the Amden/Flumserberg "
+            "ski areas in 45 minutes by car. The Atzmännig toboggan run and ropes course (CHF 15) is 20 minutes "
+            "away. Einsiedeln monastery (30 min) is Switzerland's most important pilgrimage site. "
+            "The Seedamm Center mall is right at the train station for shopping."
+        ),
+        short_description="Zurich 40 min, ski in 45 min. Atzmännig fun park CHF 15. Perfectly positioned.",
+        tags=["Zurich", "skiing", "Atzmännig", "day trips", "Einsiedeln"],
+        priority=3,
+        source_name="General Rapperswil travel info"
+    ),
+    CityTipCreate(
+        city_slug="rapperswil",
+        category="city life",
+        title="Rapperswil — Knies Kinderzoo & Local Traditions",
+        content=(
+            "Rapperswil hosts Knies Kinderzoo (children's zoo, CHF 15) — part of the famous Swiss National "
+            "Circus Knie, which is headquartered here. The Altstadt has small family-run restaurants and "
+            "wine bars. The Blues'n'Jazz Festival (free outdoor concerts) runs every summer at the lake. "
+            "Don't miss the Wednesday and Saturday morning markets on the Fischmarktplatz."
+        ),
+        short_description="Knie circus zoo CHF 15. Free Blues'n'Jazz festival at the lake. Market Wed & Sat.",
+        tags=["Kinderzoo", "Knie", "jazz festival", "Altstadt", "market"],
+        priority=3,
+        source_name="General Rapperswil cultural knowledge"
+    ),
+]

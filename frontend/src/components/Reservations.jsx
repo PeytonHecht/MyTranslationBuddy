@@ -7,10 +7,11 @@ import {
   Volume2, Brain, Star, ChevronRight, X, Flame, RotateCcw, Zap, Award,
   ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp, LogOut, Download, Lock
 } from "lucide-react";
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import logo from "../assets/MTBLogo.png";
 import { handleLogout as sharedLogout, isLoggedIn, authHeaders } from "../utils/auth.js";
 import { CITY_NAMES_LIST, CITY_SLUG_MAP, CITY_COUNTRY_MAP, COUNTRY_FLAGS } from "../constants/cities.js";
 import { PhraseListSkeleton, InlineSpinner } from "./ui/LoadingStates.jsx";
+import { API_BASE } from "../config.js";
 
 /* ═══════════════════════════════════════════════════════
    STUDY HUB — A smart, engaging language-learning space
@@ -43,7 +44,6 @@ const Reservations = () => {
   const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
   const [showVocabForm, setShowVocabForm] = useState(false);
   const [flipAnim, setFlipAnim] = useState(false);
-  const [flashcardResults, setFlashcardResults] = useState({ correct: 0, total: 0 });
 
   /* ── Daily goal state ─────────────────────────────── */
   const [dailyGoal, setDailyGoal] = useState(5);
@@ -61,7 +61,6 @@ const Reservations = () => {
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [bookmarkMap, setBookmarkMap] = useState({});
   const [phraseSearch, setPhraseSearch] = useState("");
-
 
   /* ── Active tab ───────────────────────────────────── */
   const [activeTab, setActiveTab] = useState(() => {
@@ -82,13 +81,6 @@ const Reservations = () => {
   const [podPronShown, setPodPronShown] = useState(false);
   const [showGoalEditor, setShowGoalEditor] = useState(false);
   const [celebrationMsg, setCelebrationMsg] = useState("");
-
-  /* ── Study mode state ─────────────────────────────── */
-  const [studyMode, setStudyMode] = useState(false);
-  const [studyCards, setStudyCards] = useState([]);
-  const [studyCardIndex, setStudyCardIndex] = useState(0);
-  const [studyQueue, setStudyQueue] = useState([]);
-  const [studySessionStats, setStudySessionStats] = useState({ reviewed: 0, correct: 0, incorrect: 0 });
 
   /* ── Static data ──────────────────────────────────── */
   const cities = CITY_NAMES_LIST;
@@ -114,7 +106,7 @@ const Reservations = () => {
     // Load everything from server if logged in
     if (isLoggedIn()) {
       const email = localStorage.getItem("email");
-      axios.get("/api/user/profile", { params: { email }, ...authHeaders() })
+      axios.get(`${API_BASE}/api/user/profile`, { params: { email }, ...authHeaders() })
         .then(r => {
           // Vocab cards
           const serverCards = r.data.vocab_cards || [];
@@ -127,7 +119,7 @@ const Reservations = () => {
               const parsed = JSON.parse(local);
               setVocabCards(parsed);
               if (parsed.length > 0) {
-                axios.put("/api/user/profile", { email, vocab_cards: parsed }, authHeaders()).catch(() => {});
+                axios.put(`${API_BASE}/api/user/profile`, { email, vocab_cards: parsed }, authHeaders()).catch(() => {});
               }
             }
           }
@@ -168,7 +160,7 @@ const Reservations = () => {
     if (isLoggedIn()) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, reservations }, authHeaders()).catch(() => {});
+        axios.put(`${API_BASE}/api/user/profile`, { email, reservations }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -179,7 +171,7 @@ const Reservations = () => {
     if (isLoggedIn() && vocabCards.length >= 0) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, vocab_cards: vocabCards }, authHeaders()).catch(() => {});
+        axios.put(`${API_BASE}/api/user/profile`, { email, vocab_cards: vocabCards }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -204,7 +196,7 @@ const Reservations = () => {
     if (isLoggedIn()) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
+        axios.put(`${API_BASE}/api/user/profile`, { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -217,7 +209,7 @@ const Reservations = () => {
     if (isLoggedIn()) {
       const timer = setTimeout(() => {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
+        axios.put(`${API_BASE}/api/user/profile`, { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -227,7 +219,7 @@ const Reservations = () => {
   useEffect(() => {
     if (activeTab === "library") {
       setPhrasesLoading(true);
-      let url = "/api/phrases/?limit=100";
+      let url = `${API_BASE}/api/phrases/?limit=100`;
       if (resourceCategory.size === 1) url += "&category=" + [...resourceCategory][0];
       if (resourceCities.length === 1) url += "&city_slug=" + resourceCities[0];
       if (resourceType.size === 1) url += "&phrase_type=" + [...resourceType][0];
@@ -246,7 +238,7 @@ const Reservations = () => {
     if (cached && cachedDate === today) {
       setPhraseOfDay(JSON.parse(cached));
     } else {
-      axios.get("/api/phrases/?limit=50")
+      axios.get(`${API_BASE}/api/phrases/?limit=50`)
         .then(r => {
           const all = r.data.phrases || r.data.data || [];
           if (all.length > 0) {
@@ -291,7 +283,7 @@ const Reservations = () => {
       // Sync to server
       if (isLoggedIn()) {
         const email = localStorage.getItem("email");
-        axios.put("/api/user/profile", { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
+        axios.put(`${API_BASE}/api/user/profile`, { email, study_stats: buildStudyStats() }, authHeaders()).catch(() => {});
       }
     }
   }, []);
@@ -324,14 +316,14 @@ const Reservations = () => {
       recs.push({ key:"start", icon:<Languages size={18}/>, title:"Start your vocabulary", desc:"Browse the phrase library to add your first words", action:() => setActiveTab("library"), color:"#0021A5", bgColor:"#EFF6FF" });
     }
     if (newCards > 0 && totalCards >= 1) {
-      recs.push({ key:"review", icon:<RotateCcw size={18}/>, title:`Review ${newCards} new card${newCards !== 1 ? "s" : ""}`, desc:"Flashcards help move words into long-term memory", action: startFlashcards, color:"#7C3AED", bgColor:"#F5F3FF" });
+      recs.push({ key:"review", icon:<RotateCcw size={18}/>, title:`Review ${newCards} new card${newCards !== 1 ? "s" : ""}`, desc:"Flashcards with spaced repetition", action: startSmartPractice, color:"#0021A5", bgColor:"#EFF6FF" });
     }
     if (totalCards >= 2 && todayProgress < 3) {
-      recs.push({ key:"quiz", icon:<Zap size={18}/>, title:"Take a quick quiz", desc:"Test yourself on your vocabulary", action: startQuiz, color:"#059669", bgColor:"#ECFDF5" });
+      recs.push({ key:"quiz", icon:<Zap size={18}/>, title:"Start a practice session", desc:"Flashcards + quiz challenges, weighted by mastery", action: startSmartPractice, color:"#059669", bgColor:"#ECFDF5" });
     }
     if (totalCards >= 5 && masteredCards < totalCards) {
       const weakest = vocabCards.filter(c => c.mastery < 2).length;
-      if (weakest > 0) recs.push({ key:"weak", icon:<Target size={18}/>, title:`${weakest} cards need attention`, desc:"Focus on words you haven't mastered yet", action: startFlashcards, color:"#DC2626", bgColor:"#FEF2F2" });
+      if (weakest > 0) recs.push({ key:"weak", icon:<Target size={18}/>, title:`${weakest} cards need attention`, desc:"These will show up more often in practice", action: startSmartPractice, color:"#DC2626", bgColor:"#FEF2F2" });
     }
     if (reservations.length > 0 && completedPlans < reservations.length) {
       recs.push({ key:"plans", icon:<ClipboardList size={18}/>, title:`${reservations.length - completedPlans} study plan${reservations.length - completedPlans !== 1 ? "s" : ""} in progress`, desc:"Keep working on your goals", action:() => setActiveTab("plans"), color:"#0021A5", bgColor:"#EFF6FF" });
@@ -385,151 +377,104 @@ const Reservations = () => {
 
   /* ── Flashcard handlers ───────────────────────────── */
   const handleFlashcardRate = (rating) => {
-    // Store the rating value for this card
-    setFlashcardResults(prev => ({
-      ...prev,
-      [currentCardIndex]: rating
-    }));
-    
+    const card = vocabCards[currentCardIndex];
     setVocabCards(prev => prev.map((c, i) => {
       if (i !== currentCardIndex) return c;
-      const newMastery = rating === 0 ? Math.max(0, c.mastery - 1) : Math.min(5, c.mastery + (rating >= 2 ? 1 : 0));
+      // SM-2 inspired: rating 0 = again (drop mastery), 1 = hard (no change), 2 = good (+1), 3 = easy (+2)
+      let newMastery;
+      if (rating === 0) newMastery = Math.max(0, c.mastery - 1);
+      else if (rating === 1) newMastery = c.mastery;
+      else if (rating === 2) newMastery = Math.min(5, c.mastery + 1);
+      else newMastery = Math.min(5, c.mastery + 2);
       return { ...c, mastery: newMastery, lastReviewed: new Date().toISOString().split("T")[0] };
     }));
     setShowAnswer(false);
     setFlipAnim(false);
+    // In smart practice: quiz result also triggers next card
+    setQuizResult(null);
+    setQuizAnswer("");
     setTodayProgress(p => p + 1);
     recordStudyDay();
     if (currentCardIndex < vocabCards.length - 1) setCurrentCardIndex(i => i + 1);
-    else { 
-      setFlashcardMode(false); 
-      setCurrentCardIndex(0);
-      setFlashcardResults({}); // Clear results when exiting
-    }
+    else { setFlashcardMode(false); setCurrentCardIndex(0); }
   };
 
-  /* ── Study mode handlers ───────────────────────────── */
-  function startStudy() {
+  /**
+   * Intelligent Flashcards — persistent spaced repetition.
+   * - Cards weighted by mastery: mastery 0-1 appear 3× more, mastery 4-5 appear ⅓ as often.
+   * - Cards not reviewed today get priority.
+   * - Tracks progress, presents weak cards more frequently.
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function startSmartPractice() {
     if (vocabCards.length === 0) return;
-    
-    // Create a weighted queue - cards with lower mastery appear more often
-    const weightedCards = [];
-    vocabCards.forEach(card => {
-      // Lower mastery = more repetitions
-      const weight = Math.max(1, 5 - card.mastery);
-      for (let i = 0; i < weight; i++) {
-        weightedCards.push(card);
-      }
+    const today = new Date().toISOString().split("T")[0];
+
+    // Build weighted pool — lower mastery = more copies, stale reviews = boost
+    const pool = [];
+    vocabCards.forEach((card, idx) => {
+      const stale = card.lastReviewed !== today ? 1.5 : 1;
+      let weight;
+      if (card.mastery <= 1) weight = 3 * stale;
+      else if (card.mastery <= 3) weight = 2 * stale;
+      else weight = 1;
+      // Add 'weight' copies pointing at original index
+      for (let w = 0; w < Math.round(weight); w++) pool.push(idx);
     });
-    
-    // Shuffle the weighted queue
-    const shuffled = [...weightedCards].sort(() => Math.random() - 0.5);
-    
-    setStudyQueue(shuffled);
-    setStudyCards(vocabCards);
-    setStudyCardIndex(0);
-    setStudySessionStats({ reviewed: 0, correct: 0, incorrect: 0 });
+
+    // Fisher-Yates shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+
+    // Deduplicate (keep first occurrence) — ensures each card appears once
+    const seen = new Set();
+    const order = [];
+    for (const idx of pool) {
+      if (!seen.has(idx)) { seen.add(idx); order.push(idx); }
+    }
+
+    // Re-order vocabCards according to weighted shuffle — all flip mode
+    const reordered = order.map(i => {
+      const card = vocabCards[i];
+      return { ...card, challengeMode: "flip" };
+    });
+
+    setVocabCards(reordered);
+    setCurrentCardIndex(0);
     setShowAnswer(false);
     setFlipAnim(false);
-    setStudyMode(true);
+    setQuizAnswer("");
+    setQuizResult(null);
+    setQuizScore({ correct: 0, total: 0 });
+    setFlashcardMode(true);
+    setQuizMode(false);
     setActiveTab("practice");
-    
-    // Scroll to the top of the practice section smoothly
-    setTimeout(() => {
-      const practiceSection = document.querySelector('[data-practice-section]');
-      if (practiceSection) {
-        practiceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 100);
   }
 
-const handleStudyRating = (rating) => {
-  // rating: 0=Again, 1=Hard, 2=Good, 3=Easy
-  const currentCard = studyQueue[studyCardIndex];
-  
-  // Update mastery based on rating
-  setStudyCards(prev => prev.map(c => {
-    if (c.id !== currentCard.id) return c;
-    let newMastery;
-    if (rating === 0) { // Again - decrease mastery
-      newMastery = Math.max(0, c.mastery - 2);
-    } else if (rating === 1) { // Hard - small decrease or no change
-      newMastery = Math.max(0, c.mastery - 1);
-    } else if (rating === 2) { // Good - small increase
-      newMastery = Math.min(5, c.mastery + 1);
-    } else { // Easy - larger increase
-      newMastery = Math.min(5, c.mastery + 2);
-    }
-    return { ...c, mastery: newMastery, lastReviewed: new Date().toISOString().split("T")[0] };
-  }));
-  
-  // Update stats
-  setStudySessionStats(prev => ({
-    reviewed: prev.reviewed + 1,
-    correct: prev.correct + (rating >= 2 ? 1 : 0),
-    incorrect: prev.incorrect + (rating < 2 ? 1 : 0)
-  }));
-  
-  setTodayProgress(p => p + 1);
-  recordStudyDay();
-  
-  // Move to next card
-  if (studyCardIndex < studyQueue.length - 1) {
-    setStudyCardIndex(i => i + 1);
-  } else {
-    // End of queue - reshuffle with updated weights
-    const updatedCards = studyCards.map(c => {
-      const updated = vocabCards.find(vc => vc.id === c.id);
-      return updated || c;
-    });
-    
-    // Rebuild weighted queue with updated mastery
-    const newWeightedCards = [];
-    updatedCards.forEach(card => {
-      const weight = Math.max(1, 5 - card.mastery);
-      for (let i = 0; i < weight; i++) {
-        newWeightedCards.push(card);
-      }
-    });
-    const reshuffled = [...newWeightedCards].sort(() => Math.random() - 0.5);
-    setStudyQueue(reshuffled);
-    setStudyCardIndex(0);
-    setVocabCards(updatedCards);
-  }
-  
-  setShowAnswer(false);
-  setFlipAnim(false);
-};
-
-const endStudySession = () => {
-  setStudyMode(false);
-  setStudyQueue([]);
-  setStudyCardIndex(0);
-  setStudySessionStats({ reviewed: 0, correct: 0, incorrect: 0 });
-  setShowAnswer(false);
-  setFlipAnim(false);
-};
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function startFlashcards() {
-    if (vocabCards.length === 0) return;
-    const shuffled = [...vocabCards].sort((a, b) => a.mastery - b.mastery + (Math.random() - 0.5));
-    setVocabCards(shuffled);
-    setCurrentCardIndex(0); setShowAnswer(false); setFlipAnim(false); setFlashcardMode(true); setActiveTab("practice");
-  }
-
-  /* ── Quiz handlers ────────────────────────────────── */
+  /** Quiz mode — random shuffle, type-answer challenges */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function startQuiz() {
     if (vocabCards.length < 2) return;
-    const shuffled = [...vocabCards].sort(() => Math.random() - 0.5);
+    const shuffled = [...vocabCards].sort(() => Math.random() - 0.5).map(c => ({ ...c, challengeMode: "quiz" }));
     setVocabCards(shuffled);
-    setCurrentCardIndex(0); setQuizAnswer(""); setQuizResult(null);
-    setQuizScore({ correct: 0, total: 0 }); setQuizMode(true); setActiveTab("practice");
+    setCurrentCardIndex(0);
+    setShowAnswer(false);
+    setFlipAnim(false);
+    setQuizAnswer("");
+    setQuizResult(null);
+    setQuizScore({ correct: 0, total: 0 });
+    setFlashcardMode(true);
+    setQuizMode(false);
+    setActiveTab("practice");
   }
 
+  /** Legacy alias */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function startFlashcards() { startSmartPractice(); }
+
+  /* ── Quiz answer check (used inside smart practice for quiz-mode cards) ── */
   const checkQuizAnswer = () => {
     const card = vocabCards[currentCardIndex];
     const correct = quizAnswer.trim().toLowerCase() === card.english.trim().toLowerCase();
@@ -578,7 +523,7 @@ const endStudySession = () => {
 
   useEffect(() => {
     if (userEmail) {
-      axios.get("/api/phrases/bookmarks", { ...authHeaders(), params: { user_email: userEmail } })
+      axios.get(`${API_BASE}/api/phrases/bookmarks`, { ...authHeaders(), params: { user_email: userEmail } })
         .then(res => {
           const bks = res.data.bookmarks || [];
           const ids = new Set();
@@ -599,11 +544,11 @@ const endStudySession = () => {
     try {
       if (bookmarkedIds.has(phraseId)) {
         const bkId = bookmarkMap[phraseId] || phraseId;
-        await axios.delete("/api/phrases/bookmarks/" + bkId, { ...authHeaders(), params: { user_email: userEmail } });
+        await axios.delete(`${API_BASE}/api/phrases/bookmarks/` + bkId, { ...authHeaders(), params: { user_email: userEmail } });
         setBookmarkedIds(prev => { const n = new Set(prev); n.delete(phraseId); return n; });
         setBookmarkMap(prev => { const n = { ...prev }; delete n[phraseId]; return n; });
       } else {
-        const res = await axios.post("/api/phrases/bookmarks", { phrase_id: phraseId, user_email: userEmail }, authHeaders());
+        const res = await axios.post(`${API_BASE}/api/phrases/bookmarks`, { phrase_id: phraseId, user_email: userEmail }, authHeaders());
         const newId = res.data.bookmark_id || res.data._id || phraseId;
         setBookmarkedIds(prev => new Set([...prev, phraseId]));
         setBookmarkMap(prev => ({ ...prev, [phraseId]: newId }));
@@ -620,7 +565,7 @@ const endStudySession = () => {
     if (!userEmail) return;
     setSavedLoading(true);
     try {
-      const res = await axios.get("/api/phrases/bookmarks", { ...authHeaders(), params: { user_email: userEmail } });
+      const res = await axios.get(`${API_BASE}/api/phrases/bookmarks`, { ...authHeaders(), params: { user_email: userEmail } });
       setSavedPhrases(res.data.bookmarks || []);
     } catch { setSavedPhrases([]); }
     finally { setSavedLoading(false); }
@@ -630,17 +575,9 @@ const endStudySession = () => {
     if (activeTab === "saved") fetchSavedPhrases();
   }, [activeTab, fetchSavedPhrases]);
 
-  useEffect(() => {
-    if (activeTab !== "practice") {
-      if (studyMode) {
-        endStudySession();
-      }
-    }
-  }, [activeTab]);
-
   const removeSavedPhrase = async (bookmarkId, phraseId) => {
     try {
-      await axios.delete("/api/phrases/bookmarks/" + bookmarkId, { ...authHeaders(), params: { user_email: userEmail } });
+      await axios.delete(`${API_BASE}/api/phrases/bookmarks/` + bookmarkId, { ...authHeaders(), params: { user_email: userEmail } });
       setSavedPhrases(prev => prev.filter(b => b._id !== bookmarkId));
       if (phraseId) {
         setBookmarkedIds(prev => { const n = new Set(prev); n.delete(phraseId); return n; });
@@ -807,10 +744,11 @@ return (
             </div>
             <div style={{display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))", gap:"0.85rem"}}>
               {[
-                { icon:<RotateCcw size={22} color="#7C3AED"/>, title:"Flashcards", desc:"Spaced repetition with mastery tracking", bg:"linear-gradient(135deg,#F5F3FF,#EDE9FE)", border:"#DDD6FE" },
-                { icon:<Zap size={22} color="#059669"/>, title:"Vocabulary Quiz", desc:"Multiple choice and timed challenges", bg:"linear-gradient(135deg,#ECFDF5,#D1FAE5)", border:"#A7F3D0" },
+                { icon:<RotateCcw size={22} color="#0021A5"/>, title:"Flashcards", desc:"Spaced repetition — weak cards appear more often", bg:"linear-gradient(135deg,#EFF6FF,#DBEAFE)", border:"#BFDBFE" },
+                { icon:<Zap size={22} color="#FA4616"/>, title:"Quiz Mode", desc:"Type-answer challenges to test your recall", bg:"linear-gradient(135deg,#FFF7ED,#FFEDD5)", border:"#FED7AA" },
                 { icon:<Languages size={22} color="#0021A5"/>, title:"Phrase Library", desc:"295+ phrases from 23 DACH cities", bg:"linear-gradient(135deg,#EFF6FF,#DBEAFE)", border:"#BFDBFE" },
                 { icon:<Target size={22} color="#DC2626"/>, title:"Study Plans", desc:"Set goals by city and track progress", bg:"linear-gradient(135deg,#FEF2F2,#FEE2E2)", border:"#FECACA" },
+                { icon:<Bookmark size={22} color="#059669"/>, title:"Saved Phrases", desc:"Bookmark phrases and review them anytime", bg:"linear-gradient(135deg,#ECFDF5,#D1FAE5)", border:"#A7F3D0" },
               ].map(f => (
                 <div key={f.title} style={{
                   padding:"1.25rem",backgroundColor:"#fff",borderRadius:"1rem",
@@ -1006,20 +944,16 @@ return (
             <div style={{marginBottom:"1.5rem"}}>
               <h2 style={S.sectionLabel}>Quick actions</h2>
               <div style={S.quickActions}>
-                <button onClick={startFlashcards} disabled={totalCards === 0}
+                <button onClick={startSmartPractice} disabled={totalCards === 0}
                   style={{...S.qaBtn, opacity: totalCards === 0 ? 0.45 : 1}}>
-                  <RotateCcw size={18} color="#7C3AED"/> Flashcards
+                  <RotateCcw size={18} color="#0021A5"/> Flashcards
                 </button>
-                <button onClick={startStudy} disabled={totalCards === 0}
-                style={{...S.qaBtn, opacity: totalCards === 0 ? 0.45 : 1}}>
-                <BookOpen size={18} color="#8B5CF6"/> Study
-              </button>       
                 <button onClick={startQuiz} disabled={totalCards < 2}
                   style={{...S.qaBtn, opacity: totalCards < 2 ? 0.45 : 1}}>
-                  <Zap size={18} color="#059669"/> Quiz
+                  <Zap size={18} color="#FA4616"/> Quiz
                 </button>
                 <button onClick={() => setActiveTab("library")} style={S.qaBtn}>
-                  <Languages size={18} color="#0021a5"/> Browse
+                  <Languages size={18} color="#0021A5"/> Browse
                 </button>
                 <button onClick={() => { setShowVocabForm(true); setActiveTab("practice"); }} style={S.qaBtn}>
                   <Plus size={18} color="#DC2626"/> Add Card
@@ -1074,25 +1008,21 @@ return (
         {/* ═══════════════════════════════════════════════
            TAB: PRACTICE — flashcards, quiz, vocab deck
            ═══════════════════════════════════════════════ */}
-        {/* ─── PRACTICE TAB - REGULAR VIEW (no active mode) ─── */}
-        {activeTab === "practice" && !flashcardMode && !quizMode && !studyMode && (
-          <section style={S.section} data-practice-section>
+        {activeTab === "practice" && !flashcardMode && !quizMode && (
+          <section style={S.section}>
+
             <div style={S.sectionHeader}>
               <div>
                 <h2 style={S.sectionTitle}>Practice</h2>
                 <p style={S.sectionHint}>Review and strengthen your vocabulary through flashcards and quizzes.</p>
               </div>
               <div style={{display:"flex", gap:"0.5rem", flexWrap:"wrap"}}>
-                <button onClick={startFlashcards} disabled={totalCards === 0}
+                <button onClick={startSmartPractice} disabled={totalCards === 0}
                   style={{...S.primaryBtn, opacity: totalCards === 0 ? 0.5 : 1}}>
                   <RotateCcw size={14}/> Flashcards
                 </button>
-                <button onClick={startStudy} disabled={totalCards === 0}
-                  style={{...S.primaryBtn, opacity: totalCards === 0 ? 0.5 : 1, background:"#3770c6"}}>
-                  <BookOpen size={14}/> Study
-                </button>
                 <button onClick={startQuiz} disabled={totalCards < 2}
-                  style={{...S.secondaryBtn, opacity: totalCards < 2 ? 0.5 : 1}}>
+                  style={{...S.primaryBtn, opacity: totalCards < 2 ? 0.5 : 1, backgroundColor:"#FA4616"}}>
                   <Zap size={14}/> Quiz
                 </button>
               </div>
@@ -1165,178 +1095,106 @@ return (
           </section>
         )}
 
-        {/* ─── FLASHCARD MODE ───────────────────────── */}
+        {/* ─── FLASHCARDS / QUIZ MODE ── */}
         {activeTab === "practice" && flashcardMode && vocabCards.length > 0 && (
           <section style={S.fcSection}>
             <div style={S.fcHeader}>
-              <span style={S.fcProgress}>Card {currentCardIndex + 1} of {vocabCards.length}</span>
-              <button onClick={() => { setFlashcardMode(false); setFlipAnim(false); }} style={S.exitBtn}><X size={14}/> Exit</button>
-            </div>
-            {/* Progress dots */}
-            {/* Progress dots with color coding based on answers */}
-            <div style={S.fcDots}>
-              {vocabCards.slice(0, Math.min(vocabCards.length, 20)).map((_, i) => {
-                let dotColor = "#E5E7EB"; // Default gray (not seen yet)
-                if (i < currentCardIndex) {
-                  // Already answered cards - show based on rating
-                  const rating = flashcardResults[i];
-                  if (rating === 0) dotColor = "#EF4444"; // Again - Red
-                  else if (rating === 1) dotColor = "#FDE68A"; // Hard - Orange/Yellow
-                  else if (rating === 2) dotColor = "#1E40AF"; // Good - Blue
-                  else if (rating === 3) dotColor = "#2ea478"; // Easy - Green
-                  else dotColor = "#E5E7EB";
-                } else if (i === currentCardIndex) {
-                  dotColor = "#0021A5"; // Current card - Blue
-                }
-                return (
-                  <div key={i} style={{
-                    width: 8, height: 8, borderRadius: "50%",
-                    backgroundColor: dotColor,
-                    transition: "all 0.2s",
-                    boxShadow: i === currentCardIndex ? "0 0 0 2px rgba(0,33,165,0.2)" : "none"
-                  }}/>
-                );
-              })}
-              {vocabCards.length > 20 && <span style={{fontSize:"0.65rem", color:"#9CA3AF"}}>+{vocabCards.length - 20}</span>}
-            </div>
-            <div style={S.flashcard} onClick={() => { if (!showAnswer) { setFlipAnim(true); setTimeout(() => setShowAnswer(true), 150); } }}>
-              {!showAnswer ? (
-                <div style={{textAlign:"center", opacity: flipAnim ? 0 : 1, transform: flipAnim ? "rotateY(90deg)" : "rotateY(0)", transition:"all 0.15s ease-in"}}>
-                  <p style={S.fcLabel}>GERMAN</p>
-                  <p style={S.fcWord}>{vocabCards[currentCardIndex]?.german}</p>
-                  <button onClick={(e) => { e.stopPropagation(); speakPhrase(vocabCards[currentCardIndex]?.german, "fc"); }}
-                    style={{...S.iconBtn, margin:"0.75rem auto 0", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
-                  <p style={S.fcHint}>Tap card to reveal</p>
-                </div>
-              ) : (
-                <div style={{textAlign:"center", animation:"fadeIn 0.2s ease-out"}}>
-                  <p style={S.fcLabel}>ENGLISH</p>
-                  <p style={S.fcAnswer}>{vocabCards[currentCardIndex]?.english}</p>
-                  {vocabCards[currentCardIndex]?.context && <p style={S.fcCtx}>💡 {vocabCards[currentCardIndex].context}</p>}
-                </div>
-              )}
-            </div>
-            {showAnswer && (
-              <div style={S.rateRow}>
-                <p style={{fontSize:"0.78rem",color:"#6B7280",margin:"0 0 0.65rem",textAlign:"center"}}>How well did you know this?</p>
-                <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
-                  <button onClick={() => handleFlashcardRate(0)} style={{...S.rateBtn, borderColor:"#FCA5A5", color:"#EF4444", backgroundColor:"#FEF2F2"}}>Again</button>
-                  <button onClick={() => handleFlashcardRate(1)} style={{...S.rateBtn, borderColor:"#FDE68A", color:"#92400E", backgroundColor:"#FFFBEB"}}>Hard</button>
-                  <button onClick={() => handleFlashcardRate(2)} style={{...S.rateBtn, borderColor:"#93C5FD", color:"#1E40AF", backgroundColor:"#EFF6FF"}}>Good</button>
-                  <button onClick={() => handleFlashcardRate(3)} style={{...S.rateBtn, borderColor:"#6EE7B7", color:"#065F46", backgroundColor:"#ECFDF5"}}>Easy!</button>
-                </div>
+              <div style={{display:"flex",alignItems:"center",gap:"0.5rem"}}>
+                {vocabCards[currentCardIndex]?.challengeMode === "quiz"
+                  ? <Zap size={16} color="#7C3AED"/>
+                  : <RotateCcw size={16} color="#0021A5"/>}
+                <span style={S.fcProgress}>Card {currentCardIndex + 1} of {vocabCards.length}</span>
+                {quizScore.total > 0 && <span style={{fontSize:"0.72rem",fontWeight:600,color:"#059669",background:"#ECFDF5",padding:"0.15rem 0.5rem",borderRadius:9999}}>{quizScore.correct}/{quizScore.total} correct</span>}
               </div>
-            )}
-          </section>
-        )}
-
-        {/* ─── QUIZ MODE ────────────────────────────── */}
-        {activeTab === "practice" && quizMode && vocabCards.length >= 2 && (
-          <section style={S.fcSection}>
-            <div style={S.fcHeader}>
-              <span style={S.fcProgress}>Question {currentCardIndex + 1} of {Math.min(vocabCards.length, 10)}</span>
-              <div style={{display:"flex",gap:"0.5rem",alignItems:"center"}}>
-                <span style={{fontSize:"0.82rem",fontWeight:600,color:"#059669"}}>{quizScore.correct}/{quizScore.total}</span>
-                <button onClick={() => setQuizMode(false)} style={S.exitBtn}><X size={14}/> Exit</button>
-              </div>
+              <button onClick={() => { setFlashcardMode(false); setFlipAnim(false); setQuizMode(false); }} style={S.exitBtn}><X size={14}/> Exit</button>
             </div>
-            {/* Score bar */}
-            <div style={{height:4, backgroundColor:"#E5E7EB", borderRadius:2, marginBottom:"1.25rem", overflow:"hidden"}}>
-              <div style={{height:"100%", borderRadius:2, backgroundColor:"#059669", transition:"width 0.3s",
-                width: `${(currentCardIndex / Math.min(vocabCards.length, 10)) * 100}%`}}/>
-            </div>
-            <div style={S.quizCard}>
-              <p style={S.fcLabel}>TRANSLATE TO ENGLISH</p>
-              <p style={S.fcWord}>{vocabCards[currentCardIndex]?.german}</p>
-              <button onClick={(e) => { e.stopPropagation(); speakPhrase(vocabCards[currentCardIndex]?.german, "qz"); }}
-                style={{...S.iconBtn, margin:"0.5rem auto", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
-              <div style={{display:"flex",gap:"0.5rem",marginTop:"1rem"}}>
-                <input type="text" placeholder="Type your answer…" value={quizAnswer} onChange={e => setQuizAnswer(e.target.value)}
-                  onKeyDown={e => { if (e.key === "Enter" && !quizResult) checkQuizAnswer(); }}
-                  style={{...S.input, flex:1, textAlign:"center", fontSize:"1rem"}} disabled={!!quizResult}
-                  autoFocus/>
-                {!quizResult && <button onClick={checkQuizAnswer} style={S.primaryBtn}>Check</button>}
-              </div>
-              {quizResult && (
-                <div style={{marginTop:"1.25rem",textAlign:"center"}}>
-                  <div style={{
-                    display:"inline-flex", alignItems:"center", gap:"0.5rem",
-                    padding:"0.5rem 1.25rem", borderRadius:"2rem",
-                    backgroundColor: quizResult === "correct" ? "#ECFDF5" : "#FEF2F2",
-                    color: quizResult === "correct" ? "#059669" : "#DC2626",
-                    fontSize:"0.95rem", fontWeight:700, marginBottom:"0.75rem"
-                  }}>
-                    {quizResult === "correct" ? <><CheckCircle size={16}/> Correct!</> : <><X size={16}/> Not quite</>}
-                  </div>
-                  {quizResult === "wrong" && <p style={{fontSize:"0.88rem",color:"#374151",margin:"0 0 0.75rem"}}>The answer was: <strong>{vocabCards[currentCardIndex]?.english}</strong></p>}
-                  <button onClick={nextQuizQuestion} style={S.primaryBtn}>
-                    {currentCardIndex < Math.min(vocabCards.length - 1, 9) ? "Next Question →" : "Finish Quiz 🎉"}
-                  </button>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
-        
-        {/* ─── STUDY MODE ────────────────────────────── */}
-        {activeTab === "practice" && studyMode && studyQueue.length > 0 && (
-          <section style={S.fcSection}>
-            <div style={S.fcHeader}>
-              <span style={S.fcProgress}>Card {studyCardIndex + 1} of {studyQueue.length}</span>
-              <div style={{display:"flex",gap:"0.5rem",alignItems:"center"}}>
-                <div style={{display:"flex",gap:"0.3rem",alignItems:"center",background:"#F1F5F9",padding:"0.25rem 0.6rem",borderRadius:"0.5rem"}}>
-                  <span style={{fontSize:"0.7rem",fontWeight:600,color:"#059669"}}>✓ {studySessionStats.correct}</span>
-                  <span style={{fontSize:"0.7rem",fontWeight:600,color:"#EF4444"}}>✗ {studySessionStats.incorrect}</span>
-                </div>
-                <button onClick={endStudySession} style={{...S.exitBtn, backgroundColor:"#FEF2F2",borderColor:"#FECACA",color:"#DC2626"}}>
-                  <X size={14}/> End Session
-                </button>
-              </div>
-            </div>
-            
             {/* Progress bar */}
             <div style={{height:4, backgroundColor:"#E5E7EB", borderRadius:2, marginBottom:"1rem", overflow:"hidden"}}>
-              <div style={{height:"100%", borderRadius:2, backgroundColor:"#8B5CF6", transition:"width 0.3s",
-                width: `${((studyCardIndex + 1) / studyQueue.length) * 100}%`}}/>
+              <div style={{height:"100%", borderRadius:2, background:"linear-gradient(90deg,#FA4616,#0021A5)", transition:"width 0.3s ease",
+                width: `${((currentCardIndex) / vocabCards.length) * 100}%`}}/>
             </div>
-            
-            <div style={S.flashcard} onClick={() => { if (!showAnswer) { setFlipAnim(true); setTimeout(() => setShowAnswer(true), 150); } }}>
-              {!showAnswer ? (
-                <div style={{textAlign:"center", opacity: flipAnim ? 0 : 1, transform: flipAnim ? "rotateY(90deg)" : "rotateY(0)", transition:"all 0.15s ease-in"}}>
-                  <p style={S.fcLabel}>GERMAN</p>
-                  <p style={S.fcWord}>{studyQueue[studyCardIndex]?.german}</p>
-                  <button onClick={(e) => { e.stopPropagation(); speakPhrase(studyQueue[studyCardIndex]?.german, "study"); }}
-                    style={{...S.iconBtn, margin:"0.75rem auto 0", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
-                  <p style={S.fcHint}>Tap card to reveal</p>
-                </div>
-              ) : (
-                <div style={{textAlign:"center", animation:"fadeIn 0.2s ease-out"}}>
-                  <p style={S.fcLabel}>ENGLISH</p>
-                  <p style={S.fcAnswer}>{studyQueue[studyCardIndex]?.english}</p>
-                  {studyQueue[studyCardIndex]?.context && <p style={S.fcCtx}>💡 {studyQueue[studyCardIndex].context}</p>}
-                </div>
-              )}
+            {/* Card type indicator */}
+            <div style={{display:"flex",justifyContent:"center",marginBottom:"0.65rem"}}>
+              <span style={{fontSize:"0.6rem",fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase",
+                padding:"0.2rem 0.65rem",borderRadius:9999,
+                background: vocabCards[currentCardIndex]?.challengeMode === "quiz" ? "#ECFDF5" : "#EFF6FF",
+                color: vocabCards[currentCardIndex]?.challengeMode === "quiz" ? "#059669" : "#0021A5",
+                border: vocabCards[currentCardIndex]?.challengeMode === "quiz" ? "1px solid #A7F3D0" : "1px solid #BFDBFE",
+              }}>
+                {vocabCards[currentCardIndex]?.challengeMode === "quiz" ? "⚡ Type Challenge" : "🔄 Flip to Reveal"}
+              </span>
+              <span style={{fontSize:"0.58rem",fontWeight:600,marginLeft:"0.4rem",display:"flex",alignItems:"center",gap:"2px",color:masteryColor(vocabCards[currentCardIndex]?.mastery || 0)}}>
+                {[1,2,3,4,5].map(i=>(<Star key={i} size={9} fill={i <= (vocabCards[currentCardIndex]?.mastery || 0) ? "#F59E0B" : "none"} color={i <= (vocabCards[currentCardIndex]?.mastery || 0) ? "#F59E0B" : "#D1D5DB"}/>))}
+              </span>
             </div>
-            
-            {showAnswer && (
-              <div style={S.rateRow}>
-                <p style={{fontSize:"0.78rem",color:"#6B7280",margin:"0 0 0.65rem",textAlign:"center"}}>How well did you know this?</p>
-                <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
-                  <button onClick={() => handleStudyRating(0)} style={{...S.rateBtn, borderColor:"#FCA5A5", color:"#EF4444", backgroundColor:"#FEF2F2"}}>Again</button>
-                  <button onClick={() => handleStudyRating(1)} style={{...S.rateBtn, borderColor:"#FDE68A", color:"#92400E", backgroundColor:"#FFFBEB"}}>Hard</button>
-                  <button onClick={() => handleStudyRating(2)} style={{...S.rateBtn, borderColor:"#93C5FD", color:"#1E40AF", backgroundColor:"#EFF6FF"}}>Good</button>
-                  <button onClick={() => handleStudyRating(3)} style={{...S.rateBtn, borderColor:"#6EE7B7", color:"#065F46", backgroundColor:"#ECFDF5"}}>Easy!</button>
+
+            {/* ── FLIP MODE — tap to reveal ── */}
+            {vocabCards[currentCardIndex]?.challengeMode !== "quiz" && (
+              <>
+                <div style={S.flashcard} onClick={() => { if (!showAnswer) { setFlipAnim(true); setTimeout(() => setShowAnswer(true), 150); } }}>
+                  {!showAnswer ? (
+                    <div style={{textAlign:"center", opacity: flipAnim ? 0 : 1, transform: flipAnim ? "rotateY(90deg)" : "rotateY(0)", transition:"all 0.15s ease-in"}}>
+                      <p style={S.fcLabel}>GERMAN</p>
+                      <p style={S.fcWord}>{vocabCards[currentCardIndex]?.german}</p>
+                      <button onClick={(e) => { e.stopPropagation(); speakPhrase(vocabCards[currentCardIndex]?.german, "fc"); }}
+                        style={{...S.iconBtn, margin:"0.75rem auto 0", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
+                      <p style={S.fcHint}>Tap card to reveal</p>
+                    </div>
+                  ) : (
+                    <div style={{textAlign:"center", animation:"fadeIn 0.2s ease-out"}}>
+                      <p style={S.fcLabel}>ENGLISH</p>
+                      <p style={S.fcAnswer}>{vocabCards[currentCardIndex]?.english}</p>
+                      {vocabCards[currentCardIndex]?.context && <p style={S.fcCtx}>💡 {vocabCards[currentCardIndex].context}</p>}
+                    </div>
+                  )}
                 </div>
-              </div>
+                {showAnswer && (
+                  <div style={S.rateRow}>
+                    <p style={{fontSize:"0.78rem",color:"#6B7280",margin:"0 0 0.65rem",textAlign:"center"}}>How well did you know this?</p>
+                    <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
+                      <button onClick={() => handleFlashcardRate(0)} style={{...S.rateBtn, borderColor:"#FCA5A5", color:"#EF4444", backgroundColor:"#FEF2F2"}}>Again</button>
+                      <button onClick={() => handleFlashcardRate(1)} style={{...S.rateBtn, borderColor:"#FDE68A", color:"#92400E", backgroundColor:"#FFFBEB"}}>Hard</button>
+                      <button onClick={() => handleFlashcardRate(2)} style={{...S.rateBtn, borderColor:"#93C5FD", color:"#1E40AF", backgroundColor:"#EFF6FF"}}>Good</button>
+                      <button onClick={() => handleFlashcardRate(3)} style={{...S.rateBtn, borderColor:"#6EE7B7", color:"#065F46", backgroundColor:"#ECFDF5"}}>Easy!</button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
-            
-            {/* Session summary when near the end */}
-            {studyCardIndex === studyQueue.length - 1 && showAnswer && (
-              <div style={{marginTop:"0.75rem", padding:"0.65rem", borderRadius:"0.5rem", backgroundColor:"#F0FDF4", border:"1px solid #BBF7D0", textAlign:"center"}}>
-                <p style={{fontSize:"0.72rem",color:"#065F46",fontWeight:600, margin:0}}>
-                  Last card! After this, your session will automatically reshuffle with new weights.
-                </p>
+
+            {/* ── QUIZ MODE — type the answer ── */}
+            {vocabCards[currentCardIndex]?.challengeMode === "quiz" && (
+              <div style={S.quizCard}>
+                <p style={S.fcLabel}>TRANSLATE TO ENGLISH</p>
+                <p style={S.fcWord}>{vocabCards[currentCardIndex]?.german}</p>
+                <button onClick={(e) => { e.stopPropagation(); speakPhrase(vocabCards[currentCardIndex]?.german, "qz"); }}
+                  style={{...S.iconBtn, margin:"0.5rem auto", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
+                <div style={{display:"flex",gap:"0.5rem",marginTop:"1rem"}}>
+                  <input type="text" placeholder="Type your answer…" value={quizAnswer} onChange={e => setQuizAnswer(e.target.value)}
+                    onKeyDown={e => { if (e.key === "Enter" && !quizResult) checkQuizAnswer(); }}
+                    style={{...S.input, flex:1, textAlign:"center", fontSize:"1rem"}} disabled={!!quizResult}
+                    autoFocus/>
+                  {!quizResult && <button onClick={checkQuizAnswer} style={S.primaryBtn}>Check</button>}
+                </div>
+                {quizResult && (
+                  <div style={{marginTop:"1.25rem",textAlign:"center"}}>
+                    <div style={{
+                      display:"inline-flex", alignItems:"center", gap:"0.5rem",
+                      padding:"0.5rem 1.25rem", borderRadius:"2rem",
+                      backgroundColor: quizResult === "correct" ? "#ECFDF5" : "#FEF2F2",
+                      color: quizResult === "correct" ? "#059669" : "#DC2626",
+                      fontSize:"0.95rem", fontWeight:700, marginBottom:"0.75rem"
+                    }}>
+                      {quizResult === "correct" ? <><CheckCircle size={16}/> Correct!</> : <><X size={16}/> Not quite</>}
+                    </div>
+                    {quizResult === "wrong" && <p style={{fontSize:"0.88rem",color:"#374151",margin:"0 0 0.75rem"}}>The answer was: <strong>{vocabCards[currentCardIndex]?.english}</strong></p>}
+                    <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
+                      <button onClick={() => handleFlashcardRate(quizResult === "correct" ? 2 : 0)} style={S.primaryBtn}>
+                        {currentCardIndex < vocabCards.length - 1 ? "Next Card →" : "Finish Practice 🎉"}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </section>

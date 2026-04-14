@@ -1,4 +1,5 @@
 from fastapi import Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from app.exceptions import AppException
 import traceback
@@ -18,6 +19,10 @@ async def exception_handler(request: Request, exc: Exception):
                 "error_code": exc.__class__.__name__
             }
         )
+    
+    # Let FastAPI's built-in validation errors pass through unmodified
+    if isinstance(exc, RequestValidationError):
+        raise exc
     
     # Log unexpected errors
     logger.error(f"Unexpected error: {str(exc)}")

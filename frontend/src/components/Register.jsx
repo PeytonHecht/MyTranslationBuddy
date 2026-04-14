@@ -4,7 +4,8 @@ import axios from "axios";
 import { Eye, EyeOff, ArrowRight, ArrowLeft, Check, User, MapPin } from "lucide-react";
 import { authHeaders, saveUserSession } from "../utils/auth.js";
 import { GOOGLE_CLIENT_ID, STUDY_CITIES } from "../constants/cities.js";
-import logo from "../assets/MyTranslationBuddyLogo.png";
+import { API_BASE } from "../config.js";
+import logo from "../assets/MTBLogo.png";
 
 /* ── Shared keyframes (re-uses auth-kf from Login if present) ── */
 if (!document.getElementById("auth-kf")) {
@@ -65,7 +66,7 @@ const Register = () => {
   /* ── Google OAuth ─────────────────────────────────── */
   googleCallbackRef.current = async (response) => {
     try {
-      const res = await axios.post("/api/auth/google", { credential: response.credential });
+      const res = await axios.post(`${API_BASE}/api/auth/google`, { credential: response.credential });
       if (res.status === 200) {
         saveUserSession(res.data);
         if (res.data.full_name) setFullName(res.data.full_name);
@@ -91,13 +92,16 @@ const Register = () => {
   }, []);
 
   /* ── Validation ───────────────────────────────────── */
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@ufl\.edu$/i;
+  const NAME_REGEX = /^[a-zA-Z\s'-]{2,100}$/;
+
   const validatePassword = (pw) => {
     const e = [];
     if (pw.length < 8 || pw.length > 24) e.push("8–24 characters");
-    if (!/[A-Z]/.test(pw)) e.push("one uppercase");
-    if (!/[a-z]/.test(pw)) e.push("one lowercase");
+    if (!/[A-Z]/.test(pw)) e.push("one uppercase letter");
+    if (!/[a-z]/.test(pw)) e.push("one lowercase letter");
     if (!/[0-9]/.test(pw)) e.push("one number");
-    return e.length ? "Password needs: " + e.join(", ") : "";
+    return e.length ? "Password needs: " + e.join(", ") + "." : "";
   };
   const pwChecks = {
     length: password.length >= 8 && password.length <= 24,
@@ -107,37 +111,45 @@ const Register = () => {
 
   /* ── Step handlers ────────────────────────────────── */
   const handleStep1 = () => {
-    if (!email || !password || !confirmPassword || !fullName) { setErrorMsg("Please fill in all required fields."); return; }
-    if (!email.toLowerCase().endsWith("@ufl.edu")) { setErrorMsg("Only @ufl.edu emails allowed."); return; }
+    if (!fullName.trim()) { setErrorMsg("Please enter your full name."); return; }
+    if (fullName.trim().length < 2) { setErrorMsg("Name must be at least 2 characters."); return; }
+    if (!NAME_REGEX.test(fullName.trim())) { setErrorMsg("Name can only contain letters, spaces, hyphens, and apostrophes."); return; }
+    if (!email.trim()) { setErrorMsg("Please enter your UF email address."); return; }
+    if (!EMAIL_REGEX.test(email.trim())) { setErrorMsg("Please enter a valid @ufl.edu email (e.g. gator@ufl.edu)."); return; }
+    if (!password) { setErrorMsg("Please create a password."); return; }
     const pwErr = validatePassword(password);
     if (pwErr) { setErrorMsg(pwErr); return; }
-    if (password !== confirmPassword) { setErrorMsg("Passwords do not match!"); return; }
+    if (!confirmPassword) { setErrorMsg("Please confirm your password."); return; }
+    if (password !== confirmPassword) { setErrorMsg("Passwords don't match. Please re-enter your confirmation."); return; }
     setErrorMsg(""); setStep(2);
   };
 
   const handleRegister = async () => {
-    if (!studyCity) { setErrorMsg("Please select your study abroad city."); return; }
+    if (!studyCity) { setErrorMsg("Please select the city you're studying abroad in."); return; }
+    if (isGoogleSignup && !fullName.trim()) { setErrorMsg("Please enter your full name to complete your profile."); return; }
+    if (major && major.length > 100) { setErrorMsg("Major must be under 100 characters."); return; }
     setIsSubmitting(true); setErrorMsg("");
     try {
       if (isGoogleSignup) {
-        const resp = await axios.put("/api/user/profile", { email, full_name: fullName, study_abroad_city: studyCity, major }, authHeaders ? authHeaders() : {});
+        const resp = await axios.put(`${API_BASE}/api/user/profile`, { email, full_name: fullName.trim(), study_abroad_city: studyCity, major: major.trim() }, authHeaders ? authHeaders() : {});
         if (resp.status === 200) {
-          saveUserSession({ email, full_name: fullName, study_abroad_city: studyCity });
-          if (major) localStorage.setItem("major", major);
+          saveUserSession({ email, full_name: fullName.trim(), study_abroad_city: studyCity });
+          if (major) localStorage.setItem("major", major.trim());
           navigate("/profile"); return;
         }
       }
-      const response = await axios.post("/api/register", { email, password, full_name: fullName, study_abroad_city: studyCity, major });
+      const response = await axios.post(`${API_BASE}/api/register`, { email: email.trim(), password, full_name: fullName.trim(), study_abroad_city: studyCity, major: major.trim() });
       if (response.status === 200 || response.status === 201) {
-        try { const lr = await axios.post("/api/login", { email, password }); if (lr.status === 200) { saveUserSession(lr.data); navigate("/profile"); return; } } catch {}
+        try { const lr = await axios.post(`${API_BASE}/api/login`, { email: email.trim(), password }); if (lr.status === 200) { saveUserSession(lr.data); navigate("/profile"); return; } } catch {}
         navigate("/login");
       }
     } catch (error) {
       const s = error.response?.status, d = error.response?.data?.detail || "";
-      if (s === 409 || d.toLowerCase().includes("already")) setErrorMsg("Account already exists. Try signing in.");
-      else if (s === 429) setErrorMsg("Too many attempts. Wait a moment.");
+      if (s === 409 || d.toLowerCase().includes("already")) setErrorMsg("An account with this email already exists. Try signing in instead.");
+      else if (s === 422) setErrorMsg("Some fields are invalid. Please check your inputs and try again.");
+      else if (s === 429) setErrorMsg("Too many attempts. Please wait a moment and try again.");
       else if (d) setErrorMsg(d);
-      else setErrorMsg("Could not connect. Please try again.");
+      else setErrorMsg("Unable to connect to the server. Please check your internet and try again.");
     } finally { setIsSubmitting(false); }
   };
 
@@ -218,20 +230,20 @@ const Register = () => {
               <div style={S.form}>
                 <div style={S.field}>
                   <label style={S.label}>Full Name</label>
-                  <input className="auth-input" type="text" placeholder="Your full name" value={fullName}
+                  <input className="auth-input" type="text" placeholder="Your full name" value={fullName} maxLength={100}
                     onChange={e=>{setFullName(e.target.value);if(errorMsg)setErrorMsg("");}} onKeyDown={kd} style={S.input}/>
                 </div>
 
                 <div style={S.field}>
                   <label style={S.label}>Email</label>
-                  <input className="auth-input" type="email" placeholder="gator@ufl.edu" value={email}
+                  <input className="auth-input" type="email" placeholder="gator@ufl.edu" value={email} maxLength={100}
                     onChange={e=>{setEmail(e.target.value);if(errorMsg)setErrorMsg("");}} onKeyDown={kd} style={S.input}/>
                 </div>
 
                 <div style={S.field}>
                   <label style={S.label}>Password</label>
                   <div style={S.passRow}>
-                    <input className="auth-input" type={showPassword?"text":"password"} placeholder="Create a password" value={password}
+                    <input className="auth-input" type={showPassword?"text":"password"} placeholder="Create a password" value={password} maxLength={24}
                       onChange={e=>{setPassword(e.target.value);if(errorMsg)setErrorMsg("");}} onKeyDown={kd} style={S.passInput}/>
                     <button className="auth-eye" onClick={()=>setShowPassword(!showPassword)} style={S.eyeBtn} type="button">
                       {showPassword ? <EyeOff size={15} color="#9CA3AF"/> : <Eye size={15} color="#9CA3AF"/>}
@@ -242,7 +254,7 @@ const Register = () => {
                 <div style={S.field}>
                   <label style={S.label}>Confirm Password</label>
                   <div style={S.passRow}>
-                    <input className="auth-input" type={showConfirm?"text":"password"} placeholder="Confirm password" value={confirmPassword}
+                    <input className="auth-input" type={showConfirm?"text":"password"} placeholder="Confirm password" value={confirmPassword} maxLength={24}
                       onChange={e=>{setConfirmPassword(e.target.value);if(errorMsg)setErrorMsg("");}} onKeyDown={kd} style={S.passInput}/>
                     <button className="auth-eye" onClick={()=>setShowConfirm(!showConfirm)} style={S.eyeBtn} type="button">
                       {showConfirm ? <EyeOff size={15} color="#9CA3AF"/> : <Eye size={15} color="#9CA3AF"/>}
@@ -278,7 +290,7 @@ const Register = () => {
                 {isGoogleSignup && (
                   <div style={S.field}>
                     <label style={S.label}>Full Name</label>
-                    <input className="auth-input" type="text" placeholder="Your full name" value={fullName}
+                    <input className="auth-input" type="text" placeholder="Your full name" value={fullName} maxLength={100}
                       onChange={e=>{setFullName(e.target.value);if(errorMsg)setErrorMsg("");}} onKeyDown={kd} style={S.input}/>
                   </div>
                 )}
@@ -312,7 +324,7 @@ const Register = () => {
 
                 <div style={S.field}>
                   <label style={S.label}>Major <span style={{fontSize:"0.65rem",color:"#9CA3AF",fontWeight:400,textTransform:"none"}}>(optional)</span></label>
-                  <input className="auth-input" type="text" placeholder="e.g. Computer Science" value={major}
+                  <input className="auth-input" type="text" placeholder="e.g. Computer Science" value={major} maxLength={100}
                     onChange={e=>setMajor(e.target.value)} onKeyDown={kd} style={S.input}/>
                 </div>
 

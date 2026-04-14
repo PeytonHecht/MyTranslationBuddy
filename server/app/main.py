@@ -4,6 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 import logging
+import subprocess
+import asyncio
+import httpx
 
 from app.config import settings
 from app.database import connect_to_mongo, close_mongo_connection, init_indexes
@@ -17,13 +20,76 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _ensure_libretranslate():
+    """Make sure the LibreTranslate Docker container is running."""
+    try:
+        # Check if Docker is available
+        result = subprocess.run(
+            ["docker", "ps", "--filter", "name=libretranslate", "--format", "{{.Status}}"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode != 0:
+            logger.warning("⚠ Docker not available — LibreTranslate auto-start skipped")
+            return
+
+        if result.stdout.strip():
+            logger.info("✓ LibreTranslate container already running")
+            return
+
+        # Check if container exists but is stopped
+        result_all = subprocess.run(
+            ["docker", "ps", "-a", "--filter", "name=libretranslate", "--format", "{{.Status}}"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result_all.stdout.strip():
+            logger.info("↻ Starting existing LibreTranslate container...")
+            subprocess.run(["docker", "start", "libretranslate"], capture_output=True, timeout=30)
+        else:
+            logger.info("↻ Creating & starting LibreTranslate container...")
+            subprocess.run(
+                [
+                    "docker", "run", "-d",
+                    "--name", "libretranslate",
+                    "-p", "5050:5000",
+                    "libretranslate/libretranslate",
+                    "--load-only", "en,de,es,fr,pt",
+                ],
+                capture_output=True, timeout=60,
+            )
+        logger.info("✓ LibreTranslate container started on port 5050")
+    except FileNotFoundError:
+        logger.warning("⚠ Docker CLI not found — LibreTranslate must be started manually")
+    except Exception as e:
+        logger.warning("⚠ Could not auto-start LibreTranslate: %s", e)
+
+
+async def _wait_for_libretranslate(max_wait: int = 90):
+    """Wait for LibreTranslate to be ready (it can take a while to load models)."""
+    url = settings.libretranslate_url.rstrip("/") + "/languages"
+    for i in range(max_wait):
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                r = await client.get(url)
+                if r.status_code == 200:
+                    logger.info("✓ LibreTranslate is ready")
+                    return
+        except Exception:
+            pass
+        if i == 0:
+            logger.info("⏳ Waiting for LibreTranslate to load language models...")
+        await asyncio.sleep(1)
+    logger.warning("⚠ LibreTranslate did not become ready within %ss — translations may fail initially", max_wait)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context manager"""
     # Startup
     logger.info("Starting MyTranslationBuddy backend...")
+    _ensure_libretranslate()
     await connect_to_mongo()
     await init_indexes()
+    await _wait_for_libretranslate()
     logger.info("✓ Application started successfully")
 
     yield

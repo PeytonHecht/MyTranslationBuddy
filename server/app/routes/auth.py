@@ -325,8 +325,13 @@ async def update_profile(req: UpdatePreferencesRequest, request: Request):
 
 
 @router.post("/user/change-password")
-async def change_password(req: ChangePasswordRequest):
-    """Change user password."""
+async def change_password(req: ChangePasswordRequest, request: Request):
+    """Change user password. Requires X-User-Email header to match."""
+
+    # Auth check: the requesting user must match
+    caller_email = request.headers.get("X-User-Email", "")
+    if caller_email != req.email:
+        raise HTTPException(status_code=403, detail="You can only change your own password.")
 
     user = await db.users_auth.users.find_one({"email": req.email})
     if not user:
@@ -373,6 +378,22 @@ async def google_auth(req: GoogleAuthRequest):
     payload = resp.json()
     email = payload.get("email", "")
     email_verified = payload.get("email_verified", "false")
+
+    # ── Verify token audience (aud) matches OUR client ID ──
+    aud = payload.get("aud", "")
+    if settings.google_client_id and aud != settings.google_client_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Token was not issued for this application.",
+        )
+
+    # ── Verify token issuer (iss) is Google ──
+    iss = payload.get("iss", "")
+    if iss not in ("accounts.google.com", "https://accounts.google.com"):
+        raise HTTPException(
+            status_code=401,
+            detail="Token issuer is not Google.",
+        )
 
     if str(email_verified).lower() != "true":
         raise HTTPException(status_code=401, detail="Google email is not verified.")

@@ -24,6 +24,13 @@ from app.data.tips import (
     graz_tips, munich_tech_innovation_tips, osnabruck_ag_life_tips,
     whu_vallendar_expanded_tips, ebs_graduate_tips,
     bern_cultural_tips, rapperswil_cultural_tips, winterthur_cultural_tips,
+    berlin_cultural_tips, munich_cultural_tips, hamburg_cultural_tips,
+    vienna_cultural_tips, salzburg_cultural_tips, graz_cultural_tips,
+    zurich_cultural_tips, leipzig_cultural_tips, mannheim_cultural_tips,
+    stuttgart_cultural_tips, aachen_cultural_tips, bonn_cultural_tips,
+    osnabruck_cultural_tips, wurzburg_cultural_tips, vallendar_cultural_tips,
+    ebs_cultural_tips, eltville_cultural_tips, detmold_cultural_tips,
+    lemgo_cultural_tips, jena_cultural_tips,
 )
 from app.data.phrases import all_phrases
 
@@ -86,6 +93,13 @@ async def seed_tips():
         + graz_tips + munich_tech_innovation_tips + osnabruck_ag_life_tips
         + whu_vallendar_expanded_tips + ebs_graduate_tips
         + bern_cultural_tips + rapperswil_cultural_tips + winterthur_cultural_tips
+        + berlin_cultural_tips + munich_cultural_tips + hamburg_cultural_tips
+        + vienna_cultural_tips + salzburg_cultural_tips + graz_cultural_tips
+        + zurich_cultural_tips + leipzig_cultural_tips + mannheim_cultural_tips
+        + stuttgart_cultural_tips + aachen_cultural_tips + bonn_cultural_tips
+        + osnabruck_cultural_tips + wurzburg_cultural_tips + vallendar_cultural_tips
+        + ebs_cultural_tips + eltville_cultural_tips + detmold_cultural_tips
+        + lemgo_cultural_tips + jena_cultural_tips
     )
 
     for tip in tips:
