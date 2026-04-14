@@ -37,6 +37,9 @@ export async function handleLogout(navigate) {
   localStorage.removeItem("eventPhraseBookmarks");
   localStorage.removeItem("eventbrite_token");
   
+  // Notify all components that auth state changed so they re-read from localStorage
+  window.dispatchEvent(new Event("mtb-auth-change"));
+
   // Navigate via router instead of hard reload (works with HashRouter)
   if (navigate) {
     navigate("/");
@@ -88,6 +91,9 @@ export function saveUserSession(data) {
     if (Array.isArray(data.study_stats.translation_history)) localStorage.setItem("twHistory", JSON.stringify(data.study_stats.translation_history));
   }
   if (Array.isArray(data.reservations)) localStorage.setItem("reservations", JSON.stringify(data.reservations));
+
+  // Notify all components that auth state changed so they re-read from localStorage
+  window.dispatchEvent(new Event("mtb-auth-change"));
 }
 
 /**

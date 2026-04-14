@@ -705,11 +705,15 @@ const LandingPage = () => {
     }
   }, [userCities.join(",")]);
 
-  // Re-read localStorage whenever it changes (e.g. after profile update or city picker save)
+  // Re-read localStorage whenever it changes (e.g. after profile update, city picker save, login, or logout)
   useEffect(() => {
-    const onStorage = () => setUserData(readUserData());
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    const onAuthChange = () => setUserData(readUserData());
+    window.addEventListener("storage", onAuthChange);
+    window.addEventListener("mtb-auth-change", onAuthChange);
+    return () => {
+      window.removeEventListener("storage", onAuthChange);
+      window.removeEventListener("mtb-auth-change", onAuthChange);
+    };
   }, []);
 
   // Sync user profile from server on mount (ensures myCities & study_abroad_city are fresh)
