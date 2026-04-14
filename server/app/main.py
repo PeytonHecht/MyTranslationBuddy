@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_libretranslate():
-    """Make sure the LibreTranslate Docker container is running."""
+    """Make sure the LibreTranslate Docker container is running. Returns True if Docker is available."""
     try:
         # Check if Docker is available
         result = subprocess.run(
@@ -30,11 +30,11 @@ def _ensure_libretranslate():
         )
         if result.returncode != 0:
             logger.warning("⚠ Docker not available — LibreTranslate auto-start skipped")
-            return
+            return False
 
         if result.stdout.strip():
             logger.info("✓ LibreTranslate container already running")
-            return
+            return True
 
         # Check if container exists but is stopped
         result_all = subprocess.run(
@@ -57,10 +57,13 @@ def _ensure_libretranslate():
                 capture_output=True, timeout=60,
             )
         logger.info("✓ LibreTranslate container started on port 5050")
+        return True
     except FileNotFoundError:
         logger.warning("⚠ Docker CLI not found — LibreTranslate must be started manually")
+        return False
     except Exception as e:
         logger.warning("⚠ Could not auto-start LibreTranslate: %s", e)
+        return False
 
 
 async def _wait_for_libretranslate(max_wait: int = 90):
@@ -86,10 +89,13 @@ async def lifespan(app: FastAPI):
     """Application lifespan context manager"""
     # Startup
     logger.info("Starting MyTranslationBuddy backend...")
-    _ensure_libretranslate()
+    docker_available = _ensure_libretranslate()
     await connect_to_mongo()
     await init_indexes()
-    await _wait_for_libretranslate()
+    if docker_available:
+        await _wait_for_libretranslate()
+    else:
+        logger.info("⏭ Skipping LibreTranslate wait (no Docker)")
     logger.info("✓ Application started successfully")
 
     yield
