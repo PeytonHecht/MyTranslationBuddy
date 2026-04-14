@@ -1857,15 +1857,6 @@ const LandingPage = () => {
             );
           })()}
         </section>
-      ) : userName ? (
-        <section style={{maxWidth:1200,margin:"0 auto",padding:"2.5rem 2rem 1.5rem"}}>
-          <div style={{background:"#fff",borderRadius:"1rem",border:"1px solid #E5E7EB",padding:"2.5rem",textAlign:"center"}}>
-            <div style={{width:56,height:56,borderRadius:"50%",background:"#EFF6FF",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 1rem"}}><MapPin size={24} color="#0021A5"/></div>
-            <h3 style={{fontSize:"1.2rem",fontWeight:700,color:"#111827",margin:"0 0 0.4rem"}}>Save cities to personalize your experience</h3>
-            <p style={{fontSize:"0.88rem",color:"#6B7280",maxWidth:420,margin:"0 auto 1.25rem",lineHeight:1.55}}>Head to Explore, pick the cities you're studying in or want to visit, and they'll show up here as your personal hub.</p>
-            <button onClick={() => navigate("/tips")} style={{display:"inline-flex",alignItems:"center",gap:"0.4rem",padding:"0.7rem 1.5rem",border:"none",borderRadius:"0.6rem",background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",cursor:"pointer",fontSize:"0.88rem",fontWeight:700,boxShadow:"0 3px 12px rgba(0,33,165,0.2)"}}><Compass size={15}/> Browse Cities</button>
-          </div>
-        </section>
       ) : null}
 
       {/* CITY PICKER MODAL — shown for new users with no saved cities */}
