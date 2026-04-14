@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import axios from "axios";
+import { isLoggedIn, authHeaders } from "../utils/auth.js";
 
 const MAX_CHARS = 5000;
 
@@ -27,6 +28,8 @@ export default function TranslateWidget() {
   const [savedToLib, setSavedToLib] = useState(false);
   const [direction, setDirection] = useState("de-en");
   const [speaking, setSpeaking] = useState(false);
+  const [copiedSource, setCopiedSource] = useState(false);
+  const [savedPhrase, setSavedPhrase] = useState(false);
   const [history, setHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("twHistory") || "[]").slice(0, 10); } catch { return []; }
   });
@@ -81,7 +84,22 @@ export default function TranslateWidget() {
         setHistory(prev => {
           const entry = { src: text, tgt: result, dir: direction, ts: Date.now() };
           const next = [entry, ...prev.filter(h => h.src !== text)].slice(0, 10);
-          try { localStorage.setItem("twHistory", JSON.stringify(next)); } catch {}
+          try {
+            localStorage.setItem("twHistory", JSON.stringify(next));
+            // Sync translation history to backend inside study_stats
+            if (isLoggedIn()) {
+              const email = localStorage.getItem("email");
+              const studyHistory = JSON.parse(localStorage.getItem("studyHistory") || "[]");
+              const stats = {
+                daily_goal: parseInt(localStorage.getItem("dailyGoal") || "5"),
+                today_progress: parseInt(localStorage.getItem("todayProgress") || "0"),
+                progress_date: new Date().toISOString().split("T")[0],
+                study_history: studyHistory,
+                translation_history: next,
+              };
+              axios.put("/api/user/profile", { email, study_stats: stats }, authHeaders()).catch(() => {});
+            }
+          } catch {}
           return next;
         });
         setShowHistory(false);
@@ -139,20 +157,22 @@ export default function TranslateWidget() {
       const existing = JSON.parse(localStorage.getItem("vocabCards") || "[]");
       if (existing.some(c => c.german === german && c.english === english)) { setSavedToLib(true); return; }
       const card = { id: Date.now(), german, english, context: "", mastery: 0, lastReviewed: null, created: new Date().toISOString().split("T")[0] };
-      localStorage.setItem("vocabCards", JSON.stringify([card, ...existing]));
+      const updated = [card, ...existing];
+      localStorage.setItem("vocabCards", JSON.stringify(updated));
+      // Sync to backend
+      if (isLoggedIn()) {
+        const email = localStorage.getItem("email");
+        axios.put("/api/user/profile", { email, vocab_cards: updated }, authHeaders()).catch(() => {});
+      }
       setSavedToLib(true);
     } catch { /* localStorage full */ }
   };
-
-  const [copiedSource, setCopiedSource] = useState(false);
 
   const handleCopySource = async () => {
     if (!sourceText.trim()) return;
     try { await navigator.clipboard.writeText(sourceText.trim()); setCopiedSource(true); setTimeout(() => setCopiedSource(false), 1500); }
     catch { /* clipboard not available */ }
   };
-
-  const [savedPhrase, setSavedPhrase] = useState(false);
 
   const handleSaveAsPhrase = async () => {
     if (!sourceText.trim() || !translatedText) return;

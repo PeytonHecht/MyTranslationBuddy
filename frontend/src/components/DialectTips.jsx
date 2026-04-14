@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import logo from "../assets/MTBLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
+import { CityGridSkeleton, Spinner } from "./ui/LoadingStates.jsx";
 
 const BACKEND_URL = "/api";
 
@@ -594,9 +595,8 @@ const DialectTips = () => {
             </div>
 
             {isLoading ? (
-              <div style={{textAlign:"center",padding:"4rem"}}>
-                <div style={S.spinner} />
-                <p style={{color:"#6B7280",fontSize:"0.95rem",marginTop:"1rem"}}>Loading destinations...</p>
+              <div style={{padding:"2rem 0"}}>
+                <CityGridSkeleton count={8}/>
               </div>
             ) : displayCities.length === 0 ? (
               <div style={{textAlign:"center",padding:"4rem"}}>
@@ -672,8 +672,7 @@ const DialectTips = () => {
         {/* Loading state for city detail */}
         {selectedCity && cityDetailLoading && (
           <div style={{textAlign:"center",padding:"5rem 2rem"}}>
-            <div style={S.spinner} />
-            <p style={{color:"#6B7280",fontSize:"0.95rem",marginTop:"1rem"}}>Loading city details...</p>
+            <Spinner size={44} label="Loading city details…"/>
           </div>
         )}
 

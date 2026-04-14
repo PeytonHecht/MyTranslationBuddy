@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { isLoggedIn, authHeaders } from "../utils/auth.js";
+import { Spinner, ErrorState } from "./ui/LoadingStates.jsx";
 // Ensure this path matches your logo file
 import logo from "../assets/MTBLogo.png";
 
@@ -58,6 +60,12 @@ const EventDetail = () => {
     storedReservations.push(reservation);
     localStorage.setItem("reservations", JSON.stringify(storedReservations));
 
+    // Sync to backend
+    if (isLoggedIn()) {
+      const email = localStorage.getItem("email");
+      axios.put("/api/user/profile", { email, reservations: storedReservations }, authHeaders()).catch(() => {});
+    }
+
     alert(`Successfully saved your reservation for ${tickets} ticket(s)!`);
   };
 
@@ -65,7 +73,7 @@ const EventDetail = () => {
     return (
       <div style={styles.container}>
         <div style={styles.loadingContainer}>
-          <p style={styles.loadingText}>Loading event details...</p>
+          <Spinner size={48} label="Loading event details…"/>
         </div>
       </div>
     );
@@ -78,7 +86,7 @@ const EventDetail = () => {
           <button onClick={() => navigate("/events")} style={styles.navButton}>← Back</button>
         </div>
         <div style={styles.errorContainer}>
-          <p style={styles.errorText}>{error}</p>
+          <ErrorState message={error} onRetry={() => window.location.reload()} retryLabel="Reload"/>
         </div>
       </div>
     );

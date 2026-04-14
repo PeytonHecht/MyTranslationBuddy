@@ -3,40 +3,14 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../assets/MTBLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
+import { ALL_CITIES, COUNTRY_FLAGS as FLAGS, COUNTRY_NAMES as COUNTRY_NAME } from "../constants/cities.js";
+import { ProfileSkeleton } from "./ui/LoadingStates.jsx";
 import {
   User, MapPin, LogOut, Trash2, Key, Save, Globe, Calendar,
   Bookmark, Clock, Compass, ClipboardList, Home, GraduationCap,
   ChevronRight, Shield, X, Check, Heart, Edit3, Settings,
   ExternalLink, Sparkles, Star, Volume2
 } from "lucide-react";
-
-const ALL_CITIES = [
-  { name:"Berlin",          slug:"berlin",     country:"DE", emoji:"🏛️", tag:"Capital & culture" },
-  { name:"Munich",          slug:"munich",     country:"DE", emoji:"🍺", tag:"Beer gardens & Alps" },
-  { name:"Hamburg",         slug:"hamburg",    country:"DE", emoji:"⚓", tag:"Harbor & nightlife" },
-  { name:"Stuttgart",       slug:"stuttgart",  country:"DE", emoji:"🚗", tag:"Auto & media hub" },
-  { name:"Aachen",          slug:"aachen",     country:"DE", emoji:"🔬", tag:"Engineering & trips" },
-  { name:"Bonn",            slug:"bonn",       country:"DE", emoji:"🎵", tag:"Beethoven & Rhine" },
-  { name:"Detmold",         slug:"detmold",    country:"DE", emoji:"🌲", tag:"Design & forest" },
-  { name:"Wiesbaden (EBS)", slug:"ebs",        country:"DE", emoji:"🍷", tag:"Spa city & wine" },
-  { name:"Eltville",        slug:"eltville",   country:"DE", emoji:"🏰", tag:"Rhine wine village" },
-  { name:"Jena",            slug:"jena",       country:"DE", emoji:"🔭", tag:"Science & optics" },
-  { name:"Lemgo",           slug:"lemgo",      country:"DE", emoji:"🚲", tag:"Medieval & bikes" },
-  { name:"Mannheim",        slug:"mannheim",   country:"DE", emoji:"🏯", tag:"Palace campus" },
-  { name:"Osnabrück",       slug:"osnabruck",  country:"DE", emoji:"🕊️", tag:"City of peace" },
-  { name:"Vallendar",       slug:"vallendar",  country:"DE", emoji:"📊", tag:"Top business school" },
-  { name:"Würzburg",        slug:"wurzburg",   country:"DE", emoji:"🍷", tag:"Wine & baroque" },
-  { name:"Leipzig",         slug:"leipzig",    country:"DE", emoji:"🎨", tag:"Art & nightlife" },
-  { name:"Vienna",          slug:"vienna",     country:"AT", emoji:"🎼", tag:"Opera & coffeehouses" },
-  { name:"Salzburg",        slug:"salzburg",   country:"AT", emoji:"🏔️", tag:"Alpine & Mozart" },
-  { name:"Graz",            slug:"graz",       country:"AT", emoji:"🕰️", tag:"UNESCO old town" },
-  { name:"Zurich",          slug:"zurich",     country:"CH", emoji:"🏦", tag:"Lake & innovation" },
-  { name:"Bern",            slug:"bern",       country:"CH", emoji:"🐻", tag:"Swiss capital & Aare" },
-  { name:"Rapperswil-Jona", slug:"rapperswil", country:"CH", emoji:"🌹", tag:"Rose town on lake" },
-  { name:"Winterthur",      slug:"winterthur", country:"CH", emoji:"🔬", tag:"Museums & ZHAW" },
-];
-const FLAGS = { DE:"🇩🇪", AT:"🇦🇹", CH:"🇨🇭" };
-const COUNTRY_NAME = { DE:"Germany", AT:"Austria", CH:"Switzerland" };
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -171,10 +145,7 @@ const Profile = () => {
   if (!ready || !profile) {
     return (
       <div style={S.page}>
-        <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:"60vh",flexDirection:"column",gap:"1rem"}}>
-          <div style={{width:44,height:44,borderRadius:"50%",border:"3px solid #FA4616",borderTopColor:"transparent",animation:"mtbSpin 0.8s linear infinite"}}/>
-          <p style={{color:"#9CA3AF",fontSize:"0.9rem"}}>Loading your profile…</p>
-        </div>
+        <ProfileSkeleton/>
       </div>
     );
   }

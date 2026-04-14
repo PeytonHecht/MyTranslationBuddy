@@ -62,6 +62,30 @@ export function getToken() {
 }
 
 /**
+ * Save user session data from a login/register/restore API response to localStorage.
+ * Call this after any successful auth response to avoid duplicating setItem blocks.
+ */
+export function saveUserSession(data) {
+  if (data.email) localStorage.setItem("email", data.email);
+  if (data.full_name !== undefined) localStorage.setItem("full_name", data.full_name || "");
+  if (data.study_abroad_city !== undefined) localStorage.setItem("study_abroad_city", data.study_abroad_city || "");
+  if (data.token) localStorage.setItem("token", data.token);
+  if (Array.isArray(data.saved_cities)) localStorage.setItem("myCities", JSON.stringify(data.saved_cities));
+  if (Array.isArray(data.vocab_cards)) localStorage.setItem("vocabCards", JSON.stringify(data.vocab_cards));
+  if (Array.isArray(data.saved_events)) localStorage.setItem("savedEvents", JSON.stringify(data.saved_events));
+  if (data.study_stats && typeof data.study_stats === "object") {
+    localStorage.setItem("studyStats", JSON.stringify(data.study_stats));
+    // Restore individual study-stat keys so the Study Hub picks them up
+    if (data.study_stats.daily_goal) localStorage.setItem("dailyGoal", data.study_stats.daily_goal.toString());
+    if (data.study_stats.today_progress != null) localStorage.setItem("todayProgress", data.study_stats.today_progress.toString());
+    if (data.study_stats.progress_date) localStorage.setItem("progressDate", data.study_stats.progress_date);
+    if (Array.isArray(data.study_stats.study_history)) localStorage.setItem("studyHistory", JSON.stringify(data.study_stats.study_history));
+    if (Array.isArray(data.study_stats.translation_history)) localStorage.setItem("twHistory", JSON.stringify(data.study_stats.translation_history));
+  }
+  if (Array.isArray(data.reservations)) localStorage.setItem("reservations", JSON.stringify(data.reservations));
+}
+
+/**
  * Create an Axios config that includes both the JWT and legacy X-User-Email header.
  */
 export function authHeaders() {
@@ -84,14 +108,7 @@ export async function restoreSession() {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (res.status === 200 && res.data.email) {
-      localStorage.setItem("email", res.data.email);
-      localStorage.setItem("full_name", res.data.full_name || "");
-      localStorage.setItem("study_abroad_city", res.data.study_abroad_city || "");
-      if (res.data.saved_cities) localStorage.setItem("myCities", JSON.stringify(res.data.saved_cities));
-      if (res.data.vocab_cards) localStorage.setItem("vocabCards", JSON.stringify(res.data.vocab_cards));
-      if (res.data.saved_events) localStorage.setItem("savedEvents", JSON.stringify(res.data.saved_events));
-      if (res.data.study_stats) localStorage.setItem("studyStats", JSON.stringify(res.data.study_stats));
-      if (res.data.token) localStorage.setItem("token", res.data.token);
+      saveUserSession(res.data);
       return res.data;
     }
   } catch {
