@@ -119,14 +119,15 @@ const Login = () => {
 
           <div style={S.form}>
             <div style={S.field}>
-              <label style={S.label}>Email</label>
+              <label style={S.label}>Email <span style={{color:"#DC2626"}}>*</span></label>
               <input type="email" placeholder="your.name@ufl.edu" value={email}
                 onChange={e => { setEmail(e.target.value); if (errorMsg) setErrorMsg(""); }}
                 onKeyDown={handleKeyDown} style={S.input} />
+                <span style={{fontSize:"0.72rem",color:"#9CA3AF",marginTop:"0.15rem"}}>Only @ufl.edu emails accepted</span>          
             </div>
 
             <div style={S.field}>
-              <label style={S.label}>Password</label>
+              <label style={S.label}>Password <span style={{color:"#DC2626"}}>*</span></label>
               <div style={S.passWrap}>
                 <input type={showPassword ? "text" : "password"} placeholder="Enter your password"
                   value={password}
@@ -137,8 +138,6 @@ const Login = () => {
                 </button>
               </div>
             </div>
-
-            <p style={S.hint}>Only @ufl.edu email addresses are accepted</p>
 
             <button onClick={handleLogin} disabled={isSubmitting} style={{...S.primary, opacity: isSubmitting ? 0.7 : 1}}>
               {isSubmitting ? "Signing in..." : "Sign In"} <ArrowRight size={16}/>
@@ -168,25 +167,24 @@ const S = {
   topLogo:{height:40,objectFit:"contain",cursor:"pointer",filter:"drop-shadow(0 2px 6px rgba(255,255,255,0.15))"},
   topBrand:{fontSize:"2rem",fontWeight:700,color:"#fff",letterSpacing:"0.02em"},
   content:{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:"2rem"},
-  formWrap: { width:"100%", maxWidth:420 },
-  title: { fontSize:"1.75rem", fontWeight:800, color:"#111827", margin:"0 0 0.35rem 0" },
-  sub: { fontSize:"0.92rem", color:"#6B7280", margin:"0 0 1.75rem 0" },
-  error: { color:"#DC2626", fontSize:"0.85rem", backgroundColor:"#FEF2F2", padding:"0.75rem 1rem", borderRadius:"0.6rem", marginBottom:"1rem", border:"1px solid #FECACA" },
-  form: { display:"flex", flexDirection:"column", gap:"1rem" },
-  field: { display:"flex", flexDirection:"column", gap:"0.35rem" },
-  label: { fontSize:"0.82rem", fontWeight:600, color:"#374151" },
-  input: { padding:"0.75rem 1rem", border:"1px solid #D1D5DB", borderRadius:"0.6rem", fontSize:"0.92rem", outline:"none", backgroundColor:"#fff" },
-  passWrap: { display:"flex", border:"1px solid #D1D5DB", borderRadius:"0.6rem", overflow:"hidden", backgroundColor:"#fff" },
-  passInput: { flex:1, padding:"0.75rem 1rem", border:"none", fontSize:"0.92rem", outline:"none" },
-  eyeBtn: { padding:"0 0.85rem", border:"none", backgroundColor:"transparent", cursor:"pointer", display:"flex", alignItems:"center" },
-  hint: { fontSize:"0.75rem", color:"#9CA3AF", margin:0 },
-  primary: { display:"flex", alignItems:"center", justifyContent:"center", gap:"0.5rem", padding:"0.85rem", border:"none", borderRadius:"0.6rem", background:"linear-gradient(135deg,#0021A5,#003087)", color:"#fff", cursor:"pointer", fontSize:"1rem", fontWeight:700, boxShadow:"0 4px 14px rgba(0,33,165,0.3)" },
-  divider: { display:"flex", alignItems:"center", gap:"0.75rem", margin:"0.25rem 0" },
-  divLine: { flex:1, height:"1px", backgroundColor:"#E5E7EB" },
-  divText: { fontSize:"0.78rem", color:"#9CA3AF", fontWeight:500, whiteSpace:"nowrap" },
-  googleBtn: { display:"flex", justifyContent:"center" },
-  switchText: { fontSize:"0.88rem", color:"#6B7280", textAlign:"center", margin:"0.5rem 0 0 0" },
-  switchLink: { color:"#0021A5", fontWeight:600, cursor:"pointer" },
+  formWrap:{width:"100%",maxWidth:460},
+  title:{fontSize:"1.75rem",fontWeight:800,color:"#111827",margin:"0 0 0.35rem 0"},
+  sub:{fontSize:"0.92rem",color:"#6B7280",margin:"0 0 1.5rem 0"},
+  error:{color:"#DC2626",fontSize:"0.85rem",backgroundColor:"#FEF2F2",padding:"0.75rem 1rem",borderRadius:"0.6rem",marginBottom:"1rem",border:"1px solid #FECACA"},
+  form:{display:"flex",flexDirection:"column",gap:"0.85rem"},
+  field:{display:"flex",flexDirection:"column",gap:"0.3rem"},
+  label:{fontSize:"0.82rem",fontWeight:600,color:"#374151"},
+  input:{padding:"0.7rem 1rem",border:"1px solid #D1D5DB",borderRadius:"0.6rem",fontSize:"0.92rem",outline:"none",backgroundColor:"#fff"},
+  passWrap:{display:"flex",border:"1px solid #D1D5DB",borderRadius:"0.6rem",overflow:"hidden",backgroundColor:"#fff"},
+  passInput:{flex:1,padding:"0.7rem 1rem",border:"none",fontSize:"0.92rem",outline:"none"},
+  eyeBtn:{padding:"0 0.85rem",border:"none",backgroundColor:"transparent",cursor:"pointer",display:"flex",alignItems:"center"},
+  primary:{display:"flex",alignItems:"center",justifyContent:"center",gap:"0.5rem",padding:"0.85rem",border:"none",borderRadius:"0.6rem",background:"linear-gradient(135deg,#0021A5,#003087)",color:"#fff",cursor:"pointer",fontSize:"1rem",fontWeight:700,boxShadow:"0 4px 14px rgba(0,33,165,0.3)"},
+  divider:{display:"flex",alignItems:"center",gap:"0.75rem",margin:"0.25rem 0"},
+  divLine:{flex:1,height:"1px",backgroundColor:"#E5E7EB"},
+  divText:{fontSize:"0.78rem",color:"#9CA3AF",fontWeight:500,whiteSpace:"nowrap"},
+  googleBtn:{display:"flex",justifyContent:"center"},
+  switchText:{fontSize:"0.88rem",color:"#6B7280",textAlign:"center",margin:"0.5rem 0 0 0"},
+  switchLink:{color:"#0021A5",fontWeight:600,cursor:"pointer"},
 };
 
 export default Login;
