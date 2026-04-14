@@ -8,13 +8,6 @@ from app.config import settings
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter(prefix="/api", tags=["translate"])
 
-# Lingva Translate mirrors (free Google Translate proxies, no API key, no rate limits)
-LINGVA_MIRRORS = [
-    "https://lingva.ml",
-    "https://lingva.thedaviddelta.com",
-    "https://translate.plausibility.cloud",
-]
-
 
 async def _translate_via_libretranslate(text: str, source: str, target: str) -> str:
     """Try LibreTranslate (local Docker). Returns translated text or raises."""
@@ -40,22 +33,26 @@ async def _translate_via_libretranslate(text: str, source: str, target: str) -> 
     return translated
 
 
-async def _translate_via_lingva(text: str, source: str, target: str) -> str:
-    """Fallback: Lingva Translate (free Google Translate proxy, no key or limits)."""
-    encoded_text = urllib.parse.quote(text)
-    for mirror in LINGVA_MIRRORS:
-        try:
-            url = f"{mirror}/api/v1/{source}/{target}/{encoded_text}"
-            async with httpx.AsyncClient(timeout=10.0) as client:
-                response = await client.get(url)
-            if response.status_code == 200:
-                data = response.json()
-                translated = data.get("translation")
-                if translated:
-                    return translated
-        except Exception:
-            continue
-    raise Exception("All Lingva mirrors failed")
+async def _translate_via_google(text: str, source: str, target: str) -> str:
+    """Fallback: Google Translate (free, no API key, no rate limits for normal usage)."""
+    url = "https://translate.googleapis.com/translate_a/single"
+    params = {
+        "client": "gtx",
+        "sl": source,
+        "tl": target,
+        "dt": "t",
+        "q": text,
+    }
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        response = await client.get(url, params=params)
+    if response.status_code != 200:
+        raise Exception(f"Google Translate {response.status_code}: {response.text}")
+    data = response.json()
+    # Response format: [[["translated text","source text",...],...],...] 
+    translated = "".join(part[0] for part in data[0] if part[0])
+    if not translated:
+        raise Exception(f"Unexpected Google Translate response: {data}")
+    return translated
 
 
 @router.post("/translate")
@@ -69,11 +66,11 @@ async def translate(req: TranslationCreate):
         translated = await _translate_via_libretranslate(text, source, target)
         return {"translation": translated}
     except Exception as e:
-        logger.info("LibreTranslate unavailable (%s), trying Lingva", e)
+        logger.info("LibreTranslate unavailable (%s), trying Google Translate fallback", e)
 
-    # Fallback: Lingva Translate (Google Translate proxy, no limits)
+    # Fallback: Google Translate (reliable, no key needed)
     try:
-        translated = await _translate_via_lingva(text, source, target)
+        translated = await _translate_via_google(text, source, target)
         return {"translation": translated}
     except Exception as e:
         logger.error("All translation services failed: %s", e)
