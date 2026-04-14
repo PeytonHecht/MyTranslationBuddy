@@ -6,15 +6,13 @@ Proxies requests to the Ticketmaster Discovery API to avoid CORS issues.
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional
 import httpx
-import os
+
+from app.config import settings
 
 router = APIRouter(prefix="/api", tags=["events"])
 
-# Ticketmaster API key - use env var or fallback
-TICKETMASTER_API_KEY = os.getenv(
-    "TICKETMASTER_API_KEY",
-    "2LvLdC39cHngJgFfBWoE3tlYTy2u9VSl"
-)
+# Ticketmaster API key from settings (loaded from .env)
+TICKETMASTER_API_KEY = settings.ticketmaster_api_key
 TICKETMASTER_BASE = "https://app.ticketmaster.com/discovery/v2/events.json"
 
 

@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 import logging
 
 from app.config import settings
@@ -8,6 +10,7 @@ from app.database import connect_to_mongo, close_mongo_connection, init_indexes
 from app.exceptions import AppException
 from app.middleware.error_handler import exception_handler
 from app.routes import health, phrases, cities, tips, auth, events, translate
+from app.routes.auth import limiter
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -38,6 +41,10 @@ app = FastAPI(
     version=settings.app_version,
     lifespan=lifespan
 )
+
+# Add rate limiter
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Add CORS middleware
 app.add_middleware(

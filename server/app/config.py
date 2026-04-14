@@ -14,10 +14,12 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     cors_origins: list = [
         "http://localhost:5173",  # Vite dev server
+        "http://localhost:5174",  # Vite fallback port
         "http://localhost:3000",  # React dev server
         "http://localhost",
         "http://127.0.0.1",
         "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
         "http://127.0.0.1:3000",
     ]
     
@@ -35,10 +37,18 @@ class Settings(BaseSettings):
     translations_db: str = os.getenv("TRANSLATIONS_DB", "translation_history")
     phrases_db: str = os.getenv("PHRASES_DB", "phrases_vocabulary")
 
-    #Smartcat api
+    # Smartcat API — no defaults, must be set in .env
     smartcat_base_url: str = os.getenv("SMARTCAT_BASE_URL", "https://us.smartcat.ai").rstrip("/")
-    smartcat_account_id: str = os.getenv("SMARTCAT_ACCOUNT_ID", "b6ac15a1-f293-4d35-86b5-7d29ba80846e")
-    smartcat_api_key: str = os.getenv("SMARTCAT_API_KEY", "2_oLX2JLS3rIPdiX2460d8BwSkd")
-    smartcat_profile_id: str = os.getenv("SMARTCAT_PROFILE_ID", "69d5c0167a70d2bd05db1206")
+    smartcat_account_id: str = os.getenv("SMARTCAT_ACCOUNT_ID", "")
+    smartcat_api_key: str = os.getenv("SMARTCAT_API_KEY", "")
+    smartcat_profile_id: str = os.getenv("SMARTCAT_PROFILE_ID", "")
+
+    # Ticketmaster API — must be set in .env
+    ticketmaster_api_key: str = os.getenv("TICKETMASTER_API_KEY", "")
+
+    # JWT
+    jwt_secret: str = os.getenv("JWT_SECRET", "change-me-in-production")
+    jwt_algorithm: str = "HS256"
+    jwt_expire_hours: int = 72  # 3 days
 
 settings = Settings()

@@ -1,35 +1,20 @@
 from fastapi import APIRouter, HTTPException
 import httpx
-import os
 import logging
-import base64  
+import base64
 from app.schemas.translation import TranslationCreate
-from dotenv import load_dotenv
 from app.config import settings
-
-#load_dotenv()  # add this before anything reads os.getenv()
 
 logger = logging.getLogger("uvicorn.error")
 router = APIRouter(prefix="/api", tags=["translate"])
 
-#SMARTCAT_BASE_URL = os.getenv("SMARTCAT_BASE_URL", "https://us.smartcat.ai").rstrip("/")
-#SMARTCAT_ACCOUNT_ID = os.getenv("SMARTCAT_ACCOUNT_ID", "b6ac15a1-f293-4d35-86b5-7d29ba80846e")
-#SMARTCAT_API_KEY = os.getenv("SMARTCAT_API_KEY", "2_oLX2JLS3rIPdiX2460d8BwSkd")
-#SMARTCAT_PROFILE_ID = os.getenv("SMARTCAT_PROFILE_ID", "69d5c0167a70d2bd05db1206")
 
 @router.post("/translate")
 async def translate(req: TranslationCreate):
-    smartcat_base_url = os.getenv("SMARTCAT_BASE_URL", "https://us.smartcat.ai").rstrip("/")
-    account_id = os.getenv("SMARTCAT_ACCOUNT_ID")
-    api_key = os.getenv("SMARTCAT_API_KEY")
-    profile_id = os.getenv("SMARTCAT_PROFILE_ID")
-
-
-    logger.warning("DEBUG cwd=%s", os.getcwd())
-    logger.warning("DEBUG SMARTCAT_ACCOUNT_ID=%r", account_id)
-    logger.warning("DEBUG SMARTCAT_API_KEY_set=%s", bool(api_key))
-
-
+    account_id = settings.smartcat_account_id
+    api_key = settings.smartcat_api_key
+    profile_id = settings.smartcat_profile_id
+    smartcat_base_url = settings.smartcat_base_url
 
     if not account_id or not api_key:
         raise HTTPException(
