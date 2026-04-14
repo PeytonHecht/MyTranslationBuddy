@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Eye, EyeOff, ArrowRight, ArrowLeft, GraduationCap, Globe, Languages, MapPin, Check, User } from "lucide-react";
 import { authHeaders } from "../utils/auth.js";
-import logo from "../assets/MTBLogo.png";
-
+import logo from "../assets/MyTranslationBuddyLogo.png";
 const GOOGLE_CLIENT_ID = "142798767749-a6u0rv4pgjk0kqbi84uligsq77nt8cjr.apps.googleusercontent.com";
 
 const STUDY_CITIES = [

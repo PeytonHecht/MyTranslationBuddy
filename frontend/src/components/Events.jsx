@@ -9,7 +9,7 @@ import {
   Filter, ChevronRight, ChevronLeft, Lightbulb, Coffee, Music,
   Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap, LogOut
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND = "/api";

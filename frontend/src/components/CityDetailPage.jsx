@@ -24,7 +24,7 @@ import {
   Calendar,
   User
 } from 'lucide-react';
-import logo from '../assets/MTBLogo.png';
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import '../styles/CityDetailPage.css';
 
 const CityDetailPage = () => {

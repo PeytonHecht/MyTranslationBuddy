@@ -9,8 +9,7 @@ import {
   Filter, ChevronRight, Lightbulb, Coffee, Music,
   Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
-
+import logo from "../assets/MyTranslationBuddyLogo.png";
 const BACKEND = "/api";
 
 const COUNTRIES = [

@@ -7,7 +7,7 @@ import {
   Ticket, PartyPopper, X, Info, Globe, MessageCircle,
   Home, Compass, ClipboardList, User, Volume2, BookmarkCheck
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 
 const BACKEND = "/api";
 

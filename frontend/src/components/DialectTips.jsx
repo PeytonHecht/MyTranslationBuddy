@@ -8,7 +8,7 @@ import {
   Compass, ClipboardList, User, Sparkles, GraduationCap, Coffee,
   Heart, Zap, Languages, ExternalLink, X, LogOut
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND_URL = "/api";

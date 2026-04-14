@@ -7,7 +7,7 @@ import {
   Volume2, Brain, Star, ChevronRight, X, Flame, RotateCcw, Zap, Award,
   ClipboardList, ArrowRight, Sparkles, Clock, Trophy, ChevronDown, ChevronUp, LogOut, Download, Lock
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, isLoggedIn, authHeaders } from "../utils/auth.js";
 
 /* ═══════════════════════════════════════════════════════

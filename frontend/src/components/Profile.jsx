@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 import {
   User, MapPin, LogOut, Trash2, Key, Save, Globe, Calendar,

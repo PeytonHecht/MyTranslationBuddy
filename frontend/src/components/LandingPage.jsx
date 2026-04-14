@@ -8,7 +8,7 @@ import {
   Search, ChevronDown, Train, ExternalLink, Plane, Clock,
   DollarSign, Wifi, Coffee, Heart, Zap, TrendingUp, Navigation, BookOpen, LogOut
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
 
 const BACKEND = "/api";
