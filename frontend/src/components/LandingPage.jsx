@@ -174,6 +174,29 @@ const isStudentFree = (r) => {
   return (fromCity?.country === "DE") && (toCity?.country === "DE");
 };
 
+const fmtDate = (d) => {
+  if(!d) return "TBD";
+  try {
+    return new Date(d + "T00:00:00").toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric"
+    });
+  } catch {
+    return d;
+  }
+};
+
+const fmtTime = (t) => {
+  if(!t) return "";
+  try {
+    const [h,m] = t.split(":");
+    const hr = parseInt(h);
+    return `${hr > 12 ? hr-12 : hr}:${m} ${hr >= 12 ? "PM" : "AM"}`;
+  } catch {
+    return t;
+  }
+};
+
 const LANDMARKS = [
   { lat:52.5163, lng:13.3777, name:"Brandenburg Gate", type:"landmark", city:"Berlin", icon:"🏛️", tip:"Free to visit 24/7. Best photos at sunrise before crowds.", cat:"culture", url:"https://maps.google.com/?q=Brandenburg+Gate+Berlin" },
   { lat:52.5209, lng:13.4094, name:"Museum Island", type:"museum", city:"Berlin", icon:"🎨", tip:"Get the €22 day pass for all 5 museums. Free Sundays once a month!", cat:"culture", url:"https://maps.google.com/?q=Museum+Island+Berlin" },
@@ -252,26 +275,152 @@ const QUICK_PICKS_POOL = [
 ];
 
 /* Build dynamic quick picks: prioritize user's pinned cities, fill rest from pool, no city repeats */
-function buildQuickPicks(myCitySlugs) {
+function buildQuickPicks(myCitySlugs, primaryCitySlug) {
   const pool = [...QUICK_PICKS_POOL];
-  // shuffle deterministically by day so it rotates daily
+  
+  // Create a map of city-specific quick picks (using consistent slug format)
+  const CITY_SPECIFIC_PICKS = {
+    berlin: [
+      { emoji:"🎨", label:"Free street art", city:"Berlin", detail:"East Side Gallery, 24/7", slug:"berlin" },
+      { emoji:"🛍️", label:"Mauerpark flea market", city:"Berlin", detail:"Sundays, free karaoke at 3pm", slug:"berlin" },
+      { emoji:"🎭", label:"Berlin nightlife", city:"Berlin", detail:"Berghain, techno scene, clubs all weekend", slug:"berlin" },
+      { emoji:"🏛️", label:"Free museum Sundays", city:"Berlin", detail:"Many state museums free first Sunday", slug:"berlin" },
+      { emoji:"🍺", label:"Beer gardens", city:"Berlin", detail:"Prater Biergarten since 1837", slug:"berlin" },
+    ],
+    munich: [
+      { emoji:"🍺", label:"Oktoberfest", city:"Munich", detail:"World's largest Volksfest, Sept-Oct", slug:"munich" },
+      { emoji:"🏄", label:"River surfing", city:"Munich", detail:"Eisbach wave, English Garden", slug:"munich" },
+      { emoji:"🏰", label:"Nymphenburg Palace", city:"Munich", detail:"Baroque palace with free gardens", slug:"munich" },
+      { emoji:"🍽️", label:"Viktualienmarkt", city:"Munich", detail:"Outdoor food market since 1807", slug:"munich" },
+    ],
+    hamburg: [
+      { emoji:"🎤", label:"Beatles stage", city:"Hamburg", detail:"Reeperbahn history walk", slug:"hamburg" },
+      { emoji:"🐟", label:"Sunday Fischmarkt", city:"Hamburg", detail:"5-9:30am, legendary atmosphere", slug:"hamburg" },
+      { emoji:"🎵", label:"Elbphilharmonie", city:"Hamburg", detail:"Free plaza with harbor views", slug:"hamburg" },
+    ],
+    vienna: [
+      { emoji:"🎵", label:"€13 opera", city:"Vienna", detail:"Standing room, Staatsoper", slug:"vienna" },
+      { emoji:"☕", label:"Coffeehouse culture", city:"Vienna", detail:"Café Central since 1876", slug:"vienna" },
+      { emoji:"🧀", label:"Naschmarkt brunch", city:"Vienna", detail:"€5 falafel at Neni", slug:"vienna" },
+      { emoji:"🏰", label:"Schönbrunn Palace", city:"Vienna", detail:"Imperial summer residence", slug:"vienna" },
+    ],
+    salzburg: [
+      { emoji:"🏔️", label:"Alpine views", city:"Salzburg", detail:"Hohensalzburg fortress", slug:"salzburg" },
+      { emoji:"🍺", label:"Augustinerbräu", city:"Salzburg", detail:"Monastery brewery since 1621", slug:"salzburg" },
+      { emoji:"🎵", label:"Mozart's birthplace", city:"Salzburg", detail:"Iconic composer's childhood home", slug:"salzburg" },
+    ],
+    zurich: [
+      { emoji:"🍫", label:"Swiss chocolate", city:"Zurich", detail:"Sprüngli hot chocolate", slug:"zurich" },
+      { emoji:"🌊", label:"Lake Zurich", city:"Zurich", detail:"Paddleboarding & sunset views", slug:"zurich" },
+      { emoji:"🎨", label:"Kunsthaus Zurich", city:"Zurich", detail:"Free first Wednesday of month", slug:"zurich" },
+    ],
+    bern: [
+      { emoji:"🏊", label:"River float", city:"Bern", detail:"Swim the Aare all summer", slug:"bern" },
+      { emoji:"🕰️", label:"Zytglogge tower", city:"Bern", detail:"Medieval clock with moving figures", slug:"bern" },
+      { emoji:"🌹", label:"Rose garden", city:"Bern", detail:"Best city panorama for free", slug:"bern" },
+    ],
+    stuttgart: [
+      { emoji:"🚗", label:"€5 after 4pm", city:"Stuttgart", detail:"Mercedes-Benz Museum", slug:"stuttgart" },
+      { emoji:"🏎️", label:"Porsche Museum", city:"Stuttgart", detail:"€4 student price", slug:"stuttgart" },
+      { emoji:"🍷", label:"Weindorf festival", city:"Stuttgart", detail:"Late summer wine village", slug:"stuttgart" },
+    ],
+    leipzig: [
+      { emoji:"🎭", label:"Free galleries", city:"Leipzig", detail:"Spinnerei open nights", slug:"leipzig" },
+      { emoji:"🍻", label:"Cheapest beer", city:"Leipzig", detail:"€2.50 on KarLi", slug:"leipzig" },
+      { emoji:"🎵", label:"Bach's Thomaskirche", city:"Leipzig", detail:"Free organ concerts Fridays", slug:"leipzig" },
+    ],
+    aachen: [
+      { emoji:"🚂", label:"Day trip to Maastricht", city:"Aachen", detail:"30 min by RE train", slug:"aachen" },
+      { emoji:"⛪", label:"Aachen Cathedral", city:"Aachen", detail:"UNESCO #1 in Germany", slug:"aachen" },
+      { emoji:"🍪", label:"Printen cookies", city:"Aachen", detail:"Traditional honey-spice cookies", slug:"aachen" },
+    ],
+    bonn: [
+      { emoji:"🎵", label:"Beethoven's city", city:"Bonn", detail:"Beethoven-Haus museum", slug:"bonn" },
+      { emoji:"🌊", label:"Rhine promenade", city:"Bonn", detail:"Sunset walks along the river", slug:"bonn" },
+    ],
+    graz: [
+      { emoji:"🌅", label:"Free sunset", city:"Graz", detail:"Schlossberg hilltop + Puntigamer", slug:"graz" },
+      { emoji:"🎨", label:"Kunsthaus Graz", city:"Graz", detail:"Alien-shaped art museum", slug:"graz" },
+    ],
+  };
+
+  // Start with city-specific picks if available
+  const result = [];
+  const usedSlugs = new Set();
+  
+  // DEBUG: Log what we're getting
+  console.log("Primary city slug:", primaryCitySlug);
+  console.log("Available city picks:", Object.keys(CITY_SPECIFIC_PICKS));
+  
+  // Add primary city picks FIRST - ensure it shows at the beginning
+  if (primaryCitySlug) {
+    // Try exact match first
+    let primaryPicks = CITY_SPECIFIC_PICKS[primaryCitySlug];
+    // If not found, try lowercase version
+    if (!primaryPicks) {
+      const lowerSlug = primaryCitySlug.toLowerCase();
+      primaryPicks = CITY_SPECIFIC_PICKS[lowerSlug];
+    }
+    
+    if (primaryPicks && primaryPicks.length > 0) {
+      // Add up to 2 picks from primary city at the beginning
+      primaryPicks.slice(0, 2).forEach(pick => {
+        if (result.length < 6 && !usedSlugs.has(pick.slug)) {
+          result.push(pick);
+          usedSlugs.add(pick.slug);
+        }
+      });
+    } else {
+      // If no specific picks, add a default for the primary city
+      const cityObj = CITY_COORDS.find(c => c.slug === primaryCitySlug || c.name.toLowerCase() === primaryCitySlug?.toLowerCase());
+      if (cityObj) {
+        result.push({
+          emoji: PIN_EMOJI[cityObj.country] || "📍",
+          label: "Your city",
+          city: cityObj.name,
+          detail: cityObj.mustDo || "Explore local culture",
+          slug: cityObj.slug
+        });
+        usedSlugs.add(cityObj.slug);
+      }
+    }
+  }
+  
+  // Add picks from other saved cities
+  if (myCitySlugs && myCitySlugs.length > 0) {
+    for (const slug of myCitySlugs) {
+      // Skip if it's the primary city (already added)
+      if (slug === primaryCitySlug) continue;
+      
+      const cityPicks = CITY_SPECIFIC_PICKS[slug];
+      if (cityPicks && result.length < 6) {
+        for (const pick of cityPicks) {
+          if (result.length < 6 && !usedSlugs.has(pick.slug)) {
+            result.push(pick);
+            usedSlugs.add(pick.slug);
+            break; // Only take one pick per saved city
+          }
+        }
+      }
+    }
+  }
+  
+  // Fill remaining slots with general pool (shuffled daily)
   const day = Math.floor(Date.now() / 86400000);
   for (let i = pool.length - 1; i > 0; i--) {
     const j = (day * (i + 1) * 7) % (i + 1);
     [pool[i], pool[j]] = [pool[j], pool[i]];
   }
-  const result = [];
-  const usedCities = new Set();
-  const addUnique = (item) => {
-    if (!usedCities.has(item.slug)) { result.push(item); usedCities.add(item.slug); }
-  };
-  if (myCitySlugs && myCitySlugs.length > 0) {
-    const mySet = new Set(myCitySlugs);
-    pool.filter(p => mySet.has(p.slug)).forEach(p => { if (result.length < 3) addUnique(p); });
-    pool.filter(p => !mySet.has(p.slug)).forEach(p => { if (result.length < 6) addUnique(p); });
-  } else {
-    pool.forEach(p => { if (result.length < 6) addUnique(p); });
+  
+  for (const pick of pool) {
+    if (result.length >= 6) break;
+    if (!usedSlugs.has(pick.slug)) {
+      result.push(pick);
+      usedSlugs.add(pick.slug);
+    }
   }
+  
+  console.log("Final quick picks:", result.map(r => r.city));
   return result;
 }
 
@@ -324,6 +473,14 @@ const LandingPage = () => {
   const userCities = userData.cities;
   const userCityData = CITY_COORDS.find(c => c.slug === userCity || c.name.toLowerCase() === userCity.toLowerCase());
   const weatherMap = useWeather(userCities);
+
+  const [savedEvents, setSavedEvents] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("savedEvents") || "[]");
+    } catch {
+      return [];
+    }
+  });
 
   // Re-read localStorage whenever it changes (e.g. after profile update or city picker save)
   useEffect(() => {
@@ -525,6 +682,21 @@ const LandingPage = () => {
     }
   }, [showRoutes]);
 
+  // Load saved events from server when user is logged in
+  useEffect(() => {
+    if (userEmail) {
+      axios.get("/api/user/profile", { params: { email: userEmail } })
+        .then(res => {
+          const serverSaved = res.data.saved_events || [];
+          if (serverSaved.length > 0) {
+            setSavedEvents(serverSaved);
+            localStorage.setItem("savedEvents", JSON.stringify(serverSaved));
+          }
+        })
+        .catch(() => {});
+    }
+  }, [userEmail]);
+
   const flyToCity = useCallback((slug) => {
     const map = mapInstanceRef.current;
     const city = CITY_COORDS.find(c => c.slug === slug);
@@ -533,11 +705,14 @@ const LandingPage = () => {
     setMapSearch("");
     const el = document.getElementById("mtb-map");
     if (el) {
-      const headerOffset = 50; 
+      const header = document.querySelector('header');
+      const commandBar = document.querySelector('[data-events-bar]');
+      let headerHeight = 0;
+      if (header) headerHeight += header.offsetHeight;
+      if (commandBar) headerHeight += commandBar.offsetHeight;
       const elementPosition = el.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-      
-      window.scrollTo({
+      const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 50;
+    window.scrollTo({
         top: offsetPosition,
         behavior: "smooth"
       }); 
@@ -553,6 +728,11 @@ const LandingPage = () => {
   const findRoute = () => {
     if (!routeFrom || !routeTo) return;
     
+    if (routeFrom === routeTo) {
+      setFoundRoute(null);
+      return;
+    }
+
     // Try direct route
     let route = TRAVEL_ROUTES.find(r => 
       (r.from === routeFrom && r.to === routeTo)
@@ -630,7 +810,7 @@ const LandingPage = () => {
       }
     } else {
       setFoundRoute(null);
-      alert("No direct route found between these cities. Try a different combination!");
+      //alert("No direct route found between these cities. Try a different combination!");
     }
   };
 
@@ -754,7 +934,7 @@ const LandingPage = () => {
       {isSignedIn ? (
         <section style={S.picksWrap}>
           <div style={S.picksScroll}>
-            {buildQuickPicks(userCities).map((p,i) => (
+           {buildQuickPicks(userCities, userCityData?.slug).map((p,i) => (
               <div key={i} onClick={()=>flyToCity(p.slug)} style={S.pickCard}
                 onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 30px rgba(0,0,0,0.12)";e.currentTarget.style.borderColor="#FED7AA";}}
                 onMouseLeave={e=>{e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="0 4px 20px rgba(0,0,0,0.06)";e.currentTarget.style.borderColor="#E5E7EB";}}>
@@ -1202,6 +1382,19 @@ const LandingPage = () => {
                   const pin = CITY_COORDS.find(c => c.slug === slug);
                   if (!pin) return null;
 
+                  const citySavedEvents = savedEvents.filter(event => 
+                    event.city && event.city.toLowerCase() === pin.name.toLowerCase()
+                  );
+                  const upcomingEvents = citySavedEvents.filter(event => {
+                    if (!event.date) return true;
+                    const eventDate = new Date(event.date);
+                    return eventDate >= now;
+                  }).sort((a, b) => {
+                    if (!a.date) return 1;
+                    if (!b.date) return -1;
+                    return new Date(a.date) - new Date(b.date);
+                  }).slice(0, 3);
+
                   const weather = weatherMap[slug] ?? {
                     icon: "⏳", cond: "Loading...", hi: "—", lo: "—",
                     sunrise: "—", sunset: "—",
@@ -1242,88 +1435,129 @@ const LandingPage = () => {
 
                       {/* Body */}
                       {isPrimary ? (
-                        /* ===== PRIMARY CITY — full detail with bookmark ===== */
-                        <div style={{padding:"1rem 1.25rem",display:"grid",gridTemplateColumns:userCities.length>1?"1fr 1fr":"1fr",gap:"0.75rem"}}>
-                          {/* Phrase of the day with bookmark + listen */}
-                          <div style={{background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",borderRadius:"0.85rem",padding:"0.85rem 1rem",border:"1px solid #BFDBFE",transition:"all 0.2s",gridColumn:userCities.length>1?"1 / 2":"auto"}}
-                            onMouseEnter={e=>{e.currentTarget.style.borderColor="#93C5FD";}}
-                            onMouseLeave={e=>{e.currentTarget.style.borderColor="#BFDBFE";}}>
-                            <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.4rem"}}>
-                              <span style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em"}}>💬 Street-Ready German</span>
-                              <div style={{display:"flex",alignItems:"center",gap:"0.3rem"}}>
-                                <button onClick={(e)=>{e.stopPropagation();toggleDailyBookmark(phrase);}} title={isDailyBookmarked(phrase.de)?"Remove bookmark":"Bookmark"} style={{background:isDailyBookmarked(phrase.de)?"#FFF7ED":"#fff",border:isDailyBookmarked(phrase.de)?"1px solid #FA4616":"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
-                                  <Bookmark size={11} fill={isDailyBookmarked(phrase.de)?"#FA4616":"none"} color={isDailyBookmarked(phrase.de)?"#FA4616":"#0021A5"}/>
-                                </button>
-                                <button onClick={()=>{if(typeof speechSynthesis!=="undefined"){const u=new SpeechSynthesisUtterance(phrase.de);u.lang="de-DE";u.rate=0.85;speechSynthesis.speak(u);}}} style={{background:"#fff",border:"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
-                                  <Volume2 size={11} color="#0021A5"/>
-                                </button>
-                              </div>
-                            </div>
-                            <p style={{fontSize:"0.92rem",fontWeight:800,color:"#0021A5",margin:"0 0 0.2rem",lineHeight:1.3}}>{phrase.de}</p>
-                            <p style={{fontSize:"0.73rem",color:"#374151",margin:"0 0 0.3rem"}}>{phrase.en}</p>
-                            <span style={{fontSize:"0.58rem",fontWeight:600,color:"#003087",background:"rgba(0,33,165,0.08)",padding:"0.1rem 0.45rem",borderRadius:9999}}>{phrase.ctx}</span>
-                          </div>
-
-                          {/* Tonight */}
-                          <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#FFF7F5",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FECDC2",gridColumn:userCities.length>1?"2 / 3":"auto"}}>
-                            <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>
-                              {isWeekend ? "🎉" : "🌆"}
-                            </div>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{fontSize:"0.58rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Tonight · {dayName}</p>
-                              <p style={{fontSize:"0.75rem",color:"#7C2D12",margin:0,lineHeight:1.4,fontWeight:500}}>{tonightTip}</p>
-                            </div>
-                          </div>
-
-                          {/* Local tip */}
-                          <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#F5F8FF",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #C7D7F8"}}>
-                            <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>💡</div>
-                            <div style={{flex:1,minWidth:0}}>
-                              <p style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Local tip</p>
-                              <p style={{fontSize:"0.75rem",color:"#1e3a8a",margin:0,lineHeight:1.4,fontWeight:500}}>{tip}</p>
-                            </div>
-                          </div>
-
-                          {/* Sunset / Sunrise */}
-                          {(() => {
-                            const sunsetHours = [16,16,17,18,20,21,21,20,19,18,16,16];
-                            const sunriseHours = [8,7,7,6,5,5,5,6,7,7,7,8];
-                            const mo = now.getMonth();
-                            return (
-                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
-                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#F59E0B,#D97706)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🌅</div>
-                              <div style={{flex:1,minWidth:0}}>
-                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Daylight</p>
-                                <p style={{fontSize:"0.75rem",color:"#78350F",margin:0,lineHeight:1.4,fontWeight:500}}>
-                                  ☀️ Sunrise {weather.sunrise ?? "—"} &nbsp;·&nbsp; 🌇 Sunset {weather.sunset ?? "—"}
-                                </p>
-                              </div>
-                            </div>
-                            );
-                          })()}
-
-                          {/* Days until next German holiday */}
-                          {(() => {
-                            const holidays = [
-                              {name:"New Year's Day",m:0,d:1},{name:"Epiphany",m:0,d:6},{name:"May Day",m:4,d:1},{name:"German Unity Day",m:9,d:3},{name:"All Saints' Day",m:10,d:1},{name:"Christmas Eve",m:11,d:24},{name:"Christmas Day",m:11,d:25},{name:"New Year's Eve",m:11,d:31}
-                            ];
-                            let next=null;let daysUntil=999;
-                            holidays.forEach(h=>{
-                              let hDate=new Date(now.getFullYear(),h.m,h.d);
-                              if(hDate<now) hDate=new Date(now.getFullYear()+1,h.m,h.d);
-                              const diff=Math.ceil((hDate-now)/(1000*60*60*24));
-                              if(diff<daysUntil){daysUntil=diff;next=h;}
-                            });
-                            return (
-                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #A7F3D0"}}>
-                                <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#10B981,#059669)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🗓️</div>
-                                <div style={{flex:1,minWidth:0}}>
-                                  <p style={{fontSize:"0.58rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Next Holiday</p>
-                                  <p style={{fontSize:"0.75rem",color:"#064E3B",margin:0,lineHeight:1.4,fontWeight:500}}>🎉 {next?.name} in <strong>{daysUntil}</strong> day{daysUntil!==1?"s":""}</p>
+                        <div style={{padding:"1rem 1.25rem"}}>
+                          {/* ===== PRIMARY CITY — full detail with bookmark ===== */}
+                          <div style={{display:"grid",gridTemplateColumns:userCities.length>1 ? "1fr 1fr" : "1fr",gap:"0.75rem"}}>                            
+                            {/* Phrase of the day with bookmark + listen */}
+                            <div style={{background:"linear-gradient(135deg,#EFF6FF,#DBEAFE)",borderRadius:"0.85rem",padding:"0.85rem 1rem",border:"1px solid #BFDBFE",transition:"all 0.2s"}}
+                              onMouseEnter={e=>{e.currentTarget.style.borderColor="#93C5FD";}}
+                              onMouseLeave={e=>{e.currentTarget.style.borderColor="#BFDBFE";}}>
+                              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:"0.4rem"}}>
+                                <span style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em"}}>💬 Street-Ready German</span>
+                                <div style={{display:"flex",alignItems:"center",gap:"0.3rem"}}>
+                                  <button onClick={(e)=>{e.stopPropagation();toggleDailyBookmark(phrase);}} title={isDailyBookmarked(phrase.de)?"Remove bookmark":"Bookmark"} style={{background:isDailyBookmarked(phrase.de)?"#FFF7ED":"#fff",border:isDailyBookmarked(phrase.de)?"1px solid #FA4616":"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
+                                    <Bookmark size={11} fill={isDailyBookmarked(phrase.de)?"#FA4616":"none"} color={isDailyBookmarked(phrase.de)?"#FA4616":"#0021A5"}/>
+                                  </button>
+                                  <button onClick={()=>{if(typeof speechSynthesis!=="undefined"){const u=new SpeechSynthesisUtterance(phrase.de);u.lang="de-DE";u.rate=0.85;speechSynthesis.speak(u);}}} style={{background:"#fff",border:"1px solid #BFDBFE",borderRadius:"0.35rem",width:24,height:24,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",transition:"all 0.15s",padding:0}}>
+                                    <Volume2 size={11} color="#0021A5"/>
+                                  </button>
                                 </div>
                               </div>
-                            );
-                          })()}
+                              <p style={{fontSize:"0.92rem",fontWeight:800,color:"#0021A5",margin:"0 0 0.2rem",lineHeight:1.3}}>{phrase.de}</p>
+                              <p style={{fontSize:"0.73rem",color:"#374151",margin:"0 0 0.3rem"}}>{phrase.en}</p>
+                              <span style={{fontSize:"0.58rem",fontWeight:600,color:"#003087",background:"rgba(0,33,165,0.08)",padding:"0.1rem 0.45rem",borderRadius:9999}}>{phrase.ctx}</span>
+                            </div>
+
+                            {/* Tonight */}
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#FFF7F5",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FECDC2"}}>                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#FA4616,#c73800)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>
+                                {isWeekend ? "🎉" : "🌆"}
+                              </div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#c73800",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Tonight · {dayName}</p>
+                                <p style={{fontSize:"0.75rem",color:"#7C2D12",margin:0,lineHeight:1.4,fontWeight:500}}>{tonightTip}</p>
+                              </div>
+                            </div>
+
+                            {/* Local tip */}
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"#F5F8FF",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #C7D7F8"}}>                              <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#0021A5,#003087)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>💡</div>
+                              <div style={{flex:1,minWidth:0}}>
+                                <p style={{fontSize:"0.58rem",fontWeight:700,color:"#0021A5",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Local tip</p>
+                                <p style={{fontSize:"0.75rem",color:"#1e3a8a",margin:0,lineHeight:1.4,fontWeight:500}}>{tip}</p>
+                              </div>
+                            </div>
+
+                            
+                            {/* SAVED EVENTS SECTION */}
+                            {upcomingEvents.length > 0 && (
+                              <div style={{background:"#FFFBF5",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDE68A"}}>
+                                <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.4rem"}}>
+                                  <Heart size={10} color="#FA4616" fill="#FA4616"/>
+                                  <p style={{fontSize:"0.55rem",fontWeight:700,color:"#D97706",textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>Saved Events</p>
+                                </div>
+                                <div style={{display:"flex",flexDirection:"column",gap:"0.4rem"}}>
+                                  {upcomingEvents.slice(0, 2).map((event, idx) => (
+                                    <div key={event.id || idx} style={{display:"flex",alignItems:"center",gap:"0.4rem",paddingBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "0.4rem" : "0",borderBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "1px solid #FEF3C7" : "none"}}>
+                                      {event.image && (
+                                        <div style={{width:32,height:32,borderRadius:"0.4rem",backgroundImage:`url(${event.image})`,backgroundSize:"cover",backgroundPosition:"center",flexShrink:0}}/>
+                                      )}
+                                      <div style={{flex:1,minWidth:0}}>
+                                        <p style={{fontSize:"0.68rem",fontWeight:600,color:"#78350F",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{event.name}</p>
+                                        <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginTop:"0.1rem",flexWrap:"wrap"}}>
+                                          {event.date && <span style={{fontSize:"0.52rem",color:"#B45309"}}>📅 {fmtDate(event.date)}</span>}
+                                          {event.time && <span style={{fontSize:"0.52rem",color:"#B45309"}}>🕐 {fmtTime(event.time)}</span>}
+                                        </div>
+                                      </div>
+                                      {event.url && (
+                                        <a href={event.url} target="_blank" rel="noopener noreferrer" style={{fontSize:"0.55rem",color:"#FA4616",fontWeight:600,textDecoration:"none",flexShrink:0}}>
+                                          Tickets →
+                                        </a>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                {citySavedEvents.length > 2 && (
+                                  <button onClick={() => navigate(`/events?city=${encodeURIComponent(pin.name)}`)} style={{fontSize:"0.55rem",color:"#D97706",fontWeight:600,marginTop:"0.4rem",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:"0.2rem"}}>
+                                    + {citySavedEvents.length - 2} more saved events →
+                                  </button>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Sunset / Sunrise */}
+                              <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
+                                {(() => {
+                                  const sunsetHours = [16,16,17,18,20,21,21,20,19,18,16,16];
+                                  const sunriseHours = [8,7,7,6,5,5,5,6,7,7,7,8];
+                                  const mo = now.getMonth();
+                                  return (
+                                    <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#FFF8ED,#FFFBE8)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #FDEAB8"}}>
+                                    <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#F59E0B,#D97706)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🌅</div>
+                                    <div style={{flex:1,minWidth:0}}>
+                                      <p style={{fontSize:"0.58rem",fontWeight:700,color:"#92400E",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Daylight</p>
+                                      <p style={{fontSize:"0.75rem",color:"#78350F",margin:0,lineHeight:1.4,fontWeight:500}}>
+                                        ☀️ Sunrise {weather.sunrise ?? "—"} &nbsp;·&nbsp; 🌇 Sunset {weather.sunset ?? "—"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  );
+                                })()}
+                            </div>
+
+                            {/* Days until next German holiday */}
+                            <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #A7F3D0"}}>
+                              {(() => {
+                                const holidays = [
+                                  {name:"New Year's Day",m:0,d:1},{name:"Epiphany",m:0,d:6},{name:"May Day",m:4,d:1},{name:"German Unity Day",m:9,d:3},{name:"All Saints' Day",m:10,d:1},{name:"Christmas Eve",m:11,d:24},{name:"Christmas Day",m:11,d:25},{name:"New Year's Eve",m:11,d:31}
+                                ];
+                                let next=null;let daysUntil=999;
+                                holidays.forEach(h=>{
+                                  let hDate=new Date(now.getFullYear(),h.m,h.d);
+                                  if(hDate<now) hDate=new Date(now.getFullYear()+1,h.m,h.d);
+                                  const diff=Math.ceil((hDate-now)/(1000*60*60*24));
+                                  if(diff<daysUntil){daysUntil=diff;next=h;}
+                                });
+                                return (
+                                  <div style={{display:"flex",alignItems:"flex-start",gap:"0.6rem",background:"linear-gradient(135deg,#F0FFF4,#ECFDF5)",borderRadius:"0.85rem",padding:"0.75rem 0.9rem",border:"1px solid #A7F3D0"}}>
+                                    <div style={{width:28,height:28,borderRadius:"0.45rem",background:"linear-gradient(135deg,#10B981,#059669)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.85rem"}}>🗓️</div>
+                                    <div style={{flex:1,minWidth:0}}>
+                                      <p style={{fontSize:"0.58rem",fontWeight:700,color:"#065F46",textTransform:"uppercase",letterSpacing:"0.08em",margin:"0 0 0.15rem"}}>Next Holiday</p>
+                                      <p style={{fontSize:"0.75rem",color:"#064E3B",margin:0,lineHeight:1.4,fontWeight:500}}>🎉 {next?.name} in <strong>{daysUntil}</strong> day{daysUntil!==1?"s":""}</p>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </div>
                         </div>
                       ) : (
                         /* ===== SECONDARY CITY — compact ===== */
@@ -1344,6 +1578,44 @@ const LandingPage = () => {
                               <p style={{fontSize:"0.72rem",color:"#1e3a8a",margin:0,lineHeight:1.35,fontWeight:500}}>{tip}</p>
                             </div>
                           </div>
+
+                          {/* Saved Events for secondary city - NEW! */}
+                          {upcomingEvents.length > 0 && (
+                            <div style={{background:"#FFFBF5",borderRadius:"0.85rem",padding:"0.6rem 0.7rem",border:"1px solid #FDE68A"}}>
+                              <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginBottom:"0.4rem"}}>
+                                <Heart size={10} color="#FA4616" fill="#FA4616"/>
+                                <p style={{fontSize:"0.55rem",fontWeight:700,color:"#D97706",textTransform:"uppercase",letterSpacing:"0.08em",margin:0}}>Saved Events</p>
+                              </div>
+                              <div style={{display:"flex",flexDirection:"column",gap:"0.4rem"}}>
+                                {upcomingEvents.slice(0, 2).map((event, idx) => (
+                                  <div key={event.id || idx} style={{display:"flex",alignItems:"center",gap:"0.4rem",paddingBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "0.4rem" : "0",borderBottom:idx !== upcomingEvents.slice(0,2).length-1 ? "1px solid #FEF3C7" : "none"}}>
+                                    {event.image && (
+                                      <div style={{width:32,height:32,borderRadius:"0.4rem",backgroundImage:`url(${event.image})`,backgroundSize:"cover",backgroundPosition:"center",flexShrink:0}}/>
+                                    )}
+                                    <div style={{flex:1,minWidth:0}}>
+                                      <p style={{fontSize:"0.68rem",fontWeight:600,color:"#78350F",margin:0,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{event.name}</p>
+                                      <div style={{display:"flex",alignItems:"center",gap:"0.3rem",marginTop:"0.1rem",flexWrap:"wrap"}}>
+                                        {event.date && <span style={{fontSize:"0.52rem",color:"#B45309"}}>📅 {fmtDate(event.date)}</span>}
+                                        {event.time && <span style={{fontSize:"0.52rem",color:"#B45309"}}>🕐 {fmtTime(event.time)}</span>}
+                                      </div>
+                                    </div>
+                                    {event.url && (
+                                      <a href={event.url} target="_blank" rel="noopener noreferrer" style={{fontSize:"0.55rem",color:"#FA4616",fontWeight:600,textDecoration:"none",flexShrink:0}}>
+                                        Tickets →
+                                      </a>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                              {citySavedEvents.length > 2 && (
+                                <button onClick={() => navigate(`/events?city=${encodeURIComponent(pin.name)}`)} style={{fontSize:"0.55rem",color:"#D97706",fontWeight:600,marginTop:"0.4rem",background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:"0.2rem"}}>
+                                  + {citySavedEvents.length - 2} more saved events →
+                                </button>
+                              )}
+                            </div>
+                          )}
+
+
                           {/* Mensa budget tip */}
                           <div style={{display:"flex",alignItems:"flex-start",gap:"0.55rem"}}>
                             <div style={{width:26,height:26,borderRadius:"0.4rem",background:"linear-gradient(135deg,#10B981,#059669)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:"0.78rem"}}>🍽️</div>

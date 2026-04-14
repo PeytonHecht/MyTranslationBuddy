@@ -43,6 +43,7 @@ const Reservations = () => {
   const [quizScore, setQuizScore] = useState({ correct: 0, total: 0 });
   const [showVocabForm, setShowVocabForm] = useState(false);
   const [flipAnim, setFlipAnim] = useState(false);
+  const [flashcardResults, setFlashcardResults] = useState({ correct: 0, total: 0 });
 
   /* ── Daily goal state ─────────────────────────────── */
   const [dailyGoal, setDailyGoal] = useState(5);
@@ -60,6 +61,7 @@ const Reservations = () => {
   const [bookmarkedIds, setBookmarkedIds] = useState(new Set());
   const [bookmarkMap, setBookmarkMap] = useState({});
   const [phraseSearch, setPhraseSearch] = useState("");
+
 
   /* ── Active tab ───────────────────────────────────── */
   const [activeTab, setActiveTab] = useState(() => {
@@ -80,6 +82,13 @@ const Reservations = () => {
   const [podPronShown, setPodPronShown] = useState(false);
   const [showGoalEditor, setShowGoalEditor] = useState(false);
   const [celebrationMsg, setCelebrationMsg] = useState("");
+
+  /* ── Study mode state ─────────────────────────────── */
+  const [studyMode, setStudyMode] = useState(false);
+  const [studyCards, setStudyCards] = useState([]);
+  const [studyCardIndex, setStudyCardIndex] = useState(0);
+  const [studyQueue, setStudyQueue] = useState([]);
+  const [studySessionStats, setStudySessionStats] = useState({ reviewed: 0, correct: 0, incorrect: 0 });
 
   /* ── Static data ──────────────────────────────────── */
   const cities = CITY_NAMES_LIST;
@@ -376,6 +385,12 @@ const Reservations = () => {
 
   /* ── Flashcard handlers ───────────────────────────── */
   const handleFlashcardRate = (rating) => {
+    // Store the rating value for this card
+    setFlashcardResults(prev => ({
+      ...prev,
+      [currentCardIndex]: rating
+    }));
+    
     setVocabCards(prev => prev.map((c, i) => {
       if (i !== currentCardIndex) return c;
       const newMastery = rating === 0 ? Math.max(0, c.mastery - 1) : Math.min(5, c.mastery + (rating >= 2 ? 1 : 0));
@@ -386,8 +401,116 @@ const Reservations = () => {
     setTodayProgress(p => p + 1);
     recordStudyDay();
     if (currentCardIndex < vocabCards.length - 1) setCurrentCardIndex(i => i + 1);
-    else { setFlashcardMode(false); setCurrentCardIndex(0); }
+    else { 
+      setFlashcardMode(false); 
+      setCurrentCardIndex(0);
+      setFlashcardResults({}); // Clear results when exiting
+    }
   };
+
+  /* ── Study mode handlers ───────────────────────────── */
+  function startStudy() {
+    if (vocabCards.length === 0) return;
+    
+    // Create a weighted queue - cards with lower mastery appear more often
+    const weightedCards = [];
+    vocabCards.forEach(card => {
+      // Lower mastery = more repetitions
+      const weight = Math.max(1, 5 - card.mastery);
+      for (let i = 0; i < weight; i++) {
+        weightedCards.push(card);
+      }
+    });
+    
+    // Shuffle the weighted queue
+    const shuffled = [...weightedCards].sort(() => Math.random() - 0.5);
+    
+    setStudyQueue(shuffled);
+    setStudyCards(vocabCards);
+    setStudyCardIndex(0);
+    setStudySessionStats({ reviewed: 0, correct: 0, incorrect: 0 });
+    setShowAnswer(false);
+    setFlipAnim(false);
+    setStudyMode(true);
+    setActiveTab("practice");
+    
+    // Scroll to the top of the practice section smoothly
+    setTimeout(() => {
+      const practiceSection = document.querySelector('[data-practice-section]');
+      if (practiceSection) {
+        practiceSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
+  }
+
+const handleStudyRating = (rating) => {
+  // rating: 0=Again, 1=Hard, 2=Good, 3=Easy
+  const currentCard = studyQueue[studyCardIndex];
+  
+  // Update mastery based on rating
+  setStudyCards(prev => prev.map(c => {
+    if (c.id !== currentCard.id) return c;
+    let newMastery;
+    if (rating === 0) { // Again - decrease mastery
+      newMastery = Math.max(0, c.mastery - 2);
+    } else if (rating === 1) { // Hard - small decrease or no change
+      newMastery = Math.max(0, c.mastery - 1);
+    } else if (rating === 2) { // Good - small increase
+      newMastery = Math.min(5, c.mastery + 1);
+    } else { // Easy - larger increase
+      newMastery = Math.min(5, c.mastery + 2);
+    }
+    return { ...c, mastery: newMastery, lastReviewed: new Date().toISOString().split("T")[0] };
+  }));
+  
+  // Update stats
+  setStudySessionStats(prev => ({
+    reviewed: prev.reviewed + 1,
+    correct: prev.correct + (rating >= 2 ? 1 : 0),
+    incorrect: prev.incorrect + (rating < 2 ? 1 : 0)
+  }));
+  
+  setTodayProgress(p => p + 1);
+  recordStudyDay();
+  
+  // Move to next card
+  if (studyCardIndex < studyQueue.length - 1) {
+    setStudyCardIndex(i => i + 1);
+  } else {
+    // End of queue - reshuffle with updated weights
+    const updatedCards = studyCards.map(c => {
+      const updated = vocabCards.find(vc => vc.id === c.id);
+      return updated || c;
+    });
+    
+    // Rebuild weighted queue with updated mastery
+    const newWeightedCards = [];
+    updatedCards.forEach(card => {
+      const weight = Math.max(1, 5 - card.mastery);
+      for (let i = 0; i < weight; i++) {
+        newWeightedCards.push(card);
+      }
+    });
+    const reshuffled = [...newWeightedCards].sort(() => Math.random() - 0.5);
+    setStudyQueue(reshuffled);
+    setStudyCardIndex(0);
+    setVocabCards(updatedCards);
+  }
+  
+  setShowAnswer(false);
+  setFlipAnim(false);
+};
+
+const endStudySession = () => {
+  setStudyMode(false);
+  setStudyQueue([]);
+  setStudyCardIndex(0);
+  setStudySessionStats({ reviewed: 0, correct: 0, incorrect: 0 });
+  setShowAnswer(false);
+  setFlipAnim(false);
+};
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function startFlashcards() {
@@ -506,6 +629,14 @@ const Reservations = () => {
   useEffect(() => {
     if (activeTab === "saved") fetchSavedPhrases();
   }, [activeTab, fetchSavedPhrases]);
+
+  useEffect(() => {
+    if (activeTab !== "practice") {
+      if (studyMode) {
+        endStudySession();
+      }
+    }
+  }, [activeTab]);
 
   const removeSavedPhrase = async (bookmarkId, phraseId) => {
     try {
@@ -879,12 +1010,16 @@ return (
                   style={{...S.qaBtn, opacity: totalCards === 0 ? 0.45 : 1}}>
                   <RotateCcw size={18} color="#7C3AED"/> Flashcards
                 </button>
+                <button onClick={startStudy} disabled={totalCards === 0}
+                style={{...S.qaBtn, opacity: totalCards === 0 ? 0.45 : 1}}>
+                <BookOpen size={18} color="#8B5CF6"/> Study
+              </button>       
                 <button onClick={startQuiz} disabled={totalCards < 2}
                   style={{...S.qaBtn, opacity: totalCards < 2 ? 0.45 : 1}}>
                   <Zap size={18} color="#059669"/> Quiz
                 </button>
                 <button onClick={() => setActiveTab("library")} style={S.qaBtn}>
-                  <Languages size={18} color="#0021A5"/> Browse
+                  <Languages size={18} color="#0021a5"/> Browse
                 </button>
                 <button onClick={() => { setShowVocabForm(true); setActiveTab("practice"); }} style={S.qaBtn}>
                   <Plus size={18} color="#DC2626"/> Add Card
@@ -939,9 +1074,9 @@ return (
         {/* ═══════════════════════════════════════════════
            TAB: PRACTICE — flashcards, quiz, vocab deck
            ═══════════════════════════════════════════════ */}
-        {activeTab === "practice" && !flashcardMode && !quizMode && (
-          <section style={S.section}>
-
+        {/* ─── PRACTICE TAB - REGULAR VIEW (no active mode) ─── */}
+        {activeTab === "practice" && !flashcardMode && !quizMode && !studyMode && (
+          <section style={S.section} data-practice-section>
             <div style={S.sectionHeader}>
               <div>
                 <h2 style={S.sectionTitle}>Practice</h2>
@@ -951,6 +1086,10 @@ return (
                 <button onClick={startFlashcards} disabled={totalCards === 0}
                   style={{...S.primaryBtn, opacity: totalCards === 0 ? 0.5 : 1}}>
                   <RotateCcw size={14}/> Flashcards
+                </button>
+                <button onClick={startStudy} disabled={totalCards === 0}
+                  style={{...S.primaryBtn, opacity: totalCards === 0 ? 0.5 : 1, background:"#3770c6"}}>
+                  <BookOpen size={14}/> Study
                 </button>
                 <button onClick={startQuiz} disabled={totalCards < 2}
                   style={{...S.secondaryBtn, opacity: totalCards < 2 ? 0.5 : 1}}>
@@ -1034,14 +1173,30 @@ return (
               <button onClick={() => { setFlashcardMode(false); setFlipAnim(false); }} style={S.exitBtn}><X size={14}/> Exit</button>
             </div>
             {/* Progress dots */}
+            {/* Progress dots with color coding based on answers */}
             <div style={S.fcDots}>
-              {vocabCards.slice(0, Math.min(vocabCards.length, 20)).map((_, i) => (
-                <div key={i} style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  backgroundColor: i < currentCardIndex ? "#059669" : i === currentCardIndex ? "#0021A5" : "#E5E7EB",
-                  transition: "all 0.2s"
-                }}/>
-              ))}
+              {vocabCards.slice(0, Math.min(vocabCards.length, 20)).map((_, i) => {
+                let dotColor = "#E5E7EB"; // Default gray (not seen yet)
+                if (i < currentCardIndex) {
+                  // Already answered cards - show based on rating
+                  const rating = flashcardResults[i];
+                  if (rating === 0) dotColor = "#EF4444"; // Again - Red
+                  else if (rating === 1) dotColor = "#FDE68A"; // Hard - Orange/Yellow
+                  else if (rating === 2) dotColor = "#1E40AF"; // Good - Blue
+                  else if (rating === 3) dotColor = "#2ea478"; // Easy - Green
+                  else dotColor = "#E5E7EB";
+                } else if (i === currentCardIndex) {
+                  dotColor = "#0021A5"; // Current card - Blue
+                }
+                return (
+                  <div key={i} style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    backgroundColor: dotColor,
+                    transition: "all 0.2s",
+                    boxShadow: i === currentCardIndex ? "0 0 0 2px rgba(0,33,165,0.2)" : "none"
+                  }}/>
+                );
+              })}
               {vocabCards.length > 20 && <span style={{fontSize:"0.65rem", color:"#9CA3AF"}}>+{vocabCards.length - 20}</span>}
             </div>
             <div style={S.flashcard} onClick={() => { if (!showAnswer) { setFlipAnim(true); setTimeout(() => setShowAnswer(true), 150); } }}>
@@ -1120,6 +1275,70 @@ return (
                 </div>
               )}
             </div>
+          </section>
+        )}
+
+        
+        {/* ─── STUDY MODE ────────────────────────────── */}
+        {activeTab === "practice" && studyMode && studyQueue.length > 0 && (
+          <section style={S.fcSection}>
+            <div style={S.fcHeader}>
+              <span style={S.fcProgress}>Card {studyCardIndex + 1} of {studyQueue.length}</span>
+              <div style={{display:"flex",gap:"0.5rem",alignItems:"center"}}>
+                <div style={{display:"flex",gap:"0.3rem",alignItems:"center",background:"#F1F5F9",padding:"0.25rem 0.6rem",borderRadius:"0.5rem"}}>
+                  <span style={{fontSize:"0.7rem",fontWeight:600,color:"#059669"}}>✓ {studySessionStats.correct}</span>
+                  <span style={{fontSize:"0.7rem",fontWeight:600,color:"#EF4444"}}>✗ {studySessionStats.incorrect}</span>
+                </div>
+                <button onClick={endStudySession} style={{...S.exitBtn, backgroundColor:"#FEF2F2",borderColor:"#FECACA",color:"#DC2626"}}>
+                  <X size={14}/> End Session
+                </button>
+              </div>
+            </div>
+            
+            {/* Progress bar */}
+            <div style={{height:4, backgroundColor:"#E5E7EB", borderRadius:2, marginBottom:"1rem", overflow:"hidden"}}>
+              <div style={{height:"100%", borderRadius:2, backgroundColor:"#8B5CF6", transition:"width 0.3s",
+                width: `${((studyCardIndex + 1) / studyQueue.length) * 100}%`}}/>
+            </div>
+            
+            <div style={S.flashcard} onClick={() => { if (!showAnswer) { setFlipAnim(true); setTimeout(() => setShowAnswer(true), 150); } }}>
+              {!showAnswer ? (
+                <div style={{textAlign:"center", opacity: flipAnim ? 0 : 1, transform: flipAnim ? "rotateY(90deg)" : "rotateY(0)", transition:"all 0.15s ease-in"}}>
+                  <p style={S.fcLabel}>GERMAN</p>
+                  <p style={S.fcWord}>{studyQueue[studyCardIndex]?.german}</p>
+                  <button onClick={(e) => { e.stopPropagation(); speakPhrase(studyQueue[studyCardIndex]?.german, "study"); }}
+                    style={{...S.iconBtn, margin:"0.75rem auto 0", padding:"0.4rem 0.8rem"}}><Volume2 size={15}/> Listen</button>
+                  <p style={S.fcHint}>Tap card to reveal</p>
+                </div>
+              ) : (
+                <div style={{textAlign:"center", animation:"fadeIn 0.2s ease-out"}}>
+                  <p style={S.fcLabel}>ENGLISH</p>
+                  <p style={S.fcAnswer}>{studyQueue[studyCardIndex]?.english}</p>
+                  {studyQueue[studyCardIndex]?.context && <p style={S.fcCtx}>💡 {studyQueue[studyCardIndex].context}</p>}
+                </div>
+              )}
+            </div>
+            
+            {showAnswer && (
+              <div style={S.rateRow}>
+                <p style={{fontSize:"0.78rem",color:"#6B7280",margin:"0 0 0.65rem",textAlign:"center"}}>How well did you know this?</p>
+                <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
+                  <button onClick={() => handleStudyRating(0)} style={{...S.rateBtn, borderColor:"#FCA5A5", color:"#EF4444", backgroundColor:"#FEF2F2"}}>Again</button>
+                  <button onClick={() => handleStudyRating(1)} style={{...S.rateBtn, borderColor:"#FDE68A", color:"#92400E", backgroundColor:"#FFFBEB"}}>Hard</button>
+                  <button onClick={() => handleStudyRating(2)} style={{...S.rateBtn, borderColor:"#93C5FD", color:"#1E40AF", backgroundColor:"#EFF6FF"}}>Good</button>
+                  <button onClick={() => handleStudyRating(3)} style={{...S.rateBtn, borderColor:"#6EE7B7", color:"#065F46", backgroundColor:"#ECFDF5"}}>Easy!</button>
+                </div>
+              </div>
+            )}
+            
+            {/* Session summary when near the end */}
+            {studyCardIndex === studyQueue.length - 1 && showAnswer && (
+              <div style={{marginTop:"0.75rem", padding:"0.65rem", borderRadius:"0.5rem", backgroundColor:"#F0FDF4", border:"1px solid #BBF7D0", textAlign:"center"}}>
+                <p style={{fontSize:"0.72rem",color:"#065F46",fontWeight:600, margin:0}}>
+                  Last card! After this, your session will automatically reshuffle with new weights.
+                </p>
+              </div>
+            )}
           </section>
         )}
 

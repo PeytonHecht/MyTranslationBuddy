@@ -172,6 +172,27 @@ const Events = () => {
     return ()=>document.removeEventListener("mousedown",handler);
   },[cityDrop]);
 
+  // Auto-cleanup expired events (events that have passed)
+  useEffect(() => {
+    if (!savedEvents.length) return;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const validEvents = savedEvents.filter(event => {
+      if (!event.date) return true; // Keep events without dates
+      const eventDate = new Date(event.date);
+      eventDate.setHours(0, 0, 0, 0);
+      return eventDate >= today; // Keep only today's or future events
+    });
+    
+    // If some events were removed, update state and persist
+    if (validEvents.length !== savedEvents.length) {
+      setSavedEvents(validEvents);
+      persistSavedEvents(validEvents, userEmail);
+    }
+  }, [savedEvents.length]); // Runs when savedEvents changes
+
   const toggleCountry=(code)=>{
     setCountries([code]);
     setCity("");setPage(0);
