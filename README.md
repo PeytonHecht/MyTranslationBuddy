@@ -107,6 +107,14 @@ python run.py
 # Swagger docs at http://localhost:8000/docs
 ```
 
+### Translation Engine
+
+```
+Install Docker Desktop at https://www.docker.com/products/docker-desktop/
+In terminal, run:
+docker run -ti --rm -p 5000:5000 libretranslate/libretranslate
+```
+
 ### Frontend
 
 ```bash
