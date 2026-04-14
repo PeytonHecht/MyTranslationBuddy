@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // Ensure this path matches your logo file
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 
 const OAuthAuthenticate = () => {
   const navigate = useNavigate();

@@ -13,8 +13,8 @@ def _base_url() -> str:
 
 
 def _auth() -> tuple[str, str]:
-    account_id = os.getenv("b6ac15a1-f293-4d35-86b5-7d29ba80846e")
-    api_key = os.getenv("2_oLX2JLS3rIPdiX2460d8BwSkd")
+    account_id = os.getenv("SMARTCAT_ACCOUNT_ID", "")
+    api_key = os.getenv("SMARTCAT_API_KEY", "")
     if not account_id or not api_key:
         raise SmartcatTranslationError(
             "SMARTCAT_ACCOUNT_ID/SMARTCAT_API_KEY are not set. Check your .env loading."

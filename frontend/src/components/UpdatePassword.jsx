@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // Ensure this path matches your logo file
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 
 const UpdatePassword = () => {
   const [email, setEmail] = useState("");
+  const [current_password, setCurrentPassword] = useState("");
   const [new_password, setNewPassword] = useState("");
   const [confirm_password, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
@@ -20,8 +22,14 @@ const UpdatePassword = () => {
       return;
     }
 
+    if (!current_password) {
+      setMessage("Please enter your current password.");
+      return;
+    }
+
     const payload = {
       email: email || localStorage.getItem("email"),
+      current_password,
       new_password,
     };
 
@@ -81,6 +89,27 @@ const UpdatePassword = () => {
                 style={styles.input}
                 required
               />
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Current Password</label>
+              <div style={styles.passwordContainer}>
+                <input
+                  type={showCurrentPassword ? "text" : "password"}
+                  value={current_password}
+                  placeholder="Current password"
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  style={styles.passwordInput}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  style={styles.eyeButton}
+                >
+                  {showCurrentPassword ? "👁️" : "👁️‍🗨️"}
+                </button>
+              </div>
             </div>
 
             <div style={styles.formGroup}>

@@ -9,21 +9,19 @@ import {
   Filter, ChevronRight, ChevronLeft, Lightbulb, Coffee, Music,
   Users, ChevronUp, Bookmark, SlidersHorizontal, TrendingUp, Zap, LogOut
 } from "lucide-react";
-import logo from "../assets/MTBLogo.png";
+import logo from "../assets/MyTranslationBuddyLogo.png";
 import { handleLogout as sharedLogout, authHeaders } from "../utils/auth.js";
+import { CITIES_BY_COUNTRY, COUNTRY_FLAGS, COUNTRY_NAMES } from "../constants/cities.js";
+import { EventGridSkeleton, ErrorState } from "./ui/LoadingStates.jsx";
 
 const BACKEND = "/api";
 
 const COUNTRIES = [
-  { code:"DE", label:"Germany", flag:"\u{1F1E9}\u{1F1EA}" },
-  { code:"AT", label:"Austria", flag:"\u{1F1E6}\u{1F1F9}" },
-  { code:"CH", label:"Switzerland", flag:"\u{1F1E8}\u{1F1ED}" },
+  { code:"DE", label:COUNTRY_NAMES.DE, flag:COUNTRY_FLAGS.DE },
+  { code:"AT", label:COUNTRY_NAMES.AT, flag:COUNTRY_FLAGS.AT },
+  { code:"CH", label:COUNTRY_NAMES.CH, flag:COUNTRY_FLAGS.CH },
 ];
-const CITIES_BY = {
-  DE:["Aachen","Berlin","Bonn","Detmold","Eltville am Rhein","Hamburg","Jena","Leipzig","Lemgo","Mannheim","Munich","Osnabr\u00FCck","Stuttgart","Vallendar","Wiesbaden","W\u00FCrzburg"],
-  AT:["Graz","Salzburg","Vienna"],
-  CH:["Bern","Rapperswil-Jona","Winterthur","Zurich"],
-};
+const CITIES_BY = CITIES_BY_COUNTRY;
 const CATS = [
   { id:"", label:"All", icon:"\u2728" },
   { id:"KZFzniwnSyZfZ7v7nJ", label:"Music", icon:"\uD83C\uDFB5" },
@@ -513,12 +511,15 @@ const Events = () => {
       {/* ── MAIN CONTENT — 2-column layout ── */}
       <div style={S.layout}>
         <main style={S.mainCol}>
-          {error&&<div style={S.errorBox}><Info size={14}/> {error}</div>}
+          {error&&<ErrorState message={error} onRetry={()=>fetchEvents(0)} retryLabel="Retry Search"/>}
 
           {loading&&(
-            <div style={S.loadWrap}>
-              <div style={S.spinner}/>
-              <p style={{color:"#6B7280",fontSize:"0.82rem",margin:"0.6rem 0 0",fontWeight:500}}>Searching {countryObj.label}...</p>
+            <div>
+              <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginBottom:"1rem"}}>
+                <div style={{width:20,height:20,borderRadius:"50%",border:"2px solid #E5E7EB",borderTopColor:"#0021A5",animation:"spin 0.8s linear infinite"}}/>
+                <p style={{color:"#6B7280",fontSize:"0.82rem",margin:0,fontWeight:500}}>Searching {countryObj.label}…</p>
+              </div>
+              <EventGridSkeleton count={6}/>
             </div>
           )}
 
@@ -594,7 +595,13 @@ const Events = () => {
                 <PartyPopper size={28} color="#3B82F6"/>
               </div>
               <h3 style={{fontSize:"1.05rem",fontWeight:700,color:"#1F2937",margin:"0 0 0.35rem"}}>No events found</h3>
-              <p style={{fontSize:"0.82rem",color:"#9CA3AF",maxWidth:340,lineHeight:1.55,margin:"0 auto"}}>Try different filters, another city, or a broader date range to discover more.</p>
+              <p style={{fontSize:"0.82rem",color:"#9CA3AF",maxWidth:340,lineHeight:1.55,margin:"0 auto 1rem"}}>Try different filters, another city, or a broader date range to discover more.</p>
+              <div style={{display:"flex",gap:"0.5rem",justifyContent:"center",flexWrap:"wrap"}}>
+                {city&&<button onClick={()=>{setCity("");setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Try all cities</button>}
+                {keyword&&<button onClick={()=>{setKeyword("");setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Clear search</button>}
+                {datePreset>0&&<button onClick={()=>{setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #BFDBFE",background:"#EFF6FF",color:"#0021A5",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}>Any date</button>}
+                <button onClick={()=>{setCity("");setKeyword("");setSegmentIds([]);setDatePreset(0);setTimeout(()=>fetchEvents(0),50);}} style={{display:"inline-flex",alignItems:"center",gap:"0.25rem",padding:"0.45rem 0.9rem",borderRadius:"0.5rem",border:"1px solid #FECACA",background:"#FEF2F2",color:"#DC2626",cursor:"pointer",fontSize:"0.78rem",fontWeight:600}}><X size={12}/> Clear all filters</button>
+              </div>
             </div>
           )}
 

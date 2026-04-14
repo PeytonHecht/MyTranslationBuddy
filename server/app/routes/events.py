@@ -14,6 +14,7 @@ router = APIRouter(prefix="/api", tags=["events"])
 # Ticketmaster API key from settings (loaded from .env)
 TICKETMASTER_API_KEY = settings.ticketmaster_api_key
 TICKETMASTER_BASE = "https://app.ticketmaster.com/discovery/v2/events.json"
+TICKETMASTER_EVENT_BASE = "https://app.ticketmaster.com/discovery/v2/events"
 
 
 @router.get("/tm-events")
@@ -67,4 +68,39 @@ async def proxy_ticketmaster_events(
         raise HTTPException(
             status_code=502,
             detail=f"Failed to fetch events: {str(e)}"
+        )
+
+
+@router.get("/event-details/{event_id}")
+async def proxy_ticketmaster_event_details(event_id: str):
+    """
+    Proxy endpoint for fetching a single Ticketmaster event by ID.
+    """
+    url = f"{TICKETMASTER_EVENT_BASE}/{event_id}.json"
+    params = {"apikey": TICKETMASTER_API_KEY}
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.get(url, params=params)
+
+            if response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Event not found")
+
+            data = response.json()
+
+            if response.status_code == 401 or "fault" in data:
+                raise HTTPException(
+                    status_code=502,
+                    detail="Ticketmaster API key may be expired or invalid."
+                )
+
+            return data
+    except HTTPException:
+        raise
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Ticketmaster API timed out")
+    except Exception as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to fetch event details: {str(e)}"
         )
